@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <meta content="origin" name="referrer"/>
+  <meta content="#0b1a14" name="theme-color"/>
+  <meta content="Explore os registros colaborativos de infraestrutura urbana no mapa URBS de Montes Claros, MG." name="description"/>
+  <title>
+   Mapa colaborativo — URBS
+  </title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+  <link href="assets/css/style.css" rel="stylesheet"/>
+  <link href="assets/css/map-arrival.css" rel="stylesheet"/>
+  <link href="assets/css/map-davi-integration-v19.css?v=1908" rel="stylesheet"/>
+  <link href="assets/css/occurrences.css?v=4" rel="stylesheet"/>
+  <script>
+   // Rodar antes da pintura da página para manter continuidade visual entre telas.
+    try {
+      const started = Number(sessionStorage.getItem('urbs-arrival-v8'));
+      sessionStorage.removeItem('urbs-arrival-v8');
+      if (started && Date.now() - started < 15000 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('urbs-is-arriving');
+      }
+    } catch (_) {}
+  </script>
+  <script defer="" src="assets/js/map-arrival.js">
+  </script>
+  <script defer="" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
+  <script defer="" src="assets/js/api.js?v=1">
+  </script>
+  <script defer="" src="assets/js/store.js?v=2">
+  </script>
+  <script defer="" src="assets/js/session-ui.js?v=1">
+  </script>
+  <script defer="" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
+  </script>
+  <script defer="" src="assets/js/map.js?v=1910">
+  </script>
+ </head>
+ <body class="app-page map-page">
+  <div aria-hidden="true" class="urbs-arrival-curtain">
+   <span>
+    urbs
+    <span class="arrival-dot">
+     .
+    </span>
+    / MONTES CLAROS
+   </span>
+  </div>
+  <a class="skip-link" href="#mapa-conteudo">
+   Pular para o conteúdo
+  </a>
+  <header class="app-header">
+   <a aria-label="URBS — página inicial" class="wordmark" href="index.html">
+    urbs
+    <span>
+     .
+    </span>
+   </a>
+   <nav aria-label="Navegação principal">
+    <a href="index.html">
+     Início
+    </a>
+    <a aria-current="page" class="active" href="mapa.html">
+     Mapa
+    </a>
+    <a href="registro.html">
+     Registrar
+    </a>
+    <a href="login.html">
+     Entrar
+    </a>
+   </nav>
+   <a class="header-action" href="registro.html">
+    Registrar ocorrência
+    <span aria-hidden="true">
+     ＋
+    </span>
+   </a>
+  </header>
+  <main class="map-main" id="mapa-conteudo">
+   <p aria-live="polite" class="visually-hidden" id="map-live-region" role="status">
+   </p>
+   <div class="map-page-heading">
+    <h1>Mapa de ocorrências</h1>
+   </div>
+   <div class="map-workspace">
+    <section aria-label="Mapa e localização das ocorrências" class="map-panel">
+     <div class="map-topbar map-v19-bar">
+      <div class="map-v19-place">
+       <span aria-hidden="true" class="map-region-dot">
+       </span>
+       <strong>
+        Montes Claros
+       </strong>
+       <span>
+        MG
+       </span>
+      </div>
+      <div aria-label="Controles do mapa" class="map-v19-tools">
+       <div aria-label="Tipo de mapa" class="map-v19-switch" role="group">
+        <button aria-pressed="true" class="map-v19-layer is-active" id="btnLayerLight" type="button">
+         Ruas
+        </button>
+        <button aria-pressed="false" class="map-v19-layer" id="btnLayerSat" type="button">
+         Satélite
+        </button>
+       </div>
+       <button class="map-v19-tool" id="map-fit-reports" title="Enquadrar ocorrências" type="button">
+        Ver todos
+       </button>
+       <button class="map-v19-tool" id="map-reset-city" title="Centralizar em Montes Claros" type="button">
+        Centralizar
+       </button>
+       <button aria-label="Mostrar minha localização no mapa" class="locate-button" id="locate-me" type="button">
+        <span aria-hidden="true">
+         ◎
+        </span>
+        Localizar
+       </button>
+      </div>
+     </div>
+     <div class="map-canvas-wrap">
+      <div aria-label="Mapa interativo com marcadores de ocorrências em Montes Claros" id="map" role="application">
+      </div>
+      <div class="map-unavailable" hidden="" id="map-unavailable">
+       <strong>
+        O mapa não carregou.
+       </strong>
+       <span>
+        Confira a conexão com a internet e recarregue a página.
+       </span>
+      </div>
+     </div>
+     <div aria-label="Legenda dos marcadores por situação" class="map-legend">
+      <span><i aria-hidden="true" class="legend-dot legend-new"></i> Novo</span>
+      <span><i aria-hidden="true" class="legend-dot legend-analysis"></i> Em análise</span>
+      <span><i aria-hidden="true" class="legend-dot legend-progress"></i> Em andamento</span>
+      <span><i aria-hidden="true" class="legend-dot legend-solved"></i> Solucionado</span>
+      <span class="map-legend-note">O ponto no canto indica a situação</span>
+     </div>
+    </section>
+    <aside aria-labelledby="explorer-title" class="explorer-panel" id="occurrence-explorer">
+     <div class="map-sheet-bar">
+      <button aria-controls="explorer-content" aria-expanded="false" class="map-sheet-toggle" id="explorer-toggle" type="button">
+       Ocorrências <span aria-hidden="true" class="map-sheet-arrow"></span>
+      </button>
+      <a class="occurrence-primary" href="registro.html">Registrar <span aria-hidden="true">＋</span></a>
+     </div>
+     <p class="report-action-feedback" id="report-action-feedback" role="status"></p>
+     <div class="explorer-content" id="explorer-content">
+      <div class="explorer-topline">
+       <h2 id="explorer-title">Ocorrências</h2>
+       <span aria-live="polite" class="result-count" id="result-count">—</span>
+      </div>
+      <div class="filter-location">
+       <label for="location-filter">Buscar ocorrências</label>
+       <div class="search-field">
+        <span aria-hidden="true">⌕</span>
+        <input autocomplete="off" id="location-filter" placeholder="Rua, bairro ou referência" type="search"/>
+       </div>
+      </div>
+      <details class="map-filters">
+       <summary>
+        Filtros <span class="active-filter-count" hidden="" id="active-filter-count"></span>
+       </summary>
+       <div class="filter-fields">
+        <div>
+         <label for="category-filter">Categoria</label>
+         <select id="category-filter">
+          <option value="all">
+           Todas as categorias
+          </option>
+          <option value="Pavimentação">
+           Buracos e pavimentação
+          </option>
+          <option value="Iluminação pública">
+           Iluminação pública
+          </option>
+          <option value="Acessibilidade">
+           Calçadas e acessibilidade
+          </option>
+          <option value="Descarte irregular de resíduos">
+           Descarte irregular de resíduos
+          </option>
+          <option value="Drenagem">
+           Drenagem
+          </option>
+          <option value="Sinalização">
+           Sinalização
+          </option>
+          <option value="Outro">
+           Outro
+          </option>
+         </select>
+        </div>
+        <div>
+         <label for="status-filter">Situação</label>
+         <select id="status-filter">
+          <option value="all">
+           Todas as situações
+          </option>
+          <option value="Novo">
+           Novo
+          </option>
+          <option value="Em análise">
+           Em análise
+          </option>
+          <option value="Em andamento">
+           Em andamento
+          </option>
+          <option value="Solucionado">
+           Solucionado
+          </option>
+         </select>
+        </div>
+        <button class="clear-filters" id="clear-filters" type="button">Limpar filtros</button>
+       </div>
+      </details>
+      <div aria-label="Lista de ocorrências" class="report-list" id="report-list"></div>
+      <div class="empty-state" hidden="" id="empty-state">
+       <h3>Nenhuma ocorrência encontrada</h3>
+       <p>Ajuste os filtros ou faça um novo registro.</p>
+      </div>
+     </div>
+    </aside>
+   </div>
+   <section aria-labelledby="map-pin-guide-title" class="map-pin-guide" hidden="">
+    <div class="map-pin-guide-heading">
+     <span>URBS / LEGENDA DO MAPA</span>
+     <h2 id="map-pin-guide-title">O que cada marcador representa</h2>
+    </div>
+    <ul class="map-pin-guide-list" id="map-pin-guide-list" role="list"></ul>
+   </section>
+   <p class="local-notice"><strong>Projeto acadêmico independente.</strong> Os pontos de exemplo são fictícios. Os registros enviados por usuários autenticados ficam no banco MySQL; esta plataforma não é um canal oficial da Prefeitura.</p>
+  </main>
+  <footer class="app-footer">
+   <span>
+    URBS · PROJETO ACADÊMICO
+   </span>
+   <a href="index.html">
+    Voltar ao início ↑
+   </a>
+  </footer>
+ </body>
+</html>
+
+

@@ -1,0 +1,28 @@
+/* URBS V10.1 | Defensive homepage rendering. Never hide essential content. */
+html, body {
+  overflow-x: clip;
+  overflow-y: auto !important;
+  height: auto !important;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  min-height: 100vh;
+}
+[data-aos], [data-aos].aos-init, [data-aos].aos-animate {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+/* In case a stale ScrollTrigger inline style remains after navigation */
+.manifesto-content, .territory-feature-heading, .participation-grid, .urban-faq,
+.section-kicker, .intro-grid > *, .principles article, .category-card,
+.process-item, .pilot-content > * {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+/* Arrival curtain never intercepts the page even during a failed transition */
+.home-entry-curtain {
+  pointer-events: none !important;
+}

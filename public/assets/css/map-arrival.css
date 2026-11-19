@@ -1,0 +1,47 @@
+/* URBS V8 · handoff orbital -> mapa. Apenas quando a navegação vem da intro. */
+.urbs-arrival-curtain {
+  display: none;
+}
+html.urbs-is-arriving .urbs-arrival-curtain {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  align-items: center;
+  justify-content: center;
+  background: #020805;
+  color: #e7f2e7;
+  font: 600 clamp(15px,2vw,24px) 'Space Grotesk',sans-serif;
+  letter-spacing: .11em;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity .65s cubic-bezier(.2,.8,.2,1);
+}
+.urbs-arrival-curtain .arrival-dot {
+  color: #ccf48c;
+}
+html.urbs-is-arriving.urbs-arrival-reveal .urbs-arrival-curtain {
+  opacity: 0;
+}
+html.urbs-is-arriving .app-header,html.urbs-is-arriving .map-page-heading,html.urbs-is-arriving .explorer-panel,html.urbs-is-arriving .map-legend {
+  opacity: 0;
+  transform: translateY(14px);
+}
+html.urbs-is-arriving.urbs-arrival-reveal .app-header,html.urbs-is-arriving.urbs-arrival-reveal .map-page-heading,html.urbs-is-arriving.urbs-arrival-reveal .explorer-panel,html.urbs-is-arriving.urbs-arrival-reveal .map-legend {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .7s ease,transform .7s ease;
+}
+html.urbs-is-arriving .map-canvas-wrap {
+  transform: scale(1.025);
+  transform-origin: center center;
+}
+html.urbs-is-arriving.urbs-arrival-reveal .map-canvas-wrap {
+  transform: scale(1);
+  transition: transform 1s cubic-bezier(.2,.8,.2,1);
+}
+@media(prefers-reduced-motion:reduce) {
+  .urbs-arrival-curtain {
+    display: none !important;
+  }
+}

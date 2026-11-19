@@ -1,0 +1,650 @@
+/* URBS — Terra / tela inteira. Toda a experiência fica em 100vw × 100dvh. */
+:root {
+  --ink: #050d12;
+  --mint: #c9f58c;
+  --pale: #ecf3ef;
+  --muted: #9cafa9;
+  --line: rgba(231,252,240,.15);
+}
+* {
+  box-sizing: border-box;
+}
+html,body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+body {
+  font-family: Manrope,system-ui,sans-serif;
+  color: var(--pale);
+  background: var(--ink);
+}
+button,input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button:focus-visible,input:focus-visible,a:focus-visible {
+  outline: 2px solid var(--mint);
+  outline-offset: 3px;
+}
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  transform: translateY(-150%);
+  padding: 12px;
+  background: var(--mint);
+  color: #102215;
+}
+.skip-link:focus {
+  transform: none;
+}
+.auth-experience {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  isolation: isolate;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 65% 50%,#0b2030 0%,#050d12 55%,#020609 100%);
+}
+.starfield {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #000;
+  background-image:
+    radial-gradient(circle at 3% 17%, #fff6, transparent 0.9px),
+    radial-gradient(circle at 8% 6%, #fff8, transparent 1px),
+    radial-gradient(circle at 11% 31%, #fff5, transparent 1.1px),
+    radial-gradient(circle at 17% 14%, #fff6, transparent 0.8px),
+    radial-gradient(circle at 22% 25%, #fff9, transparent 1px),
+    radial-gradient(circle at 28% 9%, #fff7, transparent 1px),
+    radial-gradient(circle at 35% 18%, #fff4, transparent 0.8px),
+    radial-gradient(circle at 42% 5%, #fff9, transparent 1.1px),
+    radial-gradient(circle at 48% 26%, #fff5, transparent 1.1px),
+    radial-gradient(circle at 54% 12%, #fff9, transparent 1.1px),
+    radial-gradient(circle at 58% 22%, #fff5, transparent 0.8px),
+    radial-gradient(circle at 64% 7%, #fff8, transparent 1px),
+    radial-gradient(circle at 71% 19%, #fff8, transparent 1px),
+    radial-gradient(circle at 76% 10%, #fff6, transparent 1px),
+    radial-gradient(circle at 82% 26%, #fff9 .25px, transparent 1.4px),
+    radial-gradient(circle at 89% 14%, #fff8, transparent 1px),
+    radial-gradient(circle at 96% 9%, #fff6, transparent 0.9px),
+    radial-gradient(circle at 94% 29%, #fff7, transparent 1px),
+    radial-gradient(circle at 4% 51%, #fff7, transparent 1px),
+    radial-gradient(circle at 16% 44%, #fff4, transparent 1px),
+    radial-gradient(circle at 33% 39%, #fff5, transparent 1px),
+    radial-gradient(circle at 39% 48%, #fff6, transparent 1.1px),
+    radial-gradient(circle at 46% 58%, #fff7, transparent 0.9px),
+    radial-gradient(circle at 54% 37%, #fff5, transparent 1px),
+    radial-gradient(circle at 65% 47%, #fff6, transparent 0.9px),
+    radial-gradient(circle at 76% 56%, #fff7, transparent 1px),
+    radial-gradient(circle at 91% 45%, #fffb .25px, transparent 1.4px),
+    radial-gradient(circle at 97% 60%, #fff7, transparent 1px),
+    radial-gradient(circle at 8% 73%, #fff9 .25px, transparent 1.2px),
+    radial-gradient(circle at 14% 90%, #fff6, transparent 1px),
+    radial-gradient(circle at 23% 64%, #fff5, transparent 0.9px),
+    radial-gradient(circle at 29% 82%, #fff6, transparent 1px),
+    radial-gradient(circle at 37% 94%, #fff8 .25px, transparent 1.2px),
+    radial-gradient(circle at 40% 73%, #fff5, transparent 0.8px),
+    radial-gradient(circle at 49% 88%, #fff8 .25px, transparent 1.2px),
+    radial-gradient(circle at 56% 70%, #fff9, transparent 1.1px),
+    radial-gradient(circle at 61% 91%, #fff6, transparent 1px),
+    radial-gradient(circle at 68% 82%, #fff9 .25px, transparent 1.3px),
+    radial-gradient(circle at 73% 95%, #fff5, transparent 0.9px),
+    radial-gradient(circle at 80% 68%, #fff4, transparent 1px),
+    radial-gradient(circle at 85% 87%, #fff7, transparent 1px),
+    radial-gradient(circle at 91% 75%, #fffa .25px, transparent 1.2px),
+    radial-gradient(circle at 96% 91%, #fff8, transparent 1px);
+}
+.topline,.bottomline {
+  z-index: 12;
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.topline>* , .bottomline>* {
+  pointer-events: auto;
+}
+.topline {
+  top: 0;
+  height: 84px;
+  padding: 0 clamp(24px,4.5vw,84px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.brand {
+  font: 700 37px/1 'Space Grotesk',sans-serif;
+  letter-spacing: -.09em;
+}
+.brand span,.dot {
+  color: var(--mint);
+}
+.header-context,.back-link,.bottomline,.micro-heading,.planet-description,.show-password {
+  font-family: 'DM Mono',monospace;
+  letter-spacing: .07em;
+  font-size: 10px;
+}
+.header-context {
+  color: #9baea9;
+}
+.back-link {
+  font-size: 10px;
+}
+.back-link:hover {
+  color: var(--mint);
+}
+/* Lado do globo: no estado login fica à direita; no cadastro cruza para esquerda. */
+.planet-zone {
+  position: absolute;
+  z-index: 2;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  overflow: visible;
+  pointer-events: none;
+  will-change: left,transform;
+}
+.planet-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.planet-layer canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.planet-halo {
+  position: absolute;
+  z-index: 1;
+  width: min(46vw,700px);
+  aspect-ratio: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  background: #2a86cf;
+  opacity: .10;
+  filter: blur(95px);
+}
+.planet-description {
+  position: absolute;
+  z-index: 4;
+  bottom: 86px;
+  left: 9%;
+  right: 9%;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #93afbb;
+  font-size: 9px;
+}
+.planet-index {
+  color: var(--mint);
+}
+.form-side {
+  position: absolute;
+  z-index: 5;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 96px clamp(22px,4vw,65px) 58px;
+  will-change: transform,opacity;
+}
+.login-side {
+  left: 0;
+}
+.register-side {
+  right: 0;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(65px);
+  pointer-events: none;
+}
+.glass-card {
+  width: min(100%,445px);
+  padding: clamp(25px,3vw,44px);
+  border-radius: 22px;
+  background: rgba(10,24,30,.64);
+  border: 1px solid rgba(216,241,234,.14);
+  box-shadow: 0 30px 110px rgba(0,0,0,.26),inset 0 1px rgba(255,255,255,.04);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+}
+.micro-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--mint);
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 14px var(--mint);
+}
+h1,h2 {
+  font: 500 clamp(42px,4.2vw,66px)/.99 'Space Grotesk',sans-serif;
+  letter-spacing: -.065em;
+  margin: 24px 0 15px;
+}
+h1 em,h2 em {
+  font-style: normal;
+  color: var(--mint);
+}
+.form-description {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a3b9b1;
+  margin: 0 0 25px;
+  max-width: 330px;
+}
+.glass-card form {
+  display: flex;
+  flex-direction: column;
+}
+.glass-card label {
+  font: 500 10px 'DM Mono',monospace;
+  color: #cadbd2;
+  letter-spacing: .06em;
+  margin: 0 0 8px;
+}
+.glass-card input {
+  min-height: 46px;
+  border-radius: 7px;
+  padding: 0 14px;
+  width: 100%;
+  border: 1px solid #39534c;
+  background: rgba(3,14,17,.67);
+  color: white;
+  font-size: 13px;
+  margin-bottom: 14px;
+  outline: none;
+}
+.glass-card input:focus {
+  border-color: var(--mint);
+}
+.glass-card input::placeholder {
+  color: #738e87;
+}
+.password-wrap {
+  position: relative;
+}
+.password-wrap input {
+  padding-right: 78px;
+}
+.show-password {
+  position: absolute;
+  top: 14px;
+  right: 10px;
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--mint);
+  font-size: 9px;
+}
+.field-error {
+  min-height: 0;
+  color: #ffc6bd;
+  font-size: 11px;
+  margin: 0 0 10px;
+}
+.field-error:empty {
+  display: none;
+}
+.submit-button {
+  width: 100%;
+  border: 1px solid var(--mint);
+  border-radius: 7px;
+  background: var(--mint);
+  color: #12241c;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 15px 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: filter .2s,transform .2s;
+}
+.submit-button:hover {
+  filter: brightness(1.09);
+  transform: translateY(-1px);
+}
+.submit-button span {
+  font-size: 20px;
+}
+.switch-copy {
+  font-size: 12px;
+  color: #9cb4a9;
+  text-align: center;
+  margin: 20px 0 0;
+}
+.switch-link {
+  background: none;
+  border: 0;
+  color: var(--mint);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px;
+}
+.switch-link:hover {
+  text-decoration: underline;
+}
+.bottomline {
+  bottom: 0;
+  min-height: 58px;
+  padding: 0 clamp(24px,4.5vw,84px);
+  border-top: 1px solid rgba(255,255,255,.08);
+  color: #91a8a5;
+  font-size: 9px;
+}
+.demo-label {
+  color: #b6d49c;
+}
+.landing-reticle {
+  position: absolute;
+  z-index: 7;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  border: 1px solid rgba(206,244,183,.55);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+}
+.landing-reticle b {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: var(--mint);
+  font: 10px 'DM Mono',monospace;
+  letter-spacing: .06em;
+}
+.arrival-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center,#235b76,#05101a 75%);
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.arrival-beam {
+  position: absolute;
+  height: 150%;
+  width: 3px;
+  transform: rotate(16deg);
+  background: linear-gradient(transparent,#e7fbff,transparent);
+  box-shadow: 0 0 55px 13px #88d8f4;
+}
+.arrival-ring {
+  width: 190px;
+  height: 190px;
+  border: 1px solid var(--mint);
+  border-radius: 50%;
+  box-shadow: 0 0 0 70px rgba(177,225,246,.035),0 0 120px rgba(120,196,242,.3);
+}
+.arrival-text {
+  position: absolute;
+  bottom: 16%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  font: 10px 'DM Mono',monospace;
+  letter-spacing: .12em;
+  color: #cde9ea;
+}
+.arrival-text strong {
+  font: 600 clamp(24px,5vw,58px) 'Space Grotesk',sans-serif;
+  letter-spacing: -.05em;
+  color: white;
+}
+.screen-reader-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+@media(max-height:790px) and (min-width:761px) {
+  .topline {
+    height: 66px;
+  }
+  .bottomline {
+    min-height: 43px;
+  }
+  .form-side {
+    padding-top: 74px;
+    padding-bottom: 48px;
+  }
+  .glass-card {
+    padding: 22px 30px;
+  }
+  .glass-card h1,.glass-card h2 {
+    font-size: 42px;
+    margin: 12px 0;
+  }
+  .form-description {
+    margin-bottom: 12px;
+  }
+  .glass-card input {
+    min-height: 40px;
+    margin-bottom: 9px;
+  }
+  .show-password {
+    top: 11px;
+  }
+  .submit-button {
+    padding: 10px 16px;
+  }
+  .switch-copy {
+    margin-top: 10px;
+  }
+  .planet-description {
+    bottom: 56px;
+  }
+}
+@media(max-width:760px) {
+  .topline {
+    height: 65px;
+    padding: 0 20px;
+  }
+  .brand {
+    font-size: 30px;
+  }
+  .header-context {
+    display: none;
+  }
+  .bottomline {
+    min-height: 46px;
+    padding: 0 18px;
+    font-size: 8px;
+  }
+  .bottomline span:nth-child(2) {
+    display: none;
+  }
+  .planet-zone {
+    width: 100%;
+    left: 0 !important;
+    opacity: .38;
+    z-index: 1;
+    transform: none !important;
+  }
+  .planet-halo {
+    width: 85vw;
+  }
+  .planet-description {
+    display: none;
+  }
+  .form-side {
+    width: 100%;
+    left: 0;
+    right: auto;
+    z-index: 6;
+    padding: 77px 20px 54px;
+  }
+  .glass-card {
+    max-width: 440px;
+    max-height: calc(100dvh - 138px);
+    overflow: auto;
+    padding: clamp(17px,4vw,28px);
+    background: rgba(4,16,21,.78);
+  }
+  h1,h2 {
+    font-size: clamp(35px,9vw,54px);
+    margin: 12px 0;
+  }
+  .form-description {
+    margin-bottom: 15px;
+  }
+  .register-side {
+    transform: translateX(50px);
+  }
+  .glass-card input {
+    min-height: 42px;
+    margin-bottom: 10px;
+  }
+  .show-password {
+    top: 12px;
+  }
+  .submit-button {
+    padding: 12px 16px;
+  }
+  .switch-copy {
+    margin-top: 12px;
+  }
+}
+@media(max-width:360px) {
+  .glass-card {
+    padding: 17px;
+  }
+  .form-description {
+    line-height: 1.5;
+  }
+  .glass-card input {
+    min-height: 38px;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*:before,*:after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .planet-layer {
+    opacity: .65;
+  }
+}
+/* Em navegadores sem WebGL, a própria foto enviada aparece como referência estática. */
+.planet-layer.globe-fallback {
+  background-image: url('../images/terra-blue-marble-referencia.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: min(92%,75vh) auto;
+  opacity: .95;
+  mix-blend-mode: screen;
+}
+@media(max-width:760px) {
+  .planet-layer.globe-fallback {
+    background-size: 90vw auto;
+  }
+}
+/* V6: Cesium dentro do painel do planeta, sem UI de navegação.
+   Os créditos Cesium/Esri permanecem visíveis por exigência de licenciamento. */
+.planet-layer .cesium-widget,.planet-layer .cesium-widget canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.planet-layer .cesium-viewer,.planet-layer .cesium-viewer-cesiumWidgetContainer {
+  width: 100%;
+  height: 100%;
+  background: transparent !important;
+}
+.planet-layer .cesium-viewer-toolbar,.planet-layer .cesium-viewer-animationContainer,.planet-layer .cesium-viewer-timelineContainer {
+  display: none !important;
+}
+.planet-layer .cesium-viewer-bottom {
+  bottom: 70px;
+  left: 5%;
+  right: 5%;
+  z-index: 6;
+  pointer-events: auto;
+}
+.planet-layer .cesium-credit-textContainer {
+  font-size: 9px !important;
+  opacity: .82;
+}
+.planet-layer .cesium-credit-logoContainer {
+  opacity: .85;
+}
+@media(max-width:760px) {
+  .planet-layer .cesium-viewer-bottom {
+    bottom: 46px;
+    left: 8px;
+    right: 8px;
+  }
+}
+/* Fundo escuro e formulário sem cartão opaco, blur, borda ou sombra. */
+html,body,.auth-experience {
+  background: #000 !important;
+}
+.glass-card {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border-radius: 0 !important;
+}
+.planet-zone {
+  pointer-events: auto;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.planet-zone.is-dragging {
+  cursor: grabbing;
+}
+.planet-layer .cesium-viewer-bottom {
+  pointer-events: auto;
+}
+/* Estado de saída: o conteúdo sai ANTES de surgir a viagem. */
+.auth-experience.is-departing .form-side {
+  pointer-events: none;
+}
+@media(max-width:760px) {
+  .glass-card {
+    background: transparent !important;
+  }
+  .planet-zone {
+    touch-action: pan-y;
+  }
+}
