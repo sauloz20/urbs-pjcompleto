@@ -1,148 +1,149 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <meta content="origin" name="referrer"/>
-  <meta content="#0b1a14" name="theme-color"/>
-  <meta content="Registre uma observação sobre a infraestrutura urbana em Montes Claros, MG, no protótipo acadêmico URBS." name="description"/>
-  <title>
-   Registrar ocorrência — URBS
-  </title>
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
-  <link href="assets/css/style.css" rel="stylesheet"/>
-  <link href="assets/css/occurrences.css?v=3" rel="stylesheet"/>
-  <script defer="" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-  </script>
-  <script defer="" src="assets/js/api.js?v=1">
-  </script>
-  <script defer="" src="assets/js/store.js?v=2">
-  </script>
-  <script defer="" src="assets/js/session-ui.js?v=1">
-  </script>
-  <script defer="" src="assets/js/registro.js?v=1904">
-  </script>
- </head>
- <body class="app-page form-page-body">
-  <a class="skip-link" href="#registro-conteudo">
-   Pular para o conteúdo
-  </a>
-  <header class="app-header">
-   <a aria-label="URBS — página inicial" class="wordmark" href="index.html">
-    urbs
-    <span>
-     .
-    </span>
-   </a>
-   <nav aria-label="Navegação principal">
-    <a href="index.html">
-     Início
-    </a>
-    <a href="mapa.html">
-     Mapa
-    </a>
-    <a aria-current="page" class="active" href="registro.html">
-     Registrar
-    </a>
-    <a href="login.html">
-     Entrar
-    </a>
-   </nav>
-   <a class="header-action" href="mapa.html">
-    Ver mapa
-    <span aria-hidden="true">
-     ↗
-    </span>
-   </a>
-  </header>
-  <main class="form-page" id="registro-conteudo">
-   <div class="form-heading">
-    <h1 id="report-page-title">Registrar ocorrência</h1>
-    <span class="form-context"><span aria-hidden="true" class="status-dot"></span> Montes Claros, MG</span>
-   </div>
-   <form class="report-form" id="report-form">
-    <div class="registration-grid">
-     <section aria-labelledby="report-details-title" class="registration-panel">
-      <div class="form-section-title">
-       <h2 id="report-details-title">O que aconteceu?</h2>
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="origin" name="referrer" />
+    <meta content="#0b1a14" name="theme-color" />
+    <meta
+      content="Registre uma observação sobre a infraestrutura urbana em Montes Claros, MG, no protótipo acadêmico URBS."
+      name="description"
+    />
+    <title>Registrar ocorrência — URBS</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" />
+    <link href="assets/css/style.css" rel="stylesheet" />
+    <link href="assets/css/occurrences.css?v=3" rel="stylesheet" />
+    <script defer="" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script defer="" src="assets/js/api.js?v=1"></script>
+    <script defer="" src="assets/js/store.js?v=2"></script>
+    <script defer="" src="assets/js/session-ui.js?v=1"></script>
+    <script defer="" src="assets/js/registro.js?v=1904"></script>
+  </head>
+  <body class="app-page form-page-body">
+    <a class="skip-link" href="#registro-conteudo"> Pular para o conteúdo </a>
+    <header class="app-header">
+      <a aria-label="URBS — página inicial" class="wordmark" href="index.html">
+        urbs
+        <span> . </span>
+      </a>
+      <nav aria-label="Navegação principal">
+        <a href="index.html"> Início </a>
+        <a href="mapa.html"> Mapa </a>
+        <a aria-current="page" class="active" href="registro.html"> Registrar </a>
+        <a href="login.html"> Entrar </a>
+      </nav>
+      <a class="header-action" href="mapa.html">
+        Ver mapa
+        <span aria-hidden="true"> ↗ </span>
+      </a>
+    </header>
+    <main class="form-page" id="registro-conteudo">
+      <div class="form-heading">
+        <h1 id="report-page-title">Registrar ocorrência</h1>
+        <span class="form-context"
+          ><span aria-hidden="true" class="status-dot"></span> Montes Claros, MG</span
+        >
       </div>
-      <label for="category">Categoria</label>
-      <select id="category" name="category" required="">
-       <option value="">
-        Selecione uma categoria
-       </option>
-       <option value="Pavimentação">
-        Buracos e pavimentação
-       </option>
-       <option value="Iluminação pública">
-        Iluminação pública
-       </option>
-       <option value="Acessibilidade">
-        Calçadas e acessibilidade
-       </option>
-       <option value="Descarte irregular de resíduos">
-        Descarte irregular de resíduos
-       </option>
-       <option value="Drenagem">
-        Drenagem
-       </option>
-       <option value="Sinalização">
-        Sinalização
-       </option>
-       <option value="Outro">
-        Outro
-       </option>
-      </select>
-      <label for="title">Título da ocorrência</label>
-      <input id="title" maxlength="90" name="title" placeholder="Ex.: Buraco perto da praça" required=""/>
-      <label for="description">Descrição</label>
-      <textarea aria-describedby="character-count" id="description" maxlength="700" name="description" placeholder="Descreva o que você observou e como isso afeta o local." required="" rows="5"></textarea>
-      <div class="character-count" id="character-count"><span id="description-count">0</span> / 700 caracteres</div>
-     </section>
-     <section aria-labelledby="report-location-title" class="registration-panel location-panel">
-      <div class="form-section-title">
-       <h2 id="report-location-title">Onde aconteceu?</h2>
-      </div>
-      <label for="address">Rua, bairro ou referência <small>Opcional</small></label>
-      <input autocomplete="street-address" id="address" maxlength="140" name="address" placeholder="Ex.: Praça da Matriz, Centro"/>
-      <div class="picker-map-wrap">
-       <div class="picker-map-toolbar">
-        <span>Marque o ponto no mapa</span>
-        <button class="locate-button" id="use-location" type="button">
-         <span aria-hidden="true">◎</span> Usar minha localização
-        </button>
-       </div>
-       <div aria-describedby="coordinates" aria-label="Selecione a localização da ocorrência no mapa" id="picker-map" role="application"></div>
-       <div aria-live="polite" class="picker-coordinates" id="coordinates">Toque ou clique no mapa. Você pode arrastar o pino para ajustar.</div>
-      </div>
-      <input id="latitude" name="latitude" type="hidden"/>
-      <input id="longitude" name="longitude" type="hidden"/>
-     </section>
-    </div>
-    <div class="registration-footer">
-     <p aria-live="polite" class="form-feedback" id="form-feedback" role="status"></p>
-     <div class="form-actions">
-      <a class="text-link" href="mapa.html">Cancelar</a>
-      <button class="submit-button occurrence-primary" type="submit">
-       <span id="report-submit-label">Salvar ocorrência</span> <span aria-hidden="true">↗</span>
-      </button>
-     </div>
-    </div>
-   </form>
-   <p class="local-notice"><strong>Projeto acadêmico independente.</strong> O envio salva o registro no banco MySQL do projeto, mas não comunica a Prefeitura. Evite incluir informações pessoais.</p>
-  </main>
-  <footer class="app-footer">
-   <span>
-    URBS · PROJETO ACADÊMICO
-   </span>
-   <a href="index.html">
-    Voltar ao início ↑
-   </a>
-  </footer>
- </body>
+      <form class="report-form" id="report-form">
+        <div class="registration-grid">
+          <section aria-labelledby="report-details-title" class="registration-panel">
+            <div class="form-section-title">
+              <h2 id="report-details-title">O que aconteceu?</h2>
+            </div>
+            <label for="category">Categoria</label>
+            <select id="category" name="category" required="">
+              <option value="">Selecione uma categoria</option>
+              <option value="Pavimentação">Buracos e pavimentação</option>
+              <option value="Iluminação pública">Iluminação pública</option>
+              <option value="Acessibilidade">Calçadas e acessibilidade</option>
+              <option value="Descarte irregular de resíduos">Descarte irregular de resíduos</option>
+              <option value="Drenagem">Drenagem</option>
+              <option value="Sinalização">Sinalização</option>
+              <option value="Outro">Outro</option>
+            </select>
+            <label for="title">Título da ocorrência</label>
+            <input
+              id="title"
+              maxlength="90"
+              name="title"
+              placeholder="Ex.: Buraco perto da praça"
+              required=""
+            />
+            <label for="description">Descrição</label>
+            <textarea
+              aria-describedby="character-count"
+              id="description"
+              maxlength="700"
+              name="description"
+              placeholder="Descreva o que você observou e como isso afeta o local."
+              required=""
+              rows="5"
+            ></textarea>
+            <div class="character-count" id="character-count">
+              <span id="description-count">0</span> / 700 caracteres
+            </div>
+          </section>
+          <section
+            aria-labelledby="report-location-title"
+            class="registration-panel location-panel"
+          >
+            <div class="form-section-title">
+              <h2 id="report-location-title">Onde aconteceu?</h2>
+            </div>
+            <label for="address">Rua, bairro ou referência <small>Opcional</small></label>
+            <input
+              autocomplete="street-address"
+              id="address"
+              maxlength="140"
+              name="address"
+              placeholder="Ex.: Praça da Matriz, Centro"
+            />
+            <div class="picker-map-wrap">
+              <div class="picker-map-toolbar">
+                <span>Marque o ponto no mapa</span>
+                <button class="locate-button" id="use-location" type="button">
+                  <span aria-hidden="true">◎</span> Usar minha localização
+                </button>
+              </div>
+              <div
+                aria-describedby="coordinates"
+                aria-label="Selecione a localização da ocorrência no mapa"
+                id="picker-map"
+                role="application"
+              ></div>
+              <div aria-live="polite" class="picker-coordinates" id="coordinates">
+                Toque ou clique no mapa. Você pode arrastar o pino para ajustar.
+              </div>
+            </div>
+            <input id="latitude" name="latitude" type="hidden" />
+            <input id="longitude" name="longitude" type="hidden" />
+          </section>
+        </div>
+        <div class="registration-footer">
+          <p aria-live="polite" class="form-feedback" id="form-feedback" role="status"></p>
+          <div class="form-actions">
+            <a class="text-link" href="mapa.html">Cancelar</a>
+            <button class="submit-button occurrence-primary" type="submit">
+              <span id="report-submit-label">Salvar ocorrência</span>
+              <span aria-hidden="true">↗</span>
+            </button>
+          </div>
+        </div>
+      </form>
+      <p class="local-notice">
+        <strong>Projeto acadêmico independente.</strong> O envio salva o registro no banco MySQL do
+        projeto, mas não comunica a Prefeitura. Evite incluir informações pessoais.
+      </p>
+    </main>
+    <footer class="app-footer">
+      <span> URBS · PROJETO ACADÊMICO </span>
+      <a href="index.html"> Voltar ao início ↑ </a>
+    </footer>
+  </body>
 </html>
-
-

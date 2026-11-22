@@ -3,19 +3,76 @@
 
   const STATUSES = ["Novo", "Em análise", "Em andamento", "Solucionado", "Rejeitado"];
   const STATUS_TO_API = {
-    "Novo": "pending",
+    Novo: "pending",
     "Em análise": "in_analysis",
     "Em andamento": "in_progress",
-    "Solucionado": "resolved",
-    "Rejeitado": "rejected",
+    Solucionado: "resolved",
+    Rejeitado: "rejected",
   };
-  const STATUS_FROM_API = Object.fromEntries(Object.entries(STATUS_TO_API).map(([label, value]) => [value, label]));
+  const STATUS_FROM_API = Object.fromEntries(
+    Object.entries(STATUS_TO_API).map(([label, value]) => [value, label]),
+  );
   const DEMO_REPORTS = [
-    { id: "demo-pavimento", title: "Pavimentação — exemplo", category: "Pavimentação", address: "Área central · ponto demonstrativo", description: "Registro fictício usado apenas para apresentar o mapa.", lat: -16.7248, lng: -43.8631, status: "Em análise", createdAt: "2026-11-10T12:00:00.000Z", demo: true },
-    { id: "demo-iluminacao", title: "Iluminação pública — exemplo", category: "Iluminação pública", address: "Setor urbano · ponto demonstrativo", description: "Exemplo fictício. Não representa uma ocorrência real.", lat: -16.7315, lng: -43.8483, status: "Em andamento", createdAt: "2026-11-08T12:00:00.000Z", demo: true },
-    { id: "demo-acessibilidade", title: "Calçada e acessibilidade — exemplo", category: "Acessibilidade", address: "Setor urbano · ponto demonstrativo", description: "Ponto ilustrativo para mostrar categoria e acompanhamento.", lat: -16.7169, lng: -43.8736, status: "Novo", createdAt: "2026-11-06T12:00:00.000Z", demo: true },
-    { id: "demo-residuos", title: "Descarte de resíduos — exemplo", category: "Descarte irregular de resíduos", address: "Setor urbano · ponto demonstrativo", description: "Ponto ilustrativo; os dados não correspondem a um chamado real.", lat: -16.7392, lng: -43.8674, status: "Solucionado", createdAt: "2026-11-03T12:00:00.000Z", demo: true },
-    { id: "demo-drenagem", title: "Drenagem urbana — exemplo", category: "Drenagem", address: "Setor urbano · ponto demonstrativo", description: "Exemplo de demonstração para filtros e marcadores.", lat: -16.7203, lng: -43.8408, status: "Novo", createdAt: "2026-10-30T12:00:00.000Z", demo: true },
+    {
+      id: "demo-pavimento",
+      title: "Pavimentação — exemplo",
+      category: "Pavimentação",
+      address: "Área central · ponto demonstrativo",
+      description: "Registro fictício usado apenas para apresentar o mapa.",
+      lat: -16.7248,
+      lng: -43.8631,
+      status: "Em análise",
+      createdAt: "2026-11-10T12:00:00.000Z",
+      demo: true,
+    },
+    {
+      id: "demo-iluminacao",
+      title: "Iluminação pública — exemplo",
+      category: "Iluminação pública",
+      address: "Setor urbano · ponto demonstrativo",
+      description: "Exemplo fictício. Não representa uma ocorrência real.",
+      lat: -16.7315,
+      lng: -43.8483,
+      status: "Em andamento",
+      createdAt: "2026-11-08T12:00:00.000Z",
+      demo: true,
+    },
+    {
+      id: "demo-acessibilidade",
+      title: "Calçada e acessibilidade — exemplo",
+      category: "Acessibilidade",
+      address: "Setor urbano · ponto demonstrativo",
+      description: "Ponto ilustrativo para mostrar categoria e acompanhamento.",
+      lat: -16.7169,
+      lng: -43.8736,
+      status: "Novo",
+      createdAt: "2026-11-06T12:00:00.000Z",
+      demo: true,
+    },
+    {
+      id: "demo-residuos",
+      title: "Descarte de resíduos — exemplo",
+      category: "Descarte irregular de resíduos",
+      address: "Setor urbano · ponto demonstrativo",
+      description: "Ponto ilustrativo; os dados não correspondem a um chamado real.",
+      lat: -16.7392,
+      lng: -43.8674,
+      status: "Solucionado",
+      createdAt: "2026-11-03T12:00:00.000Z",
+      demo: true,
+    },
+    {
+      id: "demo-drenagem",
+      title: "Drenagem urbana — exemplo",
+      category: "Drenagem",
+      address: "Setor urbano · ponto demonstrativo",
+      description: "Exemplo de demonstração para filtros e marcadores.",
+      lat: -16.7203,
+      lng: -43.8408,
+      status: "Novo",
+      createdAt: "2026-10-30T12:00:00.000Z",
+      demo: true,
+    },
   ];
 
   let currentUser = null;
@@ -72,15 +129,19 @@
     }
     const category = categories.find((item) => item.name === categoryName);
     if (!category)
-      throw new Error("A categoria selecionada não está configurada no banco de dados. Importe database/urbs.sql.");
+      throw new Error(
+        "A categoria selecionada não está configurada no banco de dados. Importe database/urbs.sql.",
+      );
     return Number(category.id);
   }
 
   function canEdit(report) {
-    return Boolean(currentUser && !report.demo && (
-      currentUser.role === "master" ||
-      (Number(currentUser.id) === report.userId && report.status === "Novo")
-    ));
+    return Boolean(
+      currentUser &&
+        !report.demo &&
+        (currentUser.role === "master" ||
+          (Number(currentUser.id) === report.userId && report.status === "Novo")),
+    );
   }
 
   function canManageStatus() {
@@ -114,7 +175,10 @@
         },
       });
       await loadOccurrences();
-      return { ok: true, report: getReport(result.occurrence_id) || { id: String(result.occurrence_id) } };
+      return {
+        ok: true,
+        report: getReport(result.occurrence_id) || { id: String(result.occurrence_id) },
+      };
     } catch (error) {
       return getResultError(error);
     }
@@ -158,8 +222,7 @@
   async function updateStatus(id, label) {
     try {
       const status = STATUS_TO_API[label];
-      if (!status)
-        throw new Error("A situação selecionada não é válida.");
+      if (!status) throw new Error("A situação selecionada não é válida.");
       await window.UrbsAPI.request("occurrences/update_status.php", {
         method: "POST",
         body: { occurrence_id: Number(id), status },

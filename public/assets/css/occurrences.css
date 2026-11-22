@@ -33,8 +33,8 @@
 .form-page-body .form-heading h1 {
   margin: 0;
   color: var(--workspace-text);
-  font: 700 clamp(30px, 4.3vw, 54px)/1.02 var(--display);
-  letter-spacing: -.062em;
+  font: 700 clamp(30px, 4.3vw, 54px) / 1.02 var(--display);
+  letter-spacing: -0.062em;
 }
 
 .occurrence-primary {
@@ -208,10 +208,18 @@
   outline-offset: 1px;
 }
 
-.legend-new { background: #b8e954; }
-.legend-analysis { background: #e5a94a; }
-.legend-progress { background: #53c4aa; }
-.legend-solved { background: #6dae71; }
+.legend-new {
+  background: #b8e954;
+}
+.legend-analysis {
+  background: #e5a94a;
+}
+.legend-progress {
+  background: #53c4aa;
+}
+.legend-solved {
+  background: #6dae71;
+}
 
 .map-legend .map-legend-note {
   margin-left: auto;
@@ -368,7 +376,9 @@
   border-radius: 6px;
   background: #e7f0e4;
   color: #234d37;
-  font: 750 14px/1 system-ui, sans-serif;
+  font:
+    750 14px/1 system-ui,
+    sans-serif;
 }
 
 .report-card .status-pill,
@@ -529,7 +539,7 @@
 
 .registration-grid {
   display: grid;
-  grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
   align-items: stretch;
   gap: 16px;
 }
@@ -545,8 +555,8 @@
 }
 
 .registration-panel .form-section-title h2 {
-  font: 700 clamp(22px, 2.5vw, 29px)/1.12 var(--display);
-  letter-spacing: -.045em;
+  font: 700 clamp(22px, 2.5vw, 29px) / 1.12 var(--display);
+  letter-spacing: -0.045em;
 }
 
 .registration-panel label {
@@ -672,7 +682,7 @@
 }
 
 .registration-footer .submit-button:disabled {
-  opacity: .58;
+  opacity: 0.58;
   cursor: wait;
 }
 
@@ -793,4 +803,3 @@
     padding-inline: 9px;
   }
 }
-

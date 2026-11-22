@@ -45,11 +45,11 @@
   pointer-events: none;
   background: linear-gradient(
     0deg,
-    rgba(2, 8, 5, .89),
-    rgba(2, 8, 5, .46) 22%,
+    rgba(2, 8, 5, 0.89),
+    rgba(2, 8, 5, 0.46) 22%,
     transparent 51%,
     transparent 79%,
-    rgba(2, 8, 5, .48)
+    rgba(2, 8, 5, 0.48)
   );
   mask-image: linear-gradient(to top, transparent 0, #000 48px);
 }
@@ -59,8 +59,10 @@
   top: max(clamp(20px, 4vh, 44px), env(safe-area-inset-top));
   left: var(--geo-gutter);
   color: #f0f5ec;
-  font: 700 24px/1 'Space Grotesk', sans-serif;
-  letter-spacing: -.065em;
+  font:
+    700 24px/1 "Space Grotesk",
+    sans-serif;
+  letter-spacing: -0.065em;
   text-shadow: 0 1px 10px #020805;
 }
 
@@ -82,14 +84,18 @@
 
 .geo-kicker {
   color: #d3f4a9;
-  font: 500 11px/1.4 'DM Mono', monospace;
-  letter-spacing: .13em;
+  font:
+    500 11px/1.4 "DM Mono",
+    monospace;
+  letter-spacing: 0.13em;
 }
 
 .geo-details strong {
   color: #f5f8f1;
-  font: 600 clamp(36px, 7vw, 102px)/.98 'Space Grotesk', sans-serif;
-  letter-spacing: -.062em;
+  font:
+    600 clamp(36px, 7vw, 102px) / 0.98 "Space Grotesk",
+    sans-serif;
+  letter-spacing: -0.062em;
 }
 
 .geo-progress {
@@ -109,7 +115,7 @@
 }
 
 .geo-flight::after {
-  content: '';
+  content: "";
   pointer-events: none;
   background: #020805;
   opacity: var(--geo-dissolve);

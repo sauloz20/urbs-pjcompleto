@@ -26,18 +26,22 @@
   border: 0;
   padding: 8px 12px;
   font: 700 10px/1 var(--mono, monospace);
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   cursor: pointer;
   color: #455846;
   background: transparent;
-  transition: background .2s,color .2s,box-shadow .2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
 }
 .map-v19-layer.is-active {
   color: #142315;
   background: #b8e954;
-  box-shadow: 0 2px 8px rgba(14,37,21,.12);
+  box-shadow: 0 2px 8px rgba(14, 37, 21, 0.12);
 }
-.map-v19-layer:focus-visible,.map-v19-tool:focus-visible {
+.map-v19-layer:focus-visible,
+.map-v19-tool:focus-visible {
   outline: 2px solid #266544;
   outline-offset: 3px;
 }
@@ -47,10 +51,10 @@
   border: 1px solid #b5c5aa;
   background: #fff;
   color: #314d37;
-  font: 700 9px/1 var(--mono,monospace);
-  letter-spacing: .045em;
+  font: 700 9px/1 var(--mono, monospace);
+  letter-spacing: 0.045em;
   cursor: pointer;
-  transition: background .2s;
+  transition: background 0.2s;
 }
 .map-v19-tool:hover {
   background: #eaf4d6;
@@ -67,7 +71,9 @@
   width: 44px;
   height: 48px;
   filter: drop-shadow(0 2px 3px #07160c99);
-  transition: filter .18s ease, transform .18s ease;
+  transition:
+    filter 0.18s ease,
+    transform 0.18s ease;
 }
 
 .map-v19-pin::before {
@@ -79,7 +85,7 @@
   height: 19px;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   background: var(--plastic);
-  content: '';
+  content: "";
 }
 
 .map-pin-icon {
@@ -95,7 +101,9 @@
   border-radius: 50%;
   color: #10251a;
   background: var(--plastic);
-  box-shadow: 0 0 0 1px #10251a8c, inset 0 1px 2px #ffffff75;
+  box-shadow:
+    0 0 0 1px #10251a8c,
+    inset 0 1px 2px #ffffff75;
 }
 
 .map-pin-icon svg {
@@ -109,7 +117,9 @@
 }
 
 .map-pin-icon-fallback {
-  font: 700 15px/1 "DM Mono", monospace;
+  font:
+    700 15px/1 "DM Mono",
+    monospace;
 }
 
 .map-v19-demo-pin .map-pin-icon {
@@ -151,15 +161,19 @@
   display: block;
   margin-bottom: 10px;
   color: #c7f36b;
-  font: 500 10px/1.4 "DM Mono", monospace;
-  letter-spacing: .12em;
+  font:
+    500 10px/1.4 "DM Mono",
+    monospace;
+  letter-spacing: 0.12em;
 }
 
 .map-pin-guide-heading h2 {
   margin: 0;
   color: #efeee5;
-  font: 600 clamp(25px, 3.1vw, 38px)/1.06 "Space Grotesk", sans-serif;
-  letter-spacing: -.055em;
+  font:
+    600 clamp(25px, 3.1vw, 38px) / 1.06 "Space Grotesk",
+    sans-serif;
+  letter-spacing: -0.055em;
 }
 
 .map-pin-guide-list {
@@ -181,12 +195,23 @@
   overflow: hidden;
   color: #0b1b11;
   background-color: #b8e954;
-  background-image:
-    linear-gradient(rgba(20, 48, 18, .045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20, 48, 18, .045) 1px, transparent 1px),
+  background-image: linear-gradient(rgba(20, 48, 18, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 48, 18, 0.045) 1px, transparent 1px),
     linear-gradient(135deg, #c5f66a 0%, #a9df3f 100%);
-  background-size: 24px 24px, 24px 24px, 100% 100%;
-  clip-path: polygon(0 17px, 17px 0, calc(100% - 25px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px));
+  background-size:
+    24px 24px,
+    24px 24px,
+    100% 100%;
+  clip-path: polygon(
+    0 17px,
+    17px 0,
+    calc(100% - 25px) 0,
+    100% 16px,
+    100% calc(100% - 16px),
+    calc(100% - 16px) 100%,
+    16px 100%,
+    0 calc(100% - 16px)
+  );
 }
 
 .map-pin-guide-top {
@@ -196,9 +221,11 @@
   justify-content: space-between;
   gap: 8px;
   padding-bottom: 17px;
-  border-bottom: 1px solid rgba(11, 27, 17, .19);
-  font: 500 9px/1.3 "DM Mono", monospace;
-  letter-spacing: .07em;
+  border-bottom: 1px solid rgba(11, 27, 17, 0.19);
+  font:
+    500 9px/1.3 "DM Mono",
+    monospace;
+  letter-spacing: 0.07em;
 }
 
 .map-pin-guide-index {
@@ -215,21 +242,25 @@
   flex-direction: column;
   justify-content: center;
   margin: 10px 0 8px;
-  font: 700 clamp(23px, 2.4vw, 34px)/.98 "Space Grotesk", sans-serif;
-  letter-spacing: -.075em;
+  font:
+    700 clamp(23px, 2.4vw, 34px) / 0.98 "Space Grotesk",
+    sans-serif;
+  letter-spacing: -0.075em;
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }
 
 .map-pin-guide-example {
-  font-size: .72em;
-  letter-spacing: -.06em;
+  font-size: 0.72em;
+  letter-spacing: -0.06em;
 }
 
 .map-pin-guide-description {
   min-height: 48px;
   margin: 0;
-  font: 500 14px/1.5 "Manrope", sans-serif;
+  font:
+    500 14px/1.5 "Manrope",
+    sans-serif;
 }
 
 .map-pin-guide-meta {
@@ -240,18 +271,18 @@
   width: 100%;
   margin-top: auto;
   padding: 12px 0;
-  border-top: 1px solid rgba(11, 27, 17, .2);
-  border-bottom: 1px solid rgba(11, 27, 17, .2);
+  border-top: 1px solid rgba(11, 27, 17, 0.2);
+  border-bottom: 1px solid rgba(11, 27, 17, 0.2);
 }
 
 .map-pin-guide-meta::after {
   width: 13px;
   height: 13px;
   flex: 0 0 13px;
-  border: 2px solid rgba(11, 27, 17, .7);
+  border: 2px solid rgba(11, 27, 17, 0.7);
   border-radius: 50%;
   background: var(--guide-pin-color, #cbd4ca);
-  content: '';
+  content: "";
 }
 
 .map-pin-guide-meta-copy {
@@ -261,12 +292,16 @@
 }
 
 .map-pin-guide-meta-copy span {
-  font: 500 8px/1.2 "DM Mono", monospace;
-  letter-spacing: .1em;
+  font:
+    500 8px/1.2 "DM Mono",
+    monospace;
+  letter-spacing: 0.1em;
 }
 
 .map-pin-guide-meta-copy strong {
-  font: 700 12px/1.2 "DM Mono", monospace;
+  font:
+    700 12px/1.2 "DM Mono",
+    monospace;
 }
 
 .map-pin-guide-footer {
@@ -276,8 +311,10 @@
   justify-content: space-between;
   gap: 10px;
   padding-top: 10px;
-  font: 500 9px/1.35 "DM Mono", monospace;
-  letter-spacing: .035em;
+  font:
+    500 9px/1.35 "DM Mono",
+    monospace;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
 }
 
@@ -294,8 +331,8 @@
 }
 
 .map-pin-preview .map-v19-pin {
-  transform: translate(-5px, -4px) scale(.76);
-  filter: drop-shadow(0 2px 1px rgba(11, 27, 17, .28));
+  transform: translate(-5px, -4px) scale(0.76);
+  filter: drop-shadow(0 2px 1px rgba(11, 27, 17, 0.28));
 }
 
 @media (min-width: 1450px) {
@@ -339,19 +376,19 @@
 .map-panel .leaflet-control-zoom {
   border: 1px solid #243d2b !important;
   border-radius: 0 !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 .map-panel .leaflet-control-zoom a {
   border-radius: 0 !important;
 }
 .map-panel .leaflet-popup-content-wrapper {
   border-radius: 4px;
-  box-shadow: 0 14px 44px rgba(7,27,18,.2);
+  box-shadow: 0 14px 44px rgba(7, 27, 18, 0.2);
 }
 .map-panel .leaflet-container {
   font-family: var(--body, Arial, sans-serif);
 }
-@media(max-width:1150px) {
+@media (max-width: 1150px) {
   .map-v19-tools {
     margin-left: 0;
     justify-content: flex-start;
@@ -361,11 +398,12 @@
     align-items: flex-start;
   }
 }
-@media(max-width:600px) {
+@media (max-width: 600px) {
   .map-v19-tools {
     gap: 6px;
   }
-  .map-v19-layer,.map-v19-tool {
+  .map-v19-layer,
+  .map-v19-tool {
     font-size: 9px;
     padding: 8px 9px;
   }
@@ -377,9 +415,10 @@
     justify-content: center;
   }
 }
-@media(prefers-reduced-motion:reduce) {
-  .map-v19-pin, .map-v19-layer, .map-v19-tool {
+@media (prefers-reduced-motion: reduce) {
+  .map-v19-pin,
+  .map-v19-layer,
+  .map-v19-tool {
     transition: none;
   }
 }
-

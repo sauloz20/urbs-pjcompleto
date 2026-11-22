@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+}
+/* O mapa vai ocupar a tela inteira */
+#map {
+  width: 100vw;
+  height: 100vh;
+}
+.urbs-popup .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  margin-top: 5px;
+}
+.status-pending {
+  background-color: #f59e0b;
+} /* Laranja */
