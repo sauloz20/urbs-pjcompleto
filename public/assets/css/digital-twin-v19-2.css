@@ -2,14 +2,14 @@
    Mantém a V19.1 e as outras seções intactas. */
 .twin-command-deck {
   display: grid;
-  grid-template-columns: minmax(0,1.04fr) minmax(0,1.42fr) minmax(0,1.04fr);
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 1.42fr) minmax(0, 1.04fr);
   gap: 1px;
-  margin: 0 clamp(14px,2.7vw,52px);
-  border: 1px solid rgba(184,233,84,.22);
+  margin: 0 clamp(14px, 2.7vw, 52px);
+  border: 1px solid rgba(184, 233, 84, 0.22);
   border-top: 0;
-  background: rgba(184,233,84,.16);
+  background: rgba(184, 233, 84, 0.16);
   color: #eff4df;
-  font-family: 'DM Mono',monospace;
+  font-family: "DM Mono", monospace;
   position: relative;
   z-index: 2;
 }
@@ -19,14 +19,14 @@
   flex-direction: column;
   gap: 11px;
   background: #071810;
-  padding: 21px clamp(14px,1.65vw,29px) 19px;
+  padding: 21px clamp(14px, 1.65vw, 29px) 19px;
 }
 .twin-deck-head {
   display: flex;
   gap: 12px;
   align-items: center;
   font-size: 10px;
-  letter-spacing: .10em;
+  letter-spacing: 0.1em;
   font-weight: 600;
   color: #ecf8d6;
 }
@@ -39,29 +39,40 @@
   gap: 5px;
   flex-wrap: wrap;
 }
-.twin-deck-buttons button,.twin-street-button {
+.twin-deck-buttons button,
+.twin-street-button {
   appearance: none;
   min-height: 39px;
   padding: 9px 11px;
   background: #0d271a;
-  border: 1px solid rgba(184,233,84,.21);
+  border: 1px solid rgba(184, 233, 84, 0.21);
   color: #b9cdb9;
   cursor: pointer;
-  font: 600 10px/1.1 'DM Mono',monospace;
-  letter-spacing: .04em;
-  transition: color .25s,background .25s,border-color .25s,box-shadow .25s;
+  font:
+    600 10px/1.1 "DM Mono",
+    monospace;
+  letter-spacing: 0.04em;
+  transition:
+    color 0.25s,
+    background 0.25s,
+    border-color 0.25s,
+    box-shadow 0.25s;
   white-space: nowrap;
 }
-.twin-deck-buttons button:hover,.twin-street-button:hover,.twin-deck-buttons button:focus-visible,.twin-street-button:focus-visible {
+.twin-deck-buttons button:hover,
+.twin-street-button:hover,
+.twin-deck-buttons button:focus-visible,
+.twin-street-button:focus-visible {
   border-color: #b8e954;
   color: #f0ffd3;
   outline-offset: 3px;
 }
-.twin-deck-buttons button[aria-pressed="true"],.twin-street-button[aria-pressed="true"] {
+.twin-deck-buttons button[aria-pressed="true"],
+.twin-street-button[aria-pressed="true"] {
   color: #082013;
   background: #b8e954;
   border-color: #b8e954;
-  box-shadow: 0 0 22px rgba(184,233,84,.14);
+  box-shadow: 0 0 22px rgba(184, 233, 84, 0.14);
 }
 .twin-deck-buttons--categories button {
   padding: 9px 10px;
@@ -70,7 +81,7 @@
   margin-top: auto;
   color: #79977e;
   font-size: 8px;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   line-height: 1.5;
 }
 .twin-street-button {
@@ -79,7 +90,20 @@
   min-height: 39px;
 }
 .digital-twin-section .twin-stage[data-twin-time="night"]:before {
-  background: linear-gradient(90deg,rgba(2,9,16,.54),transparent 35%,transparent 70%,rgba(4,8,15,.25)),linear-gradient(0deg,rgba(1,7,15,.65),transparent 31%,transparent 82%,rgba(1,5,12,.32));
+  background: linear-gradient(
+      90deg,
+      rgba(2, 9, 16, 0.54),
+      transparent 35%,
+      transparent 70%,
+      rgba(4, 8, 15, 0.25)
+    ),
+    linear-gradient(
+      0deg,
+      rgba(1, 7, 15, 0.65),
+      transparent 31%,
+      transparent 82%,
+      rgba(1, 5, 12, 0.32)
+    );
 }
 .digital-twin-section .twin-stage[data-twin-xray]:not([data-twin-xray="all"]) .twin-stage-frame {
   color: #b8e954;
@@ -87,7 +111,7 @@
 .digital-twin-section .twin-stage[data-twin-camera="street"] .twin-navigation {
   color: #e9f5cc;
 }
-@media(max-width:1150px) {
+@media (max-width: 1150px) {
   .twin-command-deck {
     grid-template-columns: 1fr 1.25fr;
   }
@@ -101,7 +125,7 @@
     padding: 19px;
   }
 }
-@media(max-width:700px) {
+@media (max-width: 700px) {
   .twin-command-deck {
     display: flex;
     flex-direction: column;
@@ -139,8 +163,9 @@
     line-height: 1.6;
   }
 }
-@media(prefers-reduced-motion:reduce) {
-  .twin-deck-buttons button,.twin-street-button {
+@media (prefers-reduced-motion: reduce) {
+  .twin-deck-buttons button,
+  .twin-street-button {
     transition: none;
   }
 }

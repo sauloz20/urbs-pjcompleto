@@ -1,12 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const nav = document.querySelector(".app-header nav");
-  if (!nav || !window.UrbsAPI)
-    return;
+  if (!nav || !window.UrbsAPI) return;
 
   try {
     const session = await window.UrbsAPI.session();
-    if (!session.authenticated)
-      return;
+    if (!session.authenticated) return;
 
     const logout = document.createElement("a");
     logout.href = "#sair";

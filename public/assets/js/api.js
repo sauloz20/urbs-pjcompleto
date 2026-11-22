@@ -20,7 +20,9 @@
     try {
       response = await fetch(new URL(path, apiBase), init);
     } catch (error) {
-      throw new Error("Não foi possível conectar ao backend. Confira se o Apache e o MySQL estão ativos no XAMPP.");
+      throw new Error(
+        "Não foi possível conectar ao backend. Confira se o Apache e o MySQL estão ativos no XAMPP.",
+      );
     }
 
     let payload;

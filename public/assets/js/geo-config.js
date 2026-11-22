@@ -5,8 +5,8 @@
  * Google Photorealistic requer faturamento habilitado e cumprimento das atribuições.
  */
 window.URBS_GEO_CONFIG = Object.freeze({
-    googleMapsApiKey: '', // Opcional: Map Tiles API / Photorealistic 3D Tiles
-    cesiumIonToken: '', // Opcional: Cesium World Terrain
-    flightDurationSeconds: 6, // V8: duração do movimento de câmera, em segundos
-    destination: { longitude: -43.8578, latitude: -16.7286, label: 'Montes Claros, MG' }
+  googleMapsApiKey: "", // Opcional: Map Tiles API / Photorealistic 3D Tiles
+  cesiumIonToken: "", // Opcional: Cesium World Terrain
+  flightDurationSeconds: 6, // V8: duração do movimento de câmera, em segundos
+  destination: { longitude: -43.8578, latitude: -16.7286, label: "Montes Claros, MG" },
 });
