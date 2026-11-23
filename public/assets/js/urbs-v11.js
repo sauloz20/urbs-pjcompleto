@@ -21,7 +21,7 @@
             counter.textContent = '0';
         }
     }
-    // Galeria "ONDE VOCÊ OLHA": faixa automática, suave e ininterrupta.
+    // Galeria "ONDE VOCÊ OLHA": faixa automática com rolagem contínua.
     // A rolagem vertical da página permanece nativa.
     initStoryCarousel();
     function initStoryCarousel() {
@@ -32,34 +32,49 @@
         const originals = [...track.querySelectorAll('.story-card')];
         if (originals.length < 2)
             return;
-        // Duplicar exatamente uma sequência evita voltar abruptamente ao início.
-        // As cópias são apenas visuais e não fazem parte da navegação por teclado.
-        originals.forEach(card => {
-            const clone = card.cloneNode(true);
-            clone.setAttribute('aria-hidden', 'true');
-            clone.setAttribute('tabindex', '-1');
-            clone.querySelectorAll('a,button,input,[tabindex]').forEach(el => el.setAttribute('tabindex', '-1'));
-            track.appendChild(clone);
-        });
         viewport.classList.add('is-carousel');
         const prefersLessMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
         const SPEED = 42; // pixels/segundo: moderado, sem saltar de card em card.
-        let period = 0, offset = 0, previous = 0, frameId = 0, visible = true, dragging = false;
+        let offset = 0, period = 0, previous = 0, frameId = 0, visible = true, dragging = false;
         let pointerStartX = 0, pointerStartOffset = 0, moved = false, pauseUntil = 0;
-        const measure = () => {
-            const first = originals[0], firstDuplicate = track.children[originals.length];
-            period = firstDuplicate.offsetLeft - first.offsetLeft;
-            if (period > 0) {
-                offset = ((offset % period) + period) % period;
-                viewport.scrollLeft = offset;
-            }
+        const limit = () => Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+        const clamp = value => Math.max(0, Math.min(limit(), value));
+        const addVisualCopies = () => {
+            originals.forEach(card => {
+                const copy = card.cloneNode(true);
+                copy.setAttribute('aria-hidden', 'true');
+                copy.tabIndex = -1;
+                track.appendChild(copy);
+            });
         };
+        const moveTo = value => {
+            const position = period ? ((value % period) + period) % period : clamp(value);
+            offset = position;
+            viewport.scrollLeft = position;
+        };
+        const measure = () => {
+            if (!prefersLessMotion && viewport.clientWidth > 0) {
+                if (track.children.length === originals.length)
+                    addVisualCopies();
+                const firstCopy = track.children[originals.length];
+                period = firstCopy.offsetLeft - originals[0].offsetLeft;
+                if (period > 0 && limit() < period) {
+                    const extraSets = Math.ceil((period - limit()) / period) + 1;
+                    for (let index = 0; index < extraSets; index++)
+                        addVisualCopies();
+                }
+            }
+            offset = viewport.scrollLeft;
+        };
+        viewport.addEventListener('scroll', () => {
+            if (Math.abs(viewport.scrollLeft - offset) > 1)
+                offset = viewport.scrollLeft;
+        }, { passive: true });
         const tick = now => {
             const delta = previous ? Math.min((now - previous) / 1000, .05) : 0;
             previous = now;
             if (!prefersLessMotion && visible && !document.hidden && !dragging && now > pauseUntil && period > 0) {
-                offset = (offset + SPEED * delta) % period;
-                viewport.scrollLeft = offset;
+                moveTo(offset + SPEED * delta);
             }
             frameId = requestAnimationFrame(tick);
         };
@@ -70,18 +85,17 @@
             dragging = true;
             moved = false;
             pointerStartX = e.clientX;
-            pointerStartOffset = offset;
+            pointerStartOffset = viewport.scrollLeft;
             viewport.classList.add('dragging');
         });
         viewport.addEventListener('pointermove', e => {
-            if (!dragging || !period)
+            if (!dragging || !limit())
                 return;
             const dx = e.clientX - pointerStartX;
             if (Math.abs(dx) > 5)
                 moved = true;
             if (moved) {
-                offset = ((pointerStartOffset - dx) % period + period) % period;
-                viewport.scrollLeft = offset;
+                moveTo(pointerStartOffset - dx);
             }
         });
         const endDrag = () => {
@@ -112,11 +126,10 @@
         viewport.addEventListener('keydown', e => {
             if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
                 e.preventDefault();
-                if (!period)
+                if (!limit())
                     return;
-                const direction = e.key === 'ArrowRight' ? 1 : -1;
-                offset = ((offset + direction * (originals[0].offsetWidth + 20)) % period + period) % period;
-                viewport.scrollLeft = offset;
+                const step = e.key === 'ArrowRight' ? 1 : -1;
+                moveTo(viewport.scrollLeft + step * (originals[0].offsetWidth + 20));
                 pauseUntil = performance.now() + 1800;
             }
         });

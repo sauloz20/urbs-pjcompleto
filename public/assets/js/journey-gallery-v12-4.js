@@ -1,4 +1,4 @@
-/* URBS V12.6 — seamless horizontal editorial reel + WebGL liquid distortion hover.
+/* URBS V12.6 — horizontal editorial reel + WebGL liquid distortion hover.
    Keeps the same horizontal carousel language already used in the site. */
 (() => {
     'use strict';
@@ -11,32 +11,50 @@
         return;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const speed = 43;
-    originals.forEach(card => {
-        const clone = card.cloneNode(true);
-        clone.setAttribute('aria-hidden', 'true');
-        clone.removeAttribute('tabindex');
-        clone.inert = true;
-        track.appendChild(clone);
-    });
-    let period = 0, offset = 0, oldTime = 0, raf = 0, isVisible = true, dragging = false;
+    let offset = 0, period = 0, oldTime = 0, raf = 0, isVisible = true, dragging = false;
     let pauseUntil = 0, dragOrigin = 0, dragOffset = 0, dragMoved = false;
-    const wrap = n => period ? ((n % period) + period) % period : 0;
-    const measure = () => {
-        const duplicate = track.children[originals.length];
-        period = duplicate.offsetLeft - originals[0].offsetLeft;
-        offset = wrap(offset);
-        viewport.scrollLeft = offset;
+    const limit = () => Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    const clamp = value => Math.max(0, Math.min(limit(), value));
+    const addVisualCopies = () => {
+        originals.forEach(card => {
+            const copy = card.cloneNode(true);
+            copy.setAttribute('aria-hidden', 'true');
+            copy.tabIndex = -1;
+            copy.inert = true;
+            track.appendChild(copy);
+        });
     };
+    const moveTo = value => {
+        const position = period ? ((value % period) + period) % period : clamp(value);
+        offset = position;
+        viewport.scrollLeft = position;
+    };
+    const measure = () => {
+        if (!reduce && viewport.clientWidth > 0) {
+            if (track.children.length === originals.length)
+                addVisualCopies();
+            const firstCopy = track.children[originals.length];
+            period = firstCopy.offsetLeft - originals[0].offsetLeft;
+            if (period > 0 && limit() < period) {
+                const extraSets = Math.ceil((period - limit()) / period) + 1;
+                for (let index = 0; index < extraSets; index++)
+                    addVisualCopies();
+            }
+        }
+        offset = viewport.scrollLeft;
+    };
+    viewport.addEventListener('scroll', () => {
+        if (Math.abs(viewport.scrollLeft - offset) > 1)
+            offset = viewport.scrollLeft;
+    }, { passive: true });
     const tick = time => {
         raf = requestAnimationFrame(tick);
         const dt = oldTime ? Math.min(.05, (time - oldTime) / 1000) : 0;
         oldTime = time;
         if (reduce || !isVisible || document.hidden || dragging || time < pauseUntil || viewport.matches(':hover') || viewport.matches(':focus-within'))
             return;
-        if (period) {
-            offset = wrap(offset + dt * speed);
-            viewport.scrollLeft = offset;
-        }
+        if (period > 0)
+            moveTo(offset + dt * speed);
     };
     viewport.addEventListener('pointerdown', e => {
         if (e.pointerType !== 'mouse' || e.button !== 0)
@@ -44,17 +62,16 @@
         dragging = true;
         dragMoved = false;
         dragOrigin = e.clientX;
-        dragOffset = offset;
+        dragOffset = viewport.scrollLeft;
     });
     viewport.addEventListener('pointermove', e => {
-        if (!dragging || !period)
+        if (!dragging || !limit())
             return;
         const dx = e.clientX - dragOrigin;
         if (Math.abs(dx) > 5)
             dragMoved = true;
         if (dragMoved) {
-            offset = wrap(dragOffset - dx);
-            viewport.scrollLeft = offset;
+            moveTo(dragOffset - dx);
         }
     });
     const endDrag = () => { if (!dragging)
@@ -69,8 +86,7 @@
     viewport.addEventListener('keydown', e => {
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
             e.preventDefault();
-            offset = wrap(offset + (e.key === 'ArrowRight' ? 1 : -1) * (originals[0].offsetWidth + 22));
-            viewport.scrollLeft = offset;
+            moveTo(viewport.scrollLeft + (e.key === 'ArrowRight' ? 1 : -1) * (originals[0].offsetWidth + 22));
             pauseUntil = performance.now() + 1800;
         }
     });

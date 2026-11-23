@@ -44,7 +44,7 @@
   scrollbar-width: none;
   overscroll-behavior-inline: contain;
   cursor: grab;
-  touch-action: pan-y pinch-zoom;
+  touch-action: pan-x pan-y pinch-zoom;
   outline-offset: -5px;
   padding: 22px 0 26px;
 }
@@ -105,11 +105,11 @@
 }
 .image-localize {
   background-color: #315344;
-  background-image: url(../images/journey/localize.webp);
+  background-image: url(../images/journey/localize-mapa.webp);
 }
 .image-follow {
   background-color: #182c33;
-  background-image: url(../images/journey/acompanhe.webp);
+  background-image: url(../images/journey/acompanhe-status.webp);
 }
 .journey-reel-shade {
   position: absolute;
