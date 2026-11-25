@@ -818,10 +818,27 @@
   }
 }
 
+.map-page::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 68px;
+  background: linear-gradient(90deg, #0c1c14 8%, #0c1c1426 80%),
+              url("../images/journey/localize.webp") center 48% / cover;
+  pointer-events: none;
+  content: "";
+}
 .map-page .app-header {
   position: sticky;
   top: 0;
   z-index: 950;
+  background: #10271fed;
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .map-page .app-header {
+    background: linear-gradient(125deg, #19392dbd, #071c16a8);
+    -webkit-backdrop-filter: blur(13px) saturate(120%);
+    backdrop-filter: blur(13px) saturate(120%);
+  }
 }
 .map-signature, .monitor-heading p {
   color: var(--map-muted);
@@ -980,6 +997,7 @@
   .map-page .explorer-panel { grid-column: 2; }
 }
 @media (max-width: 760px) {
+  .map-page::before { height: 50px; }
   .map-page .app-header { position: relative; z-index: 30; min-height: 50px; }
   .map-page .app-header nav { width: auto; order: 0; }
   .map-page .app-header .header-action { display: none; }
