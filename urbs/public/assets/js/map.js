@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const emptyState = document.getElementById("empty-state");
     const resultCount = document.getElementById("result-count");
     const activeFilterCount = document.getElementById("active-filter-count");
+    const filterChips = document.getElementById("filter-chips");
     const clearButton = document.getElementById("clear-filters");
     const locateButton = document.getElementById("locate-me");
     const liveRegion = document.getElementById("map-live-region");
@@ -234,11 +235,10 @@ document.addEventListener("DOMContentLoaded", () => {
         symbol.style.setProperty("background-color", appearance.color);
         symbol.setAttribute("aria-hidden", "true");
         category.append(symbol, makeElement("span", "", report.category));
-        card.append(category);
-        if (report.demo)
-            topline.append(makeElement("span", "demo-badge", "EXEMPLO"));
+
         const badge = makeElement("span", `status-pill ${statusClass[report.status] || ""}`, report.status);
-        topline.append(makeElement("span", "report-card-code", `#${report.id}`), badge);
+        const reference = report.demo ? "Exemplo" : "#" + String(report.id).padStart(3, "0");
+        topline.append(makeElement("span", "report-card-code", reference), badge);
         card.append(topline);
         const titleLine = makeElement("h3");
         const focusButton = makeElement("button", "report-card-title", report.title);
@@ -246,11 +246,14 @@ document.addEventListener("DOMContentLoaded", () => {
         focusButton.dataset.focusId = report.id;
         focusButton.setAttribute("aria-pressed", "false");
         focusButton.setAttribute("aria-label", `Ver no mapa: ${report.title}`);
+        const arrow = makeElement("span", "report-focus-arrow", "↗");
+        arrow.setAttribute("aria-hidden", "true");
+        focusButton.append(arrow);
         titleLine.append(focusButton);
         card.append(titleLine);
         const meta = makeElement("div", "report-card-meta");
         meta.textContent = report.address || "Ponto marcado no mapa";
-        card.append(meta);
+        card.append(meta, category);
         if (!report.demo && (data.canEdit(report) || data.canDelete(report))) {
             const actions = makeReportActions(report);
             card.append(actions);
@@ -307,6 +310,30 @@ document.addEventListener("DOMContentLoaded", () => {
         marker.getElement()?.setAttribute("aria-label", label);
         return marker;
     }
+    function updateFilterChips() {
+        filterChips.replaceChildren();
+        for (const field of [categoryFilter, statusFilter, locationFilter]) {
+            const isSearch = field === locationFilter;
+            const value = field.value.trim();
+            if (!value || (!isSearch && value === "all")) continue;
+            const label = isSearch ? "Busca: " + value : field.selectedOptions[0].textContent.trim();
+            const chip = makeElement("button", "filter-chip", label);
+            chip.type = "button";
+            chip.setAttribute("aria-label", "Remover filtro: " + label);
+            const remove = makeElement("span", "", "×");
+            remove.setAttribute("aria-hidden", "true");
+            chip.append(remove);
+            chip.addEventListener("click", () => {
+                field.value = isSearch ? "" : "all";
+                render();
+                (filterChips.firstElementChild || locationFilter).focus({ preventScroll: true });
+            });
+            filterChips.append(chip);
+        }
+        const count = filterChips.childElementCount;
+        filterChips.hidden = activeFilterCount.hidden = count === 0;
+        activeFilterCount.textContent = String(count);
+    }
     function render() {
         const reports = getFilteredReports();
         markerLayer.clearLayers();
@@ -320,9 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
             markersById.set(report.id, marker);
         });
         resultCount.textContent = `${reports.length} ${reports.length === 1 ? "registro" : "registros"}`;
-        const active = [categoryFilter, statusFilter].filter((field) => field?.value && field.value !== "all").length;
-        activeFilterCount.hidden = active === 0;
-        activeFilterCount.textContent = String(active);
+        updateFilterChips();
         emptyState.hidden = reports.length > 0;
         if (reports.length > 0 && markerLayer.getBounds().isValid()) {
             map.fitBounds(markerLayer.getBounds().pad(.22), { maxZoom: 14, animate: false });
