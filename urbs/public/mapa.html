@@ -17,7 +17,7 @@
   <link href="assets/css/map-arrival.css" rel="stylesheet"/>
   <link href="assets/css/map-davi-integration-v19.css?v=1908" rel="stylesheet"/>
   <link href="assets/css/occurrences.css?v=4" rel="stylesheet"/>
-  <link href="assets/css/map-workspace.css?v=10" rel="stylesheet"/>
+  <link href="assets/css/map-workspace.css?v=11" rel="stylesheet"/>
   <script>
    // Rodar antes da pintura da página para manter continuidade visual entre telas.
     try {
@@ -197,30 +197,33 @@
     </aside>
    </div>
    <section class="map-pin-guide" aria-labelledby="map-legend-title">
-    <div class="map-legend-heading">
-     <span class="map-legend-index">Legenda</span>
-     <h2 id="map-legend-title">Como ler o mapa</h2>
-    </div>
-    <div class="map-pin-example" hidden>
-     <span class="map-pin-sample" id="pin-example" aria-hidden="true"></span>
-     <dl>
-      <div><dt>Ícone e cor</dt><dd>Iluminação pública</dd></div>
-      <div><dt>Ponto lateral</dt><dd>Em análise</dd></div>
-     </dl>
+    <div class="legend-overview">
+     <div class="map-legend-heading">
+      <span class="map-legend-index">Guia dos marcadores</span>
+      <h2 id="map-legend-title">Como ler o mapa</h2>
+      <p class="pin-reading">A cor e o ícone mostram o tipo de ocorrência. O ponto lateral indica a situação.</p>
+     </div>
+     <div class="map-pin-example" hidden>
+      <span class="map-pin-sample" id="pin-example" aria-hidden="true"></span>
+      <dl>
+       <div><dt>Ícone e cor</dt><dd>Iluminação pública</dd></div>
+       <div><dt>Ponto lateral</dt><dd>Em análise</dd></div>
+      </dl>
+     </div>
+     <div class="map-legend-group">
+      <h3>Situação do registro</h3>
+      <ul class="map-status-grid">
+       <li><i aria-hidden="true" class="legend-dot legend-new"></i> Novo</li>
+       <li><i aria-hidden="true" class="legend-dot legend-analysis"></i> Em análise</li>
+       <li><i aria-hidden="true" class="legend-dot legend-progress"></i> Em andamento</li>
+       <li><i aria-hidden="true" class="legend-dot legend-solved"></i> Solucionado</li>
+       <li><i aria-hidden="true" class="legend-dot legend-rejected"></i> Rejeitado</li>
+      </ul>
+     </div>
     </div>
     <div class="map-legend-group" hidden>
      <h3>Categorias</h3>
      <ul class="map-pin-guide-list" id="map-pin-guide-list"></ul>
-    </div>
-    <div class="map-legend-group">
-     <h3>Status <span>· Ponto no pino</span></h3>
-     <ul class="map-status-grid">
-      <li><i aria-hidden="true" class="legend-dot legend-new"></i> Novo</li>
-      <li><i aria-hidden="true" class="legend-dot legend-analysis"></i> Em análise</li>
-      <li><i aria-hidden="true" class="legend-dot legend-progress"></i> Em andamento</li>
-      <li><i aria-hidden="true" class="legend-dot legend-solved"></i> Solucionado</li>
-      <li><i aria-hidden="true" class="legend-dot legend-rejected"></i> Rejeitado</li>
-     </ul>
     </div>
     <p class="local-notice"><strong>Projeto acadêmico independente.</strong> Os pontos de exemplo são fictícios. Os registros enviados por usuários autenticados ficam no banco MySQL; esta plataforma não é um canal oficial da Prefeitura.</p>
    </section>
