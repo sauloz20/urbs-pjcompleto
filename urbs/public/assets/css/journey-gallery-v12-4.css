@@ -1,0 +1,450 @@
+/* URBS V12.5 — carousel editorial contínuo com moldura hover inspirada em apresentações visuais de alto impacto.
+   Sem dependência de biblioteca de carrossel. Rolagem da página permanece nativa. */
+.journey-gallery {
+  background: #e7ebdd;
+  color: #0d2116;
+  overflow: hidden;
+}
+.journey-gallery .journey-gallery-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: clamp(24px,5vw,90px);
+  padding-bottom: 54px;
+}
+.journey-gallery-heading {
+  flex: 1 1 58%;
+  min-width: 0;
+}
+.journey-gallery-heading .micro {
+  color: #647b66;
+}
+.journey-gallery-heading h2 {
+  font: 700 clamp(58px,8.6vw,146px)/.87 'Space Grotesk',sans-serif;
+  letter-spacing: -.095em;
+  margin: 25px 0 0;
+  color: #0b2317;
+}
+.journey-gallery-heading h2 em {
+  font-style: normal;
+  color: #789678;
+}
+.journey-gallery-head>p {
+  flex: 0 1 420px;
+  max-width: 420px;
+  font-size: clamp(15px,1.35vw,19px);
+  line-height: 1.7;
+  color: #536b59;
+  margin: 0 0 5px;
+}
+/* Native horizontal scrolling is retained as a functional fallback. */
+.journey-reel {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+  cursor: grab;
+  touch-action: pan-y pinch-zoom;
+  outline-offset: -5px;
+  padding: 22px 0 26px;
+}
+.journey-reel::-webkit-scrollbar {
+  display: none;
+}
+.journey-reel:active {
+  cursor: grabbing;
+}
+.journey-reel-track {
+  display: flex;
+  align-items: stretch;
+  gap: 22px;
+  width: max-content;
+  padding: 0 clamp(24px,7vw,135px);
+}
+.journey-reel.is-running .journey-reel-track {
+  padding-right: 0;
+}
+.journey-reel-card {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  position: relative;
+  isolation: isolate;
+  flex: 0 0 clamp(310px,35vw,570px);
+  width: clamp(310px,35vw,570px);
+  height: clamp(460px,39vw,590px);
+  display: block;
+  overflow: visible;
+  color: #f8f9f2;
+  outline-offset: 6px;
+  transform: perspective(1400px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: transform .45s cubic-bezier(.16,1,.3,1);
+  transform-style: preserve-3d;
+}
+.journey-reel-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(241,250,228,.1);
+  pointer-events: none;
+  z-index: 4;
+  transition: border-color .45s;
+}
+.journey-reel-media {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: -2;
+  transform: scale(1);
+  transition: transform .9s cubic-bezier(.16,1,.3,1),filter .75s ease;
+  filter: saturate(.75) brightness(.84);
+}
+.image-observe {
+  background-color: #1b4837;
+  background-image: url(../images/journey/observe.webp);
+}
+.image-localize {
+  background-color: #315344;
+  background-image: url(../images/journey/localize.webp);
+}
+.image-follow {
+  background-color: #182c33;
+  background-image: url(../images/journey/acompanhe.webp);
+}
+.journey-reel-shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg,rgba(4,16,12,.46),transparent 38%,rgba(2,16,11,.91));
+  transition: background .55s;
+}
+.journey-reel-body {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: clamp(24px,2.2vw,38px);
+  pointer-events: none;
+}
+.journey-reel-eyebrow {
+  font: 500 11px 'DM Mono',monospace;
+  letter-spacing: .15em;
+  color: #ebffdd;
+}
+.journey-reel h3 {
+  margin: auto 0 19px;
+  max-width: 100%;
+  font: 700 clamp(36px,3.45vw,59px)/.95 'Space Grotesk',sans-serif;
+  letter-spacing: -.07em;
+  color: #f7fff4;
+  overflow-wrap: anywhere;
+}
+.journey-reel h3 span {
+  color: #c7f36b;
+}
+.journey-reel p {
+  margin: 0;
+  max-width: 380px;
+  min-height: 66px;
+  font-size: clamp(13px,1.15vw,16px);
+  line-height: 1.6;
+  color: #e0eadc;
+}
+.journey-reel-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  margin-top: 32px;
+  padding-top: 15px;
+  border-top: 1px solid #dfebd45a;
+  color: #c7f36b;
+  font: 500 11px 'DM Mono',monospace;
+  letter-spacing: .1em;
+}
+.journey-reel-foot span {
+  font-size: 23px;
+}
+/* Ticket-like outline floats a few pixels off the photo. Purely decorative; no copyrighted assets. */
+.journey-neon-frame {
+  position: absolute;
+  inset: -10px;
+  z-index: 5;
+  border: 2px solid #a3e635;
+  clip-path: polygon(0 0,25% 0,25% 2px,75% 2px,75% 0,100% 0,100% 36%,calc(100% - 10px) 36%,calc(100% - 10px) 64%,100% 64%,100% 100%,0 100%,0 64%,10px 64%,10px 36%,0 36%);
+  opacity: 0;
+  transform: translate(12px,12px) scale(.98);
+  transition: opacity .38s,transform .55s cubic-bezier(.16,1,.3,1),filter .4s;
+  pointer-events: none;
+}
+.journey-neon-frame i {
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  width: 80px;
+  height: 3px;
+  background: #d7ff8c;
+  transform: translateX(-50%);
+}
+.journey-neon-frame b {
+  position: absolute;
+  right: 11px;
+  top: 13px;
+  font: 500 10px 'DM Mono',monospace;
+  letter-spacing: .13em;
+  color: #d7ff90;
+  text-shadow: 0 0 12px #193c13;
+}
+.journey-reel-card:hover,.journey-reel-card:focus-visible {
+  transform: perspective(1400px) translateY(-7px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  z-index: 5;
+}
+.journey-reel-card:hover .journey-reel-media,.journey-reel-card:focus-visible .journey-reel-media {
+  transform: scale(1.085);
+  filter: saturate(1.05) brightness(1.02);
+}
+.journey-reel-card:hover::before,.journey-reel-card:focus-visible::before {
+  border-color: rgba(163,230,53,.6);
+}
+.journey-reel-card:hover .journey-neon-frame,.journey-reel-card:focus-visible .journey-neon-frame {
+  opacity: 1;
+  transform: translate(0,0) scale(1);
+  filter: drop-shadow(0 0 10px rgba(163,230,53,.6));
+}
+.journey-reel-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 5px clamp(24px,7vw,135px) 28px;
+  color: #56705c;
+  font: 500 10px 'DM Mono',monospace;
+  letter-spacing: .12em;
+}
+.journey-gallery-bottom {
+  padding-top: 30px;
+  padding-bottom: 36px;
+  display: flex;
+  gap: 30px;
+  justify-content: space-between;
+  align-items: center;
+}
+.journey-gallery-bottom p {
+  font: 600 clamp(21px,2.5vw,40px)/1.08 'Space Grotesk',sans-serif;
+  letter-spacing: -.055em;
+  max-width: 730px;
+  margin: 0;
+}
+.journey-gallery-cta {
+  padding: 20px 23px;
+  background: #0d1f14;
+  color: #e9ffbf;
+  white-space: nowrap;
+  font: 500 11px 'DM Mono',monospace;
+  letter-spacing: .09em;
+  transition: transform .25s,background .25s;
+}
+.journey-gallery-cta:hover {
+  background: #285437;
+  transform: translateY(-3px);
+}
+.journey-gallery-cta span {
+  padding-left: 18px;
+}
+.journey-gallery-note {
+  margin: 0;
+  padding: 0 clamp(24px,7vw,135px) 38px;
+  font: 11px/1.6 'DM Mono',monospace;
+  color: #617766;
+}
+@media(max-width:800px) {
+  .journey-gallery .journey-gallery-head {
+    display: block;
+    padding-top: 84px;
+    padding-bottom: 25px;
+  }
+  .journey-gallery-head>p {
+    margin-top: 26px;
+  }
+  .journey-reel-card {
+    flex-basis: min(80vw,480px);
+    width: min(80vw,480px);
+    height: 490px;
+  }
+  .journey-reel h3 {
+    font-size: clamp(37px,7vw,53px);
+  }
+  .journey-gallery-bottom {
+    display: block;
+    padding-top: 26px;
+  }
+  .journey-gallery-bottom p {
+    margin-bottom: 28px;
+  }
+  .journey-reel-caption {
+    display: block;
+  }
+  .journey-reel-caption span+span {
+    display: none;
+  }
+}
+@media(max-width:480px) {
+  .journey-reel-card {
+    width: 82vw;
+    flex-basis: 82vw;
+    height: 450px;
+  }
+  .journey-reel h3 {
+    font-size: clamp(34px,9vw,46px);
+  }
+  .journey-reel-body {
+    padding: 24px;
+  }
+  .journey-reel p {
+    font-size: 13px;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .journey-reel-card,.journey-reel-media,.journey-neon-frame {
+    transition: none !important;
+    transform: none !important;
+  }
+  .journey-reel-card:hover,.journey-reel-card:focus-visible {
+    transform: none !important;
+  }
+}
+/* URBS V12.6 — liquid hover / ripple displacement */
+.journey-reel-card {
+  border-radius: 0;
+}
+.journey-reel-media {
+  overflow: hidden;
+  will-change: transform,filter;
+  background-size: cover;
+  background-position: center;
+}
+.journey-reel-media canvas {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  z-index: 0;
+  opacity: 1;
+}
+.journey-reel-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--ripple-x,50%) var(--ripple-y,50%),rgba(255,255,255,.16),transparent 22%),linear-gradient(180deg,transparent,rgba(2,11,8,.12));
+  opacity: 0;
+  transition: opacity .35s ease;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.journey-reel-body,.journey-reel-shade,.journey-neon-frame,.journey-reel-card::before {
+  z-index: 3;
+}
+.journey-reel-shade {
+  z-index: 2;
+}
+.journey-neon-frame {
+  display: none !important;
+}
+.journey-reel-card {
+  transform: translateZ(0);
+}
+.journey-reel-card:hover,.journey-reel-card:focus-visible {
+  transform: translateY(-4px);
+}
+.journey-reel-card:hover .journey-reel-media,.journey-reel-card:focus-visible .journey-reel-media {
+  transform: scale(1.02);
+  filter: saturate(1.05) brightness(1.03);
+}
+.journey-reel-card:hover .journey-reel-media::after,.journey-reel-card:focus-visible .journey-reel-media::after {
+  opacity: 1;
+}
+@media(prefers-reduced-motion:reduce) {
+  .journey-reel-media::after {
+    display: none;
+  }
+}
+/* V12.7 — WebGL shader replaces uniform liquid overlays, with CSS photo fallback. */
+.journey-reel-media canvas {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.journey-reel-media.liquid-ready::after {
+  display: none;
+}
+.journey-reel-media.liquid-ready {
+  isolation: isolate;
+}
+.journey-reel-card:hover .journey-reel-media.liquid-ready {
+  filter: none;
+  transform: none;
+}
+.journey-reel-card {
+  transform: none !important;
+  transition: translate .35s ease;
+}
+.journey-reel-card:hover {
+  translate: 0 -3px;
+}
+.journey-neon-frame {
+  display: none !important;
+}
+@media(prefers-reduced-motion:reduce) {
+  .journey-reel-card:hover {
+    translate: none;
+  }
+}
+/* V20.1: imagens locais para evitar fundos vazios quando o CDN externo falhar. */
+.journey-reel-media {
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.journey-reel-card {
+  background-color: #142820;
+}
+.journey-reel-shade {
+  background: linear-gradient(180deg, rgba(1,13,8,.46) 0%, rgba(1,13,8,.06) 33%, rgba(1,13,8,.28) 54%, rgba(1,13,8,.90) 100%);
+}
+/* V20.2 — correct actual photo stacking. Avoid negative stacking contexts. */
+.journey-reel-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #142820;
+}
+.journey-reel-media {
+  z-index: 0;
+  overflow: hidden;
+  background-position: center;
+  background-size: cover;
+}
+.journey-reel-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+.journey-reel-shade {
+  z-index: 1;
+  pointer-events: none;
+}
+.journey-reel-body {
+  z-index: 3;
+}
+.journey-reel-media canvas {
+  z-index: 1;
+  pointer-events: none;
+}

@@ -1,0 +1,1331 @@
+﻿
+===== ARQUIVO: backend\config\database.php =====
+
+<?php
+
+/**
+ * Urbs - Conexão com o banco de dados
+ * Utilizando PDO e MySQL
+*/
+
+$host = getenv('DB_HOST') ?: 'localhost';
+$database = getenv('DB_NAME') ?: 'urbs';
+$username = getenv('DB_USER') ?: 'root';
+$password = getenv('DB_PASS') ?: '';
+
+try {
+    $pdo = new PDO(
+        "mysql:host={$host};dbname={$database};charset=utf8mb4",
+        $username,
+        $password,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false
+        ]
+    );
+
+} catch (PDOException $e) {
+    error_log('Erro de conexão Urbs: ' . $e->getMessage());
+
+    http_response_code(500);
+    exit('Não foi possível conectar ao banco de dados.');
+}
+
+===== ARQUIVO: backend\public\index.php =====
+
+<?php
+
+header('Content-Type: application/json; charset=utf-8');
+
+require_once __DIR__ . '/../config/database.php';
+
+try {
+    $query = $pdo->query(
+        "SELECT COUNT(*) AS total FROM categories"
+    );
+
+    $result = $query->fetch();
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'API Urbs funcionando!',
+        'database' => 'Conectado',
+        'categories_registered' => (int) $result['total']
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (PDOException $e) {
+    error_log('Erro na API Urbs: ' . $e->getMessage());
+
+    http_response_code(500);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erro ao consultar o banco de dados.'
+    ], JSON_UNESCAPED_UNICODE);
+}
+
+
+===== ARQUIVO: backend\public\api\auth\login.php =====
+<?php
+// Iniciar a sessão. Isso precisa ser a primeira coisa antes de qualquer saída de dados.
+session_start();
+
+header('Content-Type: application/json; charset=utf-8');
+
+require_once __DIR__ . '/../../../config/database.php';
+
+function response(int $status, array $data): void
+{
+    http_response_code($status);
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    response(405, [
+        'success' => false,
+        'message' => 'Método não permitido. Utilize POST.'
+    ]);
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+
+if (!is_array($input)) {
+    response(400, [
+        'success' => false,
+        'message' => 'Dados inválidos ou formato JSON incorreto.'
+    ]);
+}
+
+$email = strtolower(trim($input['email'] ?? ''));
+$password = $input['password'] ?? '';
+
+if ($email === '' || $password === '') {
+    response(400, [
+        'success' => false,
+        'message' => 'Informe o e-mail e a senha.'
+    ]);
+}
+
+try {
+    // Buscar o usuário pelo e-mail, incluindo a categoria e empresa (se for resolver)
+    $sql = "SELECT id, name, password, role, category_id, company_name 
+            FROM users 
+            WHERE email = :email 
+            LIMIT 1";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':email' => $email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user || !password_verify($password, $user['password'])) {
+        response(401, [
+            'success' => false,
+            'message' => 'E-mail ou senha incorretos.'
+        ]);
+    }
+
+    // Renovar o ID da sessão após autenticar para reduzir risco de session fixation.
+    session_regenerate_id(true);
+
+    // Salvar dados na sessão
+    $_SESSION['user_id'] = (int) $user['id'];
+    $_SESSION['role'] = $user['role'];
+    $_SESSION['name'] = $user['name'];
+    $_SESSION['category_id'] = $user['category_id'] ? (int) $user['category_id'] : null;
+
+    response(200, [
+        'success' => true,
+        'message' => 'Login realizado com sucesso!',
+        'user' => [
+            'id' => (int) $user['id'],
+            'name' => $user['name'],
+            'role' => $user['role'],
+            'category_id' => $_SESSION['category_id'],
+            'company_name' => $user['company_name']
+        ]
+    ]);
+
+} catch (PDOException $e) {
+    error_log('Erro no login Urbs: ' . $e->getMessage());
+    response(500, [
+        'success' => false,
+        'message' => 'Não foi possível realizar o login devido a um erro no servidor.'
+    ]);
+}
+
+
+===== ARQUIVO: backend\public\api\auth\logout.php =====
+<?php
+session_start();
+header('Content-Type: application/json; charset=utf-8');
+
+// Limpar as variáveis da sessão
+$_SESSION = [];
+
+// Destruir a sessão no servidor
+session_destroy();
+
+// Apagar o cookie de sessão no navegador
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+    );
+}
+
+echo json_encode([
+    'success' => true,
+    'message' => 'Logout realizado com sucesso.'
+], JSON_UNESCAPED_UNICODE);
+exit;
+
+===== ARQUIVO: backend\public\api\auth\register.php =====
+
+<?php
+
+session_start();
+
+header('Content-Type: application/json; charset=utf-8');
+
+require_once __DIR__ . '/../../../config/database.php';
+
+// Função para padronizar as respostas da API
+function response(int $status, array $data): void
+{
+    http_response_code($status);
+
+    echo json_encode(
+        $data,
+        JSON_UNESCAPED_UNICODE
+    );
+
+    exit;
+}
+
+// Aceitar somente requisições POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    response(405, [
+        'success' => false,
+        'message' => 'Método não permitido. Utilize POST.'
+    ]);
+}
+
+// Receber os dados enviados em JSON
+$input = json_decode(
+    file_get_contents('php://input'),
+    true
+);
+
+// Verificar se o JSON é válido
+if (!is_array($input)) {
+    response(400, [
+        'success' => false,
+        'message' => 'Dados inválidos ou formato JSON incorreto.'
+    ]);
+}
+
+// Capturar e tratar os campos
+$name = trim($input['name'] ?? '');
+$email = strtolower(trim($input['email'] ?? ''));
+$password = $input['password'] ?? '';
+
+// Validar campos obrigatórios
+if ($name === '' || $email === '' || $password === '') {
+    response(400, [
+        'success' => false,
+        'message' => 'Preencha todos os campos obrigatórios.'
+    ]);
+}
+
+// Validar tamanho do nome
+$nameLength = function_exists('mb_strlen')
+    ? mb_strlen($name, 'UTF-8')
+    : strlen($name);
+
+if ($nameLength > 120) {
+    response(400, [
+        'success' => false,
+        'message' => 'O nome deve possuir no máximo 120 caracteres.'
+    ]);
+}
+
+// Validar e-mail
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    response(400, [
+        'success' => false,
+        'message' => 'Informe um endereço de e-mail válido.'
+    ]);
+}
+
+// Validar tamanho do e-mail
+if (strlen($email) > 150) {
+    response(400, [
+        'success' => false,
+        'message' => 'O e-mail deve possuir no máximo 150 caracteres.'
+    ]);
+}
+
+// Validar senha
+if (strlen($password) < 8) {
+    response(400, [
+        'success' => false,
+        'message' => 'A senha deve possuir pelo menos 8 caracteres.'
+    ]);
+}
+
+try {
+
+    // Gerar hash seguro da senha
+    $passwordHash = password_hash(
+        $password,
+        PASSWORD_DEFAULT
+    );
+
+    // Preparar a inserção no banco
+    $sql = "INSERT INTO users (name, email, password)
+            VALUES (:name, :email, :password)";
+
+    $stmt = $pdo->prepare($sql);
+
+    // Executar a consulta
+    $stmt->execute([
+        ':name' => $name,
+        ':email' => $email,
+        ':password' => $passwordHash
+    ]);
+
+    $userId = (int) $pdo->lastInsertId();
+    session_regenerate_id(true);
+    $_SESSION['user_id'] = $userId;
+    $_SESSION['role'] = 'citizen';
+    $_SESSION['name'] = $name;
+    $_SESSION['category_id'] = null;
+
+    // Retornar sucesso
+    response(201, [
+        'success' => true,
+        'message' => 'Usuário cadastrado com sucesso!',
+        'user' => [
+            'id' => $userId,
+            'name' => $name,
+            'email' => $email,
+            'role' => 'citizen'
+        ]
+    ]);
+
+} catch (PDOException $e) {
+
+    // Verificar se o e-mail já está cadastrado
+    if ($e->getCode() === '23000') {
+        response(409, [
+            'success' => false,
+            'message' => 'Este e-mail já está cadastrado.'
+        ]);
+    }
+
+    // Registrar erro internamente
+    error_log('Erro no cadastro CitySense: ' . $e->getMessage());
+
+    response(500, [
+        'success' => false,
+        'message' => 'Não foi possível realizar o cadastro.'
+    ]);
+}
+
+
+===== ARQUIVO: backend\public\api\auth\session.php =====
+<?php
+
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+header('Content-Type: application/json; charset=utf-8');
+
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode([
+        'success' => true,
+        'authenticated' => false,
+        'user' => null
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+echo json_encode([
+    'success' => true,
+    'authenticated' => true,
+    'user' => [
+        'id' => (int) $_SESSION['user_id'],
+        'name' => $_SESSION['name'] ?? '',
+        'role' => $_SESSION['role'] ?? 'citizen',
+        'category_id' => isset($_SESSION['category_id']) ? (int) $_SESSION['category_id'] : null
+    ]
+], JSON_UNESCAPED_UNICODE);
+
+
+===== ARQUIVO: backend\public\api\categories\list.php =====
+<?php
+
+require_once __DIR__ . '/../../../config/database.php';
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Método não permitido. Utilize GET.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+try {
+    $stmt = $pdo->query('SELECT id, name, description FROM categories WHERE active = 1 ORDER BY id');
+    echo json_encode([
+        'success' => true,
+        'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+    ], JSON_UNESCAPED_UNICODE);
+} catch (PDOException $e) {
+    error_log('Erro ao listar categorias do URBS: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Não foi possível carregar as categorias.'], JSON_UNESCAPED_UNICODE);
+}
+
+
+===== ARQUIVO: backend\public\api\occurrences\create.php =====
+<?php
+// backend/public/api/occurrences/create.php
+
+// 1. Carregar middleware e banco de dados
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+require_once __DIR__ . '/../../../config/database.php';
+
+// 2. Exigir autenticação antes de qualquer coisa
+requireLogin();
+
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Método não permitido.']);
+    exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+if (!is_array($input)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Envie os dados da ocorrência em formato JSON válido.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// Capturar os dados
+$title = trim($input['title'] ?? '');
+$description = trim($input['description'] ?? '');
+$address = trim($input['address'] ?? '');
+$category_id = filter_var($input['category_id'] ?? 0, FILTER_VALIDATE_INT);
+$latitude = $input['latitude'] ?? null;
+$longitude = $input['longitude'] ?? null;
+
+// Validação básica
+if ($title === '' || $description === '' || !$category_id || $latitude === null || $longitude === null) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Preencha todos os campos obrigatórios e a localização.']);
+    exit;
+}
+
+if (mb_strlen($title, 'UTF-8') > 150 || mb_strlen($address, 'UTF-8') > 180 || mb_strlen($description, 'UTF-8') > 5000) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Um dos campos excede o tamanho permitido.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+$latitude = filter_var($latitude, FILTER_VALIDATE_FLOAT);
+$longitude = filter_var($longitude, FILTER_VALIDATE_FLOAT);
+if ($latitude === false || $longitude === false || $latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'As coordenadas informadas são inválidas.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+try {
+    // Iniciar a transação (garante que ou tudo salva, ou nada salva)
+    $pdo->beginTransaction();
+
+    // 1. Inserir a ocorrência
+    $sqlOccurrence = "INSERT INTO occurrences (user_id, category_id, title, description, address, latitude, longitude, status)
+                      VALUES (:user_id, :category_id, :title, :description, :address, :latitude, :longitude, 'pending')";
+    
+    $stmt = $pdo->prepare($sqlOccurrence);
+    $stmt->execute([
+        ':user_id'     => $_SESSION['user_id'], // Pego direto da sessão segura!
+        ':category_id' => $category_id,
+        ':title'       => $title,
+        ':description' => $description,
+        ':address'     => $address,
+        ':latitude'    => $latitude,
+        ':longitude'   => $longitude
+    ]);
+
+    $occurrence_id = $pdo->lastInsertId();
+
+    // 2. Inserir o registro no histórico inicial
+    $sqlHistory = "INSERT INTO occurrence_history (occurrence_id, user_id, new_status, comment) 
+                   VALUES (:occurrence_id, :user_id, 'pending', 'Ocorrência registrada pelo cidadão.')";
+    
+    $stmtHistory = $pdo->prepare($sqlHistory);
+    $stmtHistory->execute([
+        ':occurrence_id' => $occurrence_id,
+        ':user_id'       => $_SESSION['user_id']
+    ]);
+
+    // Confirmar a transação
+    $pdo->commit();
+
+    http_response_code(201);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Ocorrência registrada com sucesso!',
+        'occurrence_id' => $occurrence_id
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (PDOException $e) {
+    // Desfazer tudo caso ocorra um erro no meio do processo
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erro interno ao registrar a ocorrência.'
+    ], JSON_UNESCAPED_UNICODE);
+}
+
+
+===== ARQUIVO: backend\public\api\occurrences\delete.php =====
+<?php
+// backend/public/api/occurrences/delete.php
+
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+require_once __DIR__ . '/../../../config/database.php';
+
+requireLogin();
+
+header('Content-Type: application/json; charset=utf-8');
+
+if (!in_array($_SERVER['REQUEST_METHOD'], ['POST', 'DELETE'], true)) {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Método não permitido. Utilize DELETE ou POST.']);
+    exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+if (!is_array($input)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Envie os dados em formato JSON válido.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+$occurrence_id = filter_var($input['occurrence_id'] ?? 0, FILTER_VALIDATE_INT);
+
+if (!$occurrence_id) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Informe o ID da ocorrência para exclusão.']);
+    exit;
+}
+
+try {
+    // 1. Verificar se a ocorrência existe e quem é o dono
+    $stmtCheck = $pdo->prepare("SELECT user_id, status FROM occurrences WHERE id = :id LIMIT 1");
+    $stmtCheck->execute([':id' => $occurrence_id]);
+    $occurrence = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+    if (!$occurrence) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Ocorrência não encontrada.']);
+        exit;
+    }
+
+    // 2. Regra de negócio de autorização:
+    // Master pode apagar qualquer uma. Cidadão só apaga a própria se ainda estiver 'pending'.
+    $isMaster = ($_SESSION['role'] === 'master');
+    $isOwnerPending = ((int) $occurrence['user_id'] === (int) $_SESSION['user_id'] && $occurrence['status'] === 'pending');
+
+    if (!$isMaster && !$isOwnerPending) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Sem permissão para excluir. Cidadãos só podem excluir ocorrências próprias ainda pendentes.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // 3. Transação para remover o histórico vinculado e depois a ocorrência (evita erro de Foreign Key)
+    $pdo->beginTransaction();
+
+    $stmtDelHistory = $pdo->prepare("DELETE FROM occurrence_history WHERE occurrence_id = :id");
+    $stmtDelHistory->execute([':id' => $occurrence_id]);
+
+    $stmtDelOcc = $pdo->prepare("DELETE FROM occurrences WHERE id = :id");
+    $stmtDelOcc->execute([':id' => $occurrence_id]);
+
+    $pdo->commit();
+
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Ocorrência excluída com sucesso!'
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    error_log('Erro ao excluir ocorrência no Urbs: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Erro interno ao excluir a ocorrência.']);
+}
+
+
+===== ARQUIVO: backend\public\api\occurrences\history.php =====
+<?php
+// backend/public/api/occurrences/history.php
+
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+require_once __DIR__ . '/../../../config/database.php';
+
+requireLogin();
+
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Método não permitido. Utilize GET.']);
+    exit;
+}
+
+$occurrence_id = filter_var($_GET['occurrence_id'] ?? 0, FILTER_VALIDATE_INT);
+
+if (!$occurrence_id) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Informe um occurrence_id válido na URL.']);
+    exit;
+}
+
+try {
+    $sql = "SELECT h.id, h.previous_status, h.new_status, h.comment, h.created_at,
+                   u.name AS changed_by, u.role AS changed_by_role, u.company_name
+            FROM occurrence_history h
+            JOIN users u ON h.user_id = u.id
+            WHERE h.occurrence_id = :occurrence_id
+            ORDER BY h.created_at ASC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':occurrence_id' => $occurrence_id]);
+    $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'occurrence_id' => $occurrence_id,
+        'history' => $history
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (PDOException $e) {
+    error_log('Erro ao buscar histórico no Urbs: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Erro interno ao buscar o histórico.']);
+}
+
+===== ARQUIVO: backend\public\api\occurrences\list.php =====
+<?php
+// backend/public/api/occurrences/list.php
+
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+require_once __DIR__ . '/../../../config/database.php';
+
+requireLogin();
+
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Método não permitido. Utilize GET.']);
+    exit;
+}
+
+try {
+    $conditions = [];
+    $params = [];
+
+    // Filtro opcional por status (?status=pending)
+    if (!empty($_GET['status'])) {
+        $conditions[] = "o.status = :status";
+        $params[':status'] = $_GET['status'];
+    }
+
+    // Se for um 'resolver' e pedir visão restrita da empresa (?my_company=1), força a categoria dele
+    if ($_SESSION['role'] === 'resolver' && !empty($_GET['my_company']) && $_SESSION['category_id'] !== null) {
+        $conditions[] = "o.category_id = :category_id";
+        $params[':category_id'] = $_SESSION['category_id'];
+    } elseif (!empty($_GET['category_id'])) {
+        // Filtro manual por categoria (?category_id=1)
+        $conditions[] = "o.category_id = :category_id";
+        $params[':category_id'] = (int) $_GET['category_id'];
+    }
+
+    // Filtro opcional para o cidadão ver apenas as próprias ocorrências (?my_occurrences=1)
+    if (!empty($_GET['my_occurrences'])) {
+        $conditions[] = "o.user_id = :user_id";
+        $params[':user_id'] = $_SESSION['user_id'];
+    }
+
+    $whereSql = count($conditions) > 0 ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
+    $sql = "SELECT o.id, o.user_id, o.title, o.description, o.address, o.latitude, o.longitude, o.status, o.created_at,
+                   o.category_id, c.name AS category_name, u.name AS user_name
+            FROM occurrences o
+            JOIN categories c ON o.category_id = c.id
+            JOIN users u ON o.user_id = u.id
+            $whereSql
+            ORDER BY o.created_at DESC";
+            
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $occurrences = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'total' => count($occurrences),
+        'data' => $occurrences
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (PDOException $e) {
+    error_log('Erro ao listar ocorrências no Urbs: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Erro interno ao buscar as ocorrências.']);
+}
+
+
+===== ARQUIVO: backend\public\api\occurrences\stats.php =====
+<?php
+// backend/public/api/occurrences/stats.php
+
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+require_once __DIR__ . '/../../../config/database.php';
+
+requireLogin();
+
+header('Content-Type: application/json; charset=utf-8');
+
+try {
+    $where = "";
+    $params = [];
+
+    // Se for empresa solucionadora, filtra os KPIs apenas para a categoria que ela atende
+    if ($_SESSION['role'] === 'resolver' && $_SESSION['category_id'] !== null) {
+        $where = "WHERE o.category_id = :category_id";
+        $params[':category_id'] = $_SESSION['category_id'];
+    }
+
+    // 1. Contagem por status
+    $sqlStatus = "SELECT status, COUNT(*) AS total FROM occurrences o $where GROUP BY status";
+    $stmtStatus = $pdo->prepare($sqlStatus);
+    $stmtStatus->execute($params);
+    $statusRows = $stmtStatus->fetchAll(PDO::FETCH_ASSOC);
+
+    $counts = [
+        'total'       => 0,
+        'pending'     => 0,
+        'in_analysis' => 0,
+        'in_progress' => 0,
+        'resolved'    => 0,
+        'rejected'    => 0
+    ];
+
+    foreach ($statusRows as $row) {
+        $st = $row['status'];
+        $qty = (int) $row['total'];
+        if (isset($counts[$st])) {
+            $counts[$st] = $qty;
+        }
+        $counts['total'] += $qty;
+    }
+
+    // 2. Contagem por categoria
+    $sqlCat = "SELECT c.name AS category_name, COUNT(o.id) AS total
+               FROM categories c
+               LEFT JOIN occurrences o ON c.id = o.category_id
+               " . ($where ? "WHERE c.id = :category_id" : "") . "
+               GROUP BY c.id, c.name
+               ORDER BY total DESC";
+    $stmtCat = $pdo->prepare($sqlCat);
+    $stmtCat->execute($params);
+    $byCategory = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode([
+        'success'     => true,
+        'scope'       => $_SESSION['role'] === 'resolver' ? 'company_category' : 'city_wide',
+        'counts'      => $counts,
+        'by_category' => $byCategory
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (PDOException $e) {
+    error_log('Erro nas estatísticas do Urbs: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Erro ao carregar indicadores.']);
+}
+
+
+===== ARQUIVO: backend\public\api\occurrences\update.php =====
+<?php
+
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+require_once __DIR__ . '/../../../config/database.php';
+requireLogin();
+
+header('Content-Type: application/json; charset=utf-8');
+
+function respond(int $status, array $payload): void
+{
+    http_response_code($status);
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    respond(405, ['success' => false, 'message' => 'Método não permitido. Utilize POST.']);
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+if (!is_array($input)) {
+    respond(400, ['success' => false, 'message' => 'Envie os dados da ocorrência em formato JSON.']);
+}
+
+$occurrenceId = filter_var($input['occurrence_id'] ?? 0, FILTER_VALIDATE_INT);
+$categoryId = filter_var($input['category_id'] ?? 0, FILTER_VALIDATE_INT);
+$title = trim($input['title'] ?? '');
+$description = trim($input['description'] ?? '');
+$address = trim($input['address'] ?? '');
+$latitude = filter_var($input['latitude'] ?? null, FILTER_VALIDATE_FLOAT);
+$longitude = filter_var($input['longitude'] ?? null, FILTER_VALIDATE_FLOAT);
+
+if (!$occurrenceId || !$categoryId || $title === '' || $description === '' || $latitude === false || $longitude === false) {
+    respond(400, ['success' => false, 'message' => 'Preencha os campos obrigatórios e selecione uma localização válida.']);
+}
+
+if (mb_strlen($title, 'UTF-8') > 150 || mb_strlen($address, 'UTF-8') > 180 || mb_strlen($description, 'UTF-8') > 5000) {
+    respond(400, ['success' => false, 'message' => 'Um dos campos excede o tamanho permitido.']);
+}
+
+if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
+    respond(400, ['success' => false, 'message' => 'As coordenadas informadas são inválidas.']);
+}
+
+try {
+    $stmt = $pdo->prepare('SELECT user_id, status FROM occurrences WHERE id = :id LIMIT 1');
+    $stmt->execute([':id' => $occurrenceId]);
+    $occurrence = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$occurrence) {
+        respond(404, ['success' => false, 'message' => 'Ocorrência não encontrada.']);
+    }
+
+    $isMaster = ($_SESSION['role'] ?? '') === 'master';
+    $isOwnerWithPendingOccurrence = (int) $occurrence['user_id'] === (int) $_SESSION['user_id']
+        && $occurrence['status'] === 'pending';
+
+    if (!$isMaster && !$isOwnerWithPendingOccurrence) {
+        respond(403, ['success' => false, 'message' => 'Você só pode editar suas próprias ocorrências ainda não analisadas.']);
+    }
+
+    $sql = 'UPDATE occurrences
+            SET category_id = :category_id,
+                title = :title,
+                description = :description,
+                address = :address,
+                latitude = :latitude,
+                longitude = :longitude
+            WHERE id = :id';
+    $update = $pdo->prepare($sql);
+    $update->execute([
+        ':category_id' => $categoryId,
+        ':title' => $title,
+        ':description' => $description,
+        ':address' => $address,
+        ':latitude' => $latitude,
+        ':longitude' => $longitude,
+        ':id' => $occurrenceId
+    ]);
+
+    respond(200, ['success' => true, 'message' => 'Ocorrência atualizada com sucesso.']);
+} catch (PDOException $e) {
+    error_log('Erro ao atualizar ocorrência no URBS: ' . $e->getMessage());
+    respond(500, ['success' => false, 'message' => 'Não foi possível atualizar a ocorrência.']);
+}
+
+
+===== ARQUIVO: backend\public\api\occurrences\update_status.php =====
+<?php
+// backend/public/api/occurrences/update_status.php
+
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+require_once __DIR__ . '/../../../config/database.php';
+
+// Exige que seja Empresa Solucionadora (resolver) ou Master
+requireResolverOrMaster();
+
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Método não permitido. Utilize POST.']);
+    exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+if (!is_array($input)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Envie os dados em formato JSON válido.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+$occurrence_id = filter_var($input['occurrence_id'] ?? 0, FILTER_VALIDATE_INT);
+$new_status = $input['status'] ?? '';
+$comment = is_string($input['comment'] ?? null)
+    ? trim($input['comment'])
+    : 'Status atualizado pela equipe responsável.';
+
+$valid_statuses = ['pending', 'in_analysis', 'in_progress', 'resolved', 'rejected'];
+
+if (!$occurrence_id || !in_array($new_status, $valid_statuses, true)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Dados inválidos ou status incorreto.']);
+    exit;
+}
+
+try {
+    // 1. Buscar a ocorrência atual para checar a categoria e o status anterior
+    $sqlCheck = "SELECT status, category_id FROM occurrences WHERE id = :id LIMIT 1";
+    $stmtCheck = $pdo->prepare($sqlCheck);
+    $stmtCheck->execute([':id' => $occurrence_id]);
+    $occurrence = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+    if (!$occurrence) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Ocorrência não encontrada.']);
+        exit;
+    }
+
+    // 2. Se for um 'resolver' vinculado a uma categoria, impedir que mexa na área de outra empresa
+    if (
+        $_SESSION['role'] === 'resolver' && 
+        $_SESSION['category_id'] !== null && 
+        (int) $occurrence['category_id'] !== (int) $_SESSION['category_id']
+    ) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Acesso negado: esta ocorrência pertence a outra categoria de atendimento.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $previous_status = $occurrence['status'];
+
+    // Iniciar transação para atualizar ocorrência e gravar histórico juntos
+    $pdo->beginTransaction();
+
+    // 3. Atualizar o status na tabela occurrences
+    $sqlUpdate = "UPDATE occurrences SET status = :status WHERE id = :id";
+    $stmtUpdate = $pdo->prepare($sqlUpdate);
+    $stmtUpdate->execute([
+        ':status' => $new_status,
+        ':id' => $occurrence_id
+    ]);
+
+    // 4. Registrar a mudança no histórico com previous_status e new_status
+    $sqlHistory = "INSERT INTO occurrence_history (occurrence_id, user_id, previous_status, new_status, comment) 
+                   VALUES (:occurrence_id, :user_id, :previous_status, :new_status, :comment)";
+    $stmtHistory = $pdo->prepare($sqlHistory);
+    $stmtHistory->execute([
+        ':occurrence_id'   => $occurrence_id,
+        ':user_id'         => $_SESSION['user_id'],
+        ':previous_status' => $previous_status,
+        ':new_status'      => $new_status,
+        ':comment'         => $comment
+    ]);
+
+    $pdo->commit();
+
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Status atualizado com sucesso!',
+        'previous_status' => $previous_status,
+        'new_status' => $new_status
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    error_log('Erro ao atualizar status no Urbs: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Erro interno ao atualizar status.']);
+}
+
+
+===== ARQUIVO: backend\public\api\partners\manage.php =====
+<?php
+// backend/public/api/partners/manage.php
+
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+require_once __DIR__ . '/../../../config/database.php';
+
+// EXCLUSIVO para o Administrador Master
+requireMaster();
+
+header('Content-Type: application/json; charset=utf-8');
+
+// 1. Listar solicitações (GET)
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    try {
+        $sql = "SELECT pr.id, pr.company_name, pr.cnpj, pr.justification, pr.status, pr.created_at,
+                       u.id AS user_id, u.name AS user_name, u.email AS user_email,
+                       c.id AS category_id, c.name AS category_name
+                FROM partner_requests pr
+                JOIN users u ON pr.user_id = u.id
+                JOIN categories c ON pr.category_id = c.id
+                ORDER BY pr.created_at DESC";
+        $stmt = $pdo->query($sql);
+
+        echo json_encode([
+            'success' => true,
+            'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Erro ao listar solicitações.']);
+        exit;
+    }
+}
+
+// 2. Aprovar ou Rejeitar solicitação (POST)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $request_id = filter_var($input['request_id'] ?? 0, FILTER_VALIDATE_INT);
+    $action = $input['action'] ?? ''; // 'approve' ou 'reject'
+
+    if (!$request_id || !in_array($action, ['approve', 'reject'], true)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Informe um request_id válido e a action (approve ou reject).']);
+        exit;
+    }
+
+    try {
+        $stmtReq = $pdo->prepare("SELECT * FROM partner_requests WHERE id = :id LIMIT 1");
+        $stmtReq->execute([':id' => $request_id]);
+        $reqData = $stmtReq->fetch(PDO::FETCH_ASSOC);
+
+        if (!$reqData) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Solicitação não encontrada.']);
+            exit;
+        }
+
+        $newStatus = ($action === 'approve') ? 'approved' : 'rejected';
+
+        $pdo->beginTransaction();
+
+        // Atualizar status da solicitação
+        $stmtUpdateReq = $pdo->prepare("UPDATE partner_requests SET status = :status WHERE id = :id");
+        $stmtUpdateReq->execute([':status' => $newStatus, ':id' => $request_id]);
+
+        // Se aprovada, promove o usuário para 'resolver' e vincula empresa/CNPJ/categoria
+        if ($action === 'approve') {
+            $sqlPromote = "UPDATE users 
+                           SET role = 'resolver', 
+                               category_id = :category_id, 
+                               company_name = :company_name, 
+                               cnpj = :cnpj 
+                           WHERE id = :user_id";
+            $stmtPromote = $pdo->prepare($sqlPromote);
+            $stmtPromote->execute([
+                ':category_id'  => $reqData['category_id'],
+                ':company_name' => $reqData['company_name'],
+                ':cnpj'         => $reqData['cnpj'],
+                ':user_id'      => $reqData['user_id']
+            ]);
+        }
+
+        $pdo->commit();
+
+        echo json_encode([
+            'success' => true,
+            'message' => $action === 'approve' 
+                ? 'Empresa aprovada e promovida a Solucionadora com sucesso!' 
+                : 'Solicitação rejeitada.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log('Erro ao gerenciar parceria no Urbs: ' . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Erro interno ao processar solicitação.']);
+        exit;
+    }
+}
+
+http_response_code(405);
+echo json_encode(['success' => false, 'message' => 'Método não permitido.']);
+
+===== ARQUIVO: backend\public\api\partners\request.php =====
+<?php
+// backend/public/api/partners/request.php
+
+require_once __DIR__ . '/../../../src/middlewares/auth.php';
+require_once __DIR__ . '/../../../config/database.php';
+
+requireLogin();
+
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Método não permitido. Utilize POST.']);
+    exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+
+$company_name = trim($input['company_name'] ?? '');
+$cnpj = trim($input['cnpj'] ?? '');
+$category_id = filter_var($input['category_id'] ?? 0, FILTER_VALIDATE_INT);
+$justification = trim($input['justification'] ?? '');
+
+if ($company_name === '' || $cnpj === '' || !$category_id) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Informe a razão social/nome da empresa, o CNPJ/MEI e a categoria de atuação.'
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+try {
+    // Verificar se o usuário já possui uma solicitação pendente
+    $stmtCheck = $pdo->prepare("SELECT id FROM partner_requests WHERE user_id = :user_id AND status = 'pending' LIMIT 1");
+    $stmtCheck->execute([':user_id' => $_SESSION['user_id']]);
+
+    if ($stmtCheck->fetch()) {
+        http_response_code(409);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Você já possui uma solicitação em análise pelo Administrador Master.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $sql = "INSERT INTO partner_requests (user_id, category_id, company_name, cnpj, justification)
+            VALUES (:user_id, :category_id, :company_name, :cnpj, :justification)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':user_id'       => $_SESSION['user_id'],
+        ':category_id'   => $category_id,
+        ':company_name'  => $company_name,
+        ':cnpj'          => $cnpj,
+        ':justification' => $justification
+    ]);
+
+    http_response_code(201);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Solicitação enviada com sucesso! Aguarde a aprovação do Administrador Master.'
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (PDOException $e) {
+    error_log('Erro ao solicitar parceria no Urbs: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Erro interno ao registrar solicitação.']);
+}
+
+===== ARQUIVO: backend\src\middlewares\auth.php =====
+<?php
+// backend/src/middlewares/auth.php
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+/**
+ * Exige que qualquer usuário esteja logado (citizen, resolver ou master)
+ */
+function requireLogin(): void {
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Acesso negado. Faça login para continuar.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
+/**
+ * Permite acesso para Empresas Solucionadoras (resolver) e Admin Master (master)
+ */
+function requireResolverOrMaster(): void {
+    requireLogin();
+
+    if (!in_array($_SESSION['role'], ['resolver', 'master'], true)) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Acesso restrito a empresas solucionadoras e administradores.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
+/**
+ * Permite acesso EXCLUSIVO ao Administrador Master (aprovação de empresas, gestão geral)
+ */
+function requireMaster(): void {
+    requireLogin();
+
+    if ($_SESSION['role'] !== 'master') {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Acesso restrito exclusivamente ao Administrador Master.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
+===== ARQUIVO: database\urbs.sql =====
+-- URBS — esquema inicial para MySQL / MariaDB.
+-- Importe este arquivo uma vez no phpMyAdmin antes de abrir a aplicação.
+
+CREATE DATABASE IF NOT EXISTS urbs
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE urbs;
+
+CREATE TABLE IF NOT EXISTS categories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(80) NOT NULL UNIQUE,
+  description VARCHAR(255) NULL,
+  active BOOLEAN NOT NULL DEFAULT TRUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO categories (name, description) VALUES
+  ('Pavimentação', 'Buracos, danos e desníveis no pavimento.'),
+  ('Iluminação pública', 'Postes apagados, lâmpadas defeituosas e problemas de iluminação.'),
+  ('Acessibilidade', 'Calçadas, rampas e travessias acessíveis.'),
+  ('Descarte irregular de resíduos', 'Descarte inadequado de lixo, entulho ou móveis.'),
+  ('Drenagem', 'Bueiros, galerias pluviais e acúmulo de água.'),
+  ('Sinalização', 'Placas, faixas e semáforos danificados ou ausentes.'),
+  ('Outro', 'Outros problemas relacionados à infraestrutura urbana.');
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(150) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role ENUM('citizen', 'resolver', 'master') NOT NULL DEFAULT 'citizen',
+  category_id INT NULL,
+  company_name VARCHAR(150) NULL,
+  cnpj VARCHAR(20) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_users_category FOREIGN KEY (category_id)
+    REFERENCES categories(id) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS occurrences (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  category_id INT NOT NULL,
+  title VARCHAR(150) NOT NULL,
+  description TEXT NOT NULL,
+  address VARCHAR(180) NOT NULL DEFAULT '',
+  latitude DECIMAL(10,7) NOT NULL,
+  longitude DECIMAL(10,7) NOT NULL,
+  status ENUM('pending', 'in_analysis', 'in_progress', 'resolved', 'rejected') NOT NULL DEFAULT 'pending',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_occurrences_user FOREIGN KEY (user_id)
+    REFERENCES users(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_occurrences_category FOREIGN KEY (category_id)
+    REFERENCES categories(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  INDEX idx_occurrences_user (user_id),
+  INDEX idx_occurrences_category (category_id),
+  INDEX idx_occurrences_status (status),
+  INDEX idx_occurrences_location (latitude, longitude),
+  INDEX idx_occurrences_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS occurrence_history (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  occurrence_id INT NOT NULL,
+  user_id INT NOT NULL,
+  previous_status ENUM('pending', 'in_analysis', 'in_progress', 'resolved', 'rejected') NULL,
+  new_status ENUM('pending', 'in_analysis', 'in_progress', 'resolved', 'rejected') NOT NULL,
+  comment VARCHAR(500) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_history_occurrence FOREIGN KEY (occurrence_id)
+    REFERENCES occurrences(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_history_user FOREIGN KEY (user_id)
+    REFERENCES users(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  INDEX idx_history_occurrence (occurrence_id),
+  INDEX idx_history_user (user_id),
+  INDEX idx_history_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS partner_requests (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  category_id INT NOT NULL,
+  company_name VARCHAR(150) NOT NULL,
+  cnpj VARCHAR(20) NOT NULL,
+  justification TEXT NULL,
+  status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_partner_user FOREIGN KEY (user_id)
+    REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_partner_category FOREIGN KEY (category_id)
+    REFERENCES categories(id) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+===== ARQUIVO: database\migrations\001_integracao_frontend.sql =====
+-- Execute uma única vez se o banco URBS já foi criado com o esquema anterior.
+-- Esta migração alinha categorias e estados com o formulário e o mapa da interface.
+
+UPDATE categories SET name = 'Pavimentação' WHERE name = 'Buracos em vias públicas';
+UPDATE categories SET name = 'Acessibilidade' WHERE name = 'Calçadas danificadas';
+UPDATE categories SET name = 'Descarte irregular de resíduos' WHERE name = 'Descarte irregular de lixo';
+UPDATE categories SET name = 'Sinalização' WHERE name = 'Sinalização danificada';
+UPDATE categories SET name = 'Outro' WHERE name = 'Outros problemas';
+
+INSERT IGNORE INTO categories (name, description) VALUES
+  ('Drenagem', 'Bueiros, galerias pluviais e acúmulo de água.');
+
+ALTER TABLE occurrences
+  ADD COLUMN address VARCHAR(180) NOT NULL DEFAULT '' AFTER description,
+  MODIFY COLUMN status ENUM('pending', 'in_analysis', 'in_progress', 'resolved', 'rejected') NOT NULL DEFAULT 'pending';
+
+ALTER TABLE occurrence_history
+  MODIFY COLUMN previous_status ENUM('pending', 'in_analysis', 'in_progress', 'resolved', 'rejected') NULL,
+  MODIFY COLUMN new_status ENUM('pending', 'in_analysis', 'in_progress', 'resolved', 'rejected') NOT NULL;
+
+ALTER TABLE users
+  MODIFY COLUMN role ENUM('citizen', 'resolver', 'master') NOT NULL DEFAULT 'citizen';
+
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS category_id INT NULL,
+  ADD COLUMN IF NOT EXISTS company_name VARCHAR(150) NULL,
+  ADD COLUMN IF NOT EXISTS cnpj VARCHAR(20) NULL;
+
