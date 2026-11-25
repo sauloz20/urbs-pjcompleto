@@ -1,0 +1,327 @@
+.map-page {
+  --map-ink: #edf3eb;
+  --map-muted: #a4b5aa;
+  --map-surface: #15221d;
+  --map-control: #1e3027;
+  --map-line: #33463b;
+  --map-accent: #c7ef7d;
+  --workspace-text: var(--map-ink);
+  --workspace-muted: var(--map-muted);
+  --workspace-border: var(--map-line);
+  background: #0c1511;
+}
+
+.map-page .app-header {
+  position: relative;
+  border-bottom: 1px solid var(--map-line);
+  background: #0c1511;
+}
+
+.map-page .app-header nav a {
+  color: var(--map-muted);
+  font-size: 12px;
+}
+
+.map-page .app-header nav a[aria-current="page"],
+.map-page .app-header nav a:hover,
+.map-page .app-header .wordmark {
+  color: var(--map-ink);
+}
+
+.map-page .app-header .header-action {
+  border: 1px solid var(--map-accent);
+  border-radius: 9px;
+  background: var(--map-accent);
+  color: #152217;
+  font-size: 12px;
+}
+
+.map-page .map-main {
+  max-width: 1680px;
+  padding-top: clamp(22px, 3vw, 40px);
+}
+
+.map-page-heading {
+  margin-bottom: 20px;
+}
+
+.map-page-heading .map-city {
+  margin: 0 0 7px;
+  color: var(--map-accent);
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.map-page-heading h1 {
+  font-size: clamp(30px, 4vw, 52px);
+  letter-spacing: -.045em;
+}
+
+.map-page .map-workspace {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
+  gap: 16px;
+}
+
+.map-page .map-panel,
+.map-page .explorer-panel {
+  min-height: 0;
+  border: 1px solid var(--map-line);
+  border-radius: 16px;
+  background: var(--map-surface);
+  box-shadow: 0 8px 24px #0003;
+}
+
+.map-page .map-panel {
+  --map-frame-gutter: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-page .map-topbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 13px;
+}
+
+.map-page .map-v19-tools {
+  width: auto;
+  margin-left: 0;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.map-page .map-v19-tool,
+.map-page .map-v19-bar .locate-button {
+  min-height: 38px;
+  border-color: var(--map-line);
+  background: var(--map-control);
+  font-size: 12px;
+  padding-inline: 9px;
+}
+
+.map-page .map-v19-tool:hover,
+.map-page .map-v19-bar .locate-button:hover {
+  background: #2b4134;
+}
+
+.map-page .map-v19-switch {
+  flex: 0 0 auto;
+  border-color: var(--map-line);
+  background: #101c16;
+}
+
+.map-page .map-v19-layer {
+  min-height: 32px;
+  padding-inline: 10px;
+  font-size: 12px;
+}
+
+.map-page .map-canvas-wrap {
+  min-height: clamp(395px, 61svh, 730px);
+  border: solid var(--map-line);
+  border-width: 1px 0;
+  border-radius: 0;
+}
+
+.map-page .map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 12px 14px;
+}
+
+.map-page .map-legend .map-legend-note {
+  color: var(--map-muted);
+}
+
+.map-page .explorer-panel {
+  padding: 0;
+}
+
+.map-page .explorer-content {
+  padding: 16px;
+}
+
+.map-page .explorer-topline h2 {
+  color: var(--map-ink);
+  font-size: 23px;
+}
+
+.map-page .result-count {
+  border: 1px solid #45593c;
+  background: #283b25;
+  color: var(--map-accent);
+}
+
+.map-page .search-field,
+.map-page .filter-fields select,
+.map-page .map-filters,
+.map-page .map-sheet-toggle {
+  border-color: var(--map-line);
+  background: var(--map-control);
+  color: var(--map-ink);
+}
+
+.map-page .search-field input {
+  color: var(--map-ink);
+}
+
+.map-page .search-field input::placeholder {
+  color: var(--map-muted);
+}
+
+.map-page .map-search-icon {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+  border: 1.5px solid var(--map-muted);
+  border-radius: 50%;
+}
+
+.map-search-icon::after {
+  position: absolute;
+  right: -5px;
+  bottom: -2px;
+  width: 6px;
+  height: 1.5px;
+  background: var(--map-muted);
+  transform: rotate(45deg);
+  content: "";
+}
+
+.map-page .map-filters summary,
+.map-page .filter-fields select,
+.map-page .clear-filters {
+  min-height: 38px;
+}
+
+.map-page .clear-filters {
+  color: var(--map-accent);
+}
+
+.map-page .active-filter-count {
+  color: #152217;
+}
+
+.map-page .report-list {
+  gap: 9px;
+  max-height: clamp(250px, 52svh, 615px);
+}
+
+.map-page .report-card,
+.map-page .empty-state {
+  border-color: var(--map-line);
+  border-radius: 11px;
+  background: #182720;
+  color: var(--map-ink);
+}
+
+.map-page .report-card:hover,
+.map-page .report-card.is-selected {
+  border-color: #7b9a60;
+  background: #23372a;
+}
+
+.map-page .report-card.is-selected {
+  box-shadow: inset 3px 0 var(--map-accent);
+}
+
+.map-page .report-card h3 {
+  font-size: 17px;
+}
+
+.map-page .empty-state h3,
+.map-page .local-notice strong {
+  color: var(--map-ink);
+}
+
+.map-page .empty-state p,
+.map-page .local-notice {
+  color: var(--map-muted);
+}
+
+.map-page .map-pin-guide {
+  margin: 14px 0 0;
+  border: 1px solid var(--map-line);
+  border-radius: 12px;
+  background: var(--map-surface);
+}
+
+.map-pin-guide > summary {
+  padding: 13px 15px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.map-page .map-pin-guide-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+
+.map-category-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--map-line);
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.map-category-preview {
+  display: grid;
+  width: 29px;
+  height: 32px;
+  flex: 0 0 29px;
+  place-items: start;
+}
+
+.map-category-preview .map-v19-pin {
+  transform: scale(.65);
+  transform-origin: top left;
+}
+
+.map-page :focus-visible {
+  outline: 2px solid var(--map-accent);
+  outline-offset: 2px;
+}
+
+.map-page .map-panel .leaflet-control-zoom {
+  overflow: hidden;
+  border-radius: 11px !important;
+}
+
+@media (max-width: 800px) {
+  .map-page .map-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .map-page .map-canvas-wrap {
+    min-height: clamp(285px, 49svh, 500px);
+  }
+}
+
+@media (max-width: 540px) {
+  .map-page .app-header nav {
+    gap: 10px;
+  }
+
+  .map-page .map-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .map-page .map-v19-tool,
+  .map-page .map-v19-layer,
+  .map-page .map-v19-bar .locate-button {
+    font-size: 11px;
+    padding-inline: 7px;
+  }
+}

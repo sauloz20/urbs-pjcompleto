@@ -234,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (!report.demo && data.canManageStatus(report))
             card.append(makeStatusSelect(report));
+        return card;
     }
     function makePin(appearance, status, demo) {
         const pin = makeElement("span", demo ? "map-v19-pin map-v19-demo-pin" : "map-v19-pin");
@@ -260,43 +261,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const guide = document.getElementById("map-pin-guide-list");
         if (!guide)
             return;
-        const groupNames = {
-            "Pavimentação": "MOBILIDADE URBANA",
-            "Iluminação pública": "SERVIÇOS URBANOS",
-            "Acessibilidade": "ACESSIBILIDADE",
-            "Descarte irregular de resíduos": "LIMPEZA URBANA",
-            "Drenagem": "INFRAESTRUTURA",
-            "Sinalização": "MOBILIDADE URBANA",
-            "Outro": "INFRAESTRUTURA URBANA"
-        };
-        categoryMarkers.forEach((appearance, category, categories) => {
-            const card = makeElement("li", "map-pin-guide-card");
-            const preview = makeElement("span", "map-pin-preview");
-            const top = makeElement("div", "map-pin-guide-top");
-            const index = String(guide.children.length + 1).padStart(2, "0");
-            const title = makeElement("h3", "map-pin-guide-title");
-            const categoryName = makeElement("span", "map-pin-guide-category", category);
-            const exampleLabel = makeElement("span", "map-pin-guide-example", "— EXEMPLO");
-            const description = makeElement("p", "map-pin-guide-description", appearance.examples);
-            const meta = makeElement("div", "map-pin-guide-meta");
-            const metaCopy = makeElement("div", "map-pin-guide-meta-copy");
-            const metaLabel = makeElement("span", "", "COR DO MARCADOR");
-            const metaValue = makeElement("strong", "", appearance.color.toUpperCase());
-            const footer = makeElement("div", "map-pin-guide-footer");
-            const footerText = makeElement("span", "", "O pino colorido identifica esta categoria no mapa.");
+        categoryMarkers.forEach((appearance, category) => {
+            const entry = makeElement("li", "map-category-entry");
+            const preview = makeElement("span", "map-category-preview");
             preview.setAttribute("aria-hidden", "true");
             preview.append(makePin(appearance));
-            card.style.setProperty("--guide-pin-color", appearance.color);
-            top.append(makeElement("span", "map-pin-guide-index", `${index} / ${String(categories.size).padStart(2, "0")}`));
-            top.append(makeElement("span", "map-pin-guide-group", groupNames[category] || "URBANISMO"));
-            title.append(categoryName, exampleLabel);
-            metaCopy.append(metaLabel, metaValue);
-            meta.append(metaCopy);
-            footer.append(footerText, preview);
-            card.append(top, title, description, meta, footer);
-            guide.append(card);
+            entry.append(preview, makeElement("span", "", category));
+            guide.append(entry);
         });
-        guide.closest("section").hidden = false;
+        guide.closest("details").hidden = false;
     }
     function makeReportMarker(report) {
         const appearance = categoryMarkers.get(report.category) || otherCategory;

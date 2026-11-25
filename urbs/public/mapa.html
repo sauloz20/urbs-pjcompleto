@@ -17,6 +17,7 @@
   <link href="assets/css/map-arrival.css" rel="stylesheet"/>
   <link href="assets/css/map-davi-integration-v19.css?v=1908" rel="stylesheet"/>
   <link href="assets/css/occurrences.css?v=4" rel="stylesheet"/>
+  <link href="assets/css/map-workspace.css" rel="stylesheet"/>
   <script>
    // Rodar antes da pintura da página para manter continuidade visual entre telas.
     try {
@@ -39,7 +40,7 @@
   </script>
   <script defer="" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
   </script>
-  <script defer="" src="assets/js/map.js?v=1910">
+  <script defer="" src="assets/js/map.js?v=1911">
   </script>
  </head>
  <body class="app-page map-page">
@@ -87,7 +88,10 @@
    <p aria-live="polite" class="visually-hidden" id="map-live-region" role="status">
    </p>
    <div class="map-page-heading">
-    <h1>Mapa de ocorrências</h1>
+    <div>
+     <p class="map-city">Montes Claros, MG</p>
+     <h1>Mapa de ocorrências</h1>
+    </div>
    </div>
    <div class="map-workspace">
     <section aria-label="Mapa e localização das ocorrências" class="map-panel">
@@ -142,7 +146,7 @@
       <span><i aria-hidden="true" class="legend-dot legend-analysis"></i> Em análise</span>
       <span><i aria-hidden="true" class="legend-dot legend-progress"></i> Em andamento</span>
       <span><i aria-hidden="true" class="legend-dot legend-solved"></i> Solucionado</span>
-      <span class="map-legend-note">O ponto no canto indica a situação</span>
+      <span class="map-legend-note">Situação indicada pelo ponto no pino</span>
      </div>
     </section>
     <aside aria-labelledby="explorer-title" class="explorer-panel" id="occurrence-explorer">
@@ -161,7 +165,7 @@
       <div class="filter-location">
        <label for="location-filter">Buscar ocorrências</label>
        <div class="search-field">
-        <span aria-hidden="true">⌕</span>
+        <span aria-hidden="true" class="map-search-icon"></span>
         <input autocomplete="off" id="location-filter" placeholder="Rua, bairro ou referência" type="search"/>
        </div>
       </div>
@@ -230,13 +234,10 @@
      </div>
     </aside>
    </div>
-   <section aria-labelledby="map-pin-guide-title" class="map-pin-guide" hidden="">
-    <div class="map-pin-guide-heading">
-     <span>URBS / LEGENDA DO MAPA</span>
-     <h2 id="map-pin-guide-title">O que cada marcador representa</h2>
-    </div>
-    <ul class="map-pin-guide-list" id="map-pin-guide-list" role="list"></ul>
-   </section>
+   <details class="map-pin-guide" hidden>
+    <summary>Legenda de categorias</summary>
+    <ul class="map-pin-guide-list" id="map-pin-guide-list"></ul>
+   </details>
    <p class="local-notice"><strong>Projeto acadêmico independente.</strong> Os pontos de exemplo são fictícios. Os registros enviados por usuários autenticados ficam no banco MySQL; esta plataforma não é um canal oficial da Prefeitura.</p>
   </main>
   <footer class="app-footer">
