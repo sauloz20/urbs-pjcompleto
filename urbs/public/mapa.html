@@ -17,7 +17,7 @@
   <link href="assets/css/map-arrival.css" rel="stylesheet"/>
   <link href="assets/css/map-davi-integration-v19.css?v=1908" rel="stylesheet"/>
   <link href="assets/css/occurrences.css?v=4" rel="stylesheet"/>
-  <link href="assets/css/map-workspace.css?v=3" rel="stylesheet"/>
+  <link href="assets/css/map-workspace.css?v=4" rel="stylesheet"/>
   <script>
    // Rodar antes da pintura da página para manter continuidade visual entre telas.
     try {
@@ -40,7 +40,7 @@
   </script>
   <script defer="" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
   </script>
-  <script defer="" src="assets/js/map.js?v=1913">
+  <script defer="" src="assets/js/map.js?v=1914">
   </script>
  </head>
  <body class="app-page map-page">
@@ -58,7 +58,7 @@
   </a>
   <header class="app-header">
    <a aria-label="URBS — página inicial" class="wordmark" href="index.html">urbs<span>.</span></a>
-   <div class="map-header-tag">SPATIAL INTELLIGENCE <b aria-hidden="true">✳</b> MONTES CLAROS / MG</div>
+   <div class="map-header-tag">SPATIAL INTELLIGENCE <b aria-hidden="true">✳︎</b> MONTES CLAROS / MG</div>
    <nav aria-label="Navegação principal">
     <a href="index.html">Início</a>
     <a aria-current="page" class="active" href="mapa.html">Mapa</a>
@@ -66,15 +66,21 @@
    </nav>
    <a class="header-action" href="registro.html">Registrar <span aria-hidden="true">↗</span></a>
   </header>
+  <div class="map-ribbon" aria-hidden="true">
+   <span>Observe <b>✳︎</b> Localize <b>✳︎</b> Acompanhe <b>✳︎</b> Transforme <b>✳︎</b> Montes Claros pulsa <b>✳︎</b></span>
+   <span>Observe <b>✳︎</b> Localize <b>✳︎</b> Acompanhe <b>✳︎</b> Transforme <b>✳︎</b> Montes Claros pulsa <b>✳︎</b></span>
+   <span>Observe <b>✳︎</b> Localize <b>✳︎</b> Acompanhe <b>✳︎</b> Transforme <b>✳︎</b> Montes Claros pulsa <b>✳︎</b></span>
+  </div>
   <main class="map-main" id="mapa-conteudo">
    <p aria-live="polite" class="visually-hidden" id="map-live-region" role="status">
    </p>
-   <div class="map-page-heading">
-    <div>
-     <p class="map-city"><span aria-hidden="true">✳</span> Montes Claros · MG</p>
-     <h1>Mapa de ocorrências</h1>
+   <header class="map-intro">
+    <p class="map-intro-rule"><span>Território</span><span>Montes Claros / MG</span></p>
+    <div class="map-intro-layout">
+     <h1>Mapa de <span>ocorrências</span></h1>
+     <div class="map-intro-note"><span aria-hidden="true">✳︎</span><p>Selecione um registro para localizar a ocorrência e acompanhar sua situação.</p></div>
     </div>
-   </div>
+   </header>
    <div class="map-workspace">
     <section aria-label="Mapa e localização das ocorrências" class="map-panel">
      <div class="map-topbar map-v19-bar">
@@ -206,7 +212,13 @@
     <div class="map-legend-heading">
      <span class="map-legend-index">02 / Legenda</span>
      <h2 id="map-legend-title">Como ler o mapa</h2>
-     <span class="map-legend-star" aria-hidden="true">✳</span>
+    </div>
+    <div class="map-pin-example" hidden>
+     <span class="map-pin-sample" id="pin-example" aria-hidden="true"></span>
+     <dl>
+      <div><dt>Ícone e cor</dt><dd>Iluminação pública</dd></div>
+      <div><dt>Ponto lateral</dt><dd>Em análise</dd></div>
+     </dl>
     </div>
     <div class="map-legend-group" hidden>
      <h3>Categorias</h3>

@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const topline = makeElement("div", "report-card-topline");
         const category = makeElement("span", "report-card-category");
         const appearance = categoryMarkers.get(report.category) || otherCategory;
-        const symbol = makeElement("span", "report-card-symbol", appearance.symbol);
+        const symbol = makeElement("span", "report-card-symbol");
         symbol.style.setProperty("background-color", appearance.color);
         symbol.setAttribute("aria-hidden", "true");
         category.append(symbol, makeElement("span", "", report.category));
@@ -296,6 +296,9 @@ document.addEventListener("DOMContentLoaded", () => {
             guide.append(entry);
         });
         guide.closest(".map-legend-group").hidden = false;
+        const sample = document.getElementById("pin-example");
+        sample.append(makePin(categoryMarkers.get("Iluminação pública"), "Em análise"));
+        sample.parentElement.hidden = false;
     }
     function makeReportMarker(report) {
         const appearance = categoryMarkers.get(report.category) || otherCategory;
