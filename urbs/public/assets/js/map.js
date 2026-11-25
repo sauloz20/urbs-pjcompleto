@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = document.getElementById("report-list");
     const emptyState = document.getElementById("empty-state");
     const resultCount = document.getElementById("result-count");
-    const activeFilterCount = document.getElementById("active-filter-count");
+    const categoryTabs = document.getElementById("category-tabs");
     const filterChips = document.getElementById("filter-chips");
     const clearButton = document.getElementById("clear-filters");
     const locateButton = document.getElementById("locate-me");
@@ -44,20 +44,54 @@ document.addEventListener("DOMContentLoaded", () => {
     const explorer = document.getElementById("occurrence-explorer");
     const explorerToggle = document.getElementById("explorer-toggle");
     const isMobile = window.matchMedia("(max-width: 760px)");
-    if (explorer && explorerToggle) {
-        explorer.dataset.expanded = "false";
-        explorerToggle.addEventListener("click", () => {
-            const expanded = explorer.dataset.expanded === "false";
-            explorer.dataset.expanded = String(expanded);
-            explorerToggle.setAttribute("aria-expanded", String(expanded));
-        });
+    const content = document.getElementById("explorer-content");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    function setSheet(open) {
+        explorer.dataset.expanded = String(open);
+        explorerToggle.setAttribute("aria-expanded", String(open));
+        content.inert = isMobile.matches && !open;
     }
+    setSheet(false);
+    isMobile.addEventListener("change", () => setSheet(false));
+    let dragStart = null;
+    let suppressClick = false;
+    explorerToggle.addEventListener("pointerdown", event => {
+        dragStart = event.clientY;
+        suppressClick = false;
+        explorerToggle.setPointerCapture(event.pointerId);
+    });
+    explorerToggle.addEventListener("pointercancel", () => { dragStart = null; });
+    explorerToggle.addEventListener("pointerup", event => {
+        if (dragStart === null) return;
+        const distance = event.clientY - dragStart;
+        dragStart = null;
+        if (Math.abs(distance) < 24) return;
+        suppressClick = true;
+        setSheet(distance < 0);
+    });
+    explorerToggle.addEventListener("click", event => {
+        if (!suppressClick || event.detail === 0) setSheet(explorer.dataset.expanded !== "true");
+        suppressClick = false;
+    });
     window.lucide?.createIcons();
     renderPinGuide();
     if (!window.L) {
         if (mapUnavailable)
             mapUnavailable.hidden = false;
         return;
+    }
+    for (const option of categoryFilter.options) {
+        const label = option.value === "all" ? "Todos" : option.value
+            .replace("Iluminação pública", "Iluminação")
+            .replace("Descarte irregular de resíduos", "Resíduos");
+        const button = makeElement("button", "category-tab", label);
+        button.type = "button";
+        button.value = option.value;
+        button.addEventListener("click", () => {
+            categoryFilter.value = option.value;
+            render();
+        });
+        categoryTabs.append(button);
     }
     // O mapa mantém os exemplos visuais e carrega as ocorrências reais pela API PHP.
     const map = L.map(mapElement, { scrollWheelZoom: false, zoomControl: false, preferCanvas: true }).setView(center, 13);
@@ -91,7 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.addEventListener("fullscreenchange", () => {
             const expanded = document.fullscreenElement === mapPanel;
             fullscreenButton.setAttribute("aria-pressed", String(expanded));
-            fullscreenButton.firstElementChild.textContent = expanded ? "Sair da tela cheia" : "Tela cheia";
+            fullscreenButton.title = expanded ? "Sair da tela cheia" : "Tela cheia";
+            fullscreenButton.firstElementChild.textContent = fullscreenButton.title;
             requestAnimationFrame(() => map.invalidateSize({ pan: false }));
         });
     }
@@ -255,6 +290,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const meta = makeElement("div", "report-card-meta");
         meta.textContent = report.address || "Ponto marcado no mapa";
         card.append(meta, category);
+        const details = makeElement("p", "report-description", report.description || "Sem descrição adicional.");
+        details.hidden = true;
+        card.append(details);
         if (!report.demo && (data.canEdit(report) || data.canDelete(report))) {
             const actions = makeReportActions(report);
             card.append(actions);
@@ -293,7 +331,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const preview = makeElement("span", "map-category-preview");
             preview.setAttribute("aria-hidden", "true");
             preview.append(makePin(appearance));
-            entry.append(preview, makeElement("span", "", category));
+            const caption = makeElement("span", "category-caption");
+            caption.append(makeElement("strong", "", category), makeElement("small", "", appearance.examples));
+            entry.append(preview, caption);
             guide.append(entry);
         });
         guide.closest(".map-legend-group").hidden = false;
@@ -316,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     function updateFilterChips() {
         filterChips.replaceChildren();
-        for (const field of [categoryFilter, statusFilter, locationFilter]) {
+        for (const field of [statusFilter, locationFilter]) {
             const isSearch = field === locationFilter;
             const value = field.value.trim();
             if (!value || (!isSearch && value === "all")) continue;
@@ -335,8 +375,10 @@ document.addEventListener("DOMContentLoaded", () => {
             filterChips.append(chip);
         }
         const count = filterChips.childElementCount;
-        filterChips.hidden = activeFilterCount.hidden = count === 0;
-        activeFilterCount.textContent = String(count);
+        filterChips.hidden = count === 0;
+        clearButton.hidden = count === 0 && categoryFilter.value === "all";
+        for (const button of categoryTabs.children)
+            button.setAttribute("aria-pressed", String(button.value === categoryFilter.value));
     }
     function render() {
         const reports = getFilteredReports();
@@ -348,6 +390,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const marker = makeReportMarker(report);
             marker.bindPopup(popupContent(report), { maxWidth: 260 });
             marker.on("popupopen", () => selectReport(report.id));
+            marker.on("click", () => {
+                window.clearTimeout(pendingPopup);
+                selectReport(report.id);
+                if (isMobile.matches) setSheet(true);
+                requestAnimationFrame(() => {
+                    const card = list.querySelector(".is-selected");
+                    if (card) list.scrollTop += card.getBoundingClientRect().top - list.getBoundingClientRect().top;
+                });
+            });
             markersById.set(report.id, marker);
         });
         resultCount.textContent = String(reports.length);
@@ -367,6 +418,7 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedReportId = id;
         list.querySelectorAll(".report-card").forEach((card) => {
             card.classList.toggle("is-selected", card.dataset.reportId === id);
+            card.querySelector(".report-description").hidden = card.dataset.reportId !== id;
             card.querySelector("[data-focus-id]").setAttribute("aria-pressed", String(card.dataset.reportId === id));
         });
         markersById.forEach((marker, markerId) => {
@@ -404,9 +456,28 @@ document.addEventListener("DOMContentLoaded", () => {
         render();
         locationFilter.focus();
     });
+    let hoverTimer;
+    list.addEventListener("pointerover", event => {
+        const card = event.target.closest(".report-card");
+        if (event.pointerType !== "mouse" || !card || card.contains(event.relatedTarget)) return;
+        hoverTimer = setTimeout(() => {
+            const marker = markersById.get(card.dataset.reportId);
+            if (!marker) return;
+            window.clearTimeout(pendingPopup);
+            selectReport(card.dataset.reportId);
+            map.panTo(marker.getLatLng(), { animate: !reducedMotion.matches, duration: .35 });
+        }, 300);
+    });
+    list.addEventListener("pointerout", event => {
+        const card = event.target.closest(".report-card");
+        if (card && !card.contains(event.relatedTarget)) clearTimeout(hoverTimer);
+    });
     list.addEventListener("click", (event) => {
+        clearTimeout(hoverTimer);
         const button = event.target.closest("[data-focus-id]");
-        if (button && focusReport(button.dataset.focusId, !isMobile.matches) && isMobile.matches) {
+        if (button && focusReport(button.dataset.focusId, !isMobile.matches && !reducedMotion.matches) && isMobile.matches) {
+            setSheet(false);
+            explorerToggle.focus({ preventScroll: true });
             mapElement.scrollIntoView({ block: "nearest", behavior: "instant" });
         }
     });
@@ -447,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.currentUser) {
                 link.href = "registro.html";
                 if (link.classList.contains("occurrence-primary"))
-                    link.innerHTML = 'Registrar <span aria-hidden="true">＋</span>';
+                    link.innerHTML = 'Registrar <span aria-hidden="true">↗</span>';
             } else {
                 link.href = "login.html";
                 if (link.classList.contains("occurrence-primary"))
@@ -472,6 +543,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 showActionFeedback("Alterações salvas. Ocorrência selecionada no mapa.");
             else if (liveRegion)
                 liveRegion.textContent = "Registro salvo no banco de dados. Ocorrência selecionada no mapa.";
+            setSheet(false);
+            explorerToggle.focus({ preventScroll: true });
             mapElement.scrollIntoView({ block: "nearest", behavior: "instant" });
         }
     });
