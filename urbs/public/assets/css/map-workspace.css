@@ -836,20 +836,79 @@
   color: var(--map-charcoal);
 }
 .monitor-heading {
-  display: flex;
-  align-items: baseline;
-  gap: 10px 24px;
-  flex-wrap: wrap;
-  padding: 16px 0;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  min-height: clamp(120px, 10vw, 158px);
+  padding: 18px clamp(16px, 2.8vw, 44px);
+  overflow: hidden;
+  background: #0c1c14;
+  color: var(--map-paper);
 }
-.monitor-heading p { margin: 0; color: var(--map-accent); }
+.monitor-heading::before,
+.monitor-heading::after {
+  position: absolute;
+  inset: 0 0 0 32%;
+  z-index: -1;
+  content: "";
+  pointer-events: none;
+}
+.monitor-heading::before {
+  background: linear-gradient(90deg, #0c1c14, #0c1c1470 43%, #0c1c1410),
+              url("../images/journey/localize.webp") center 58% / cover;
+}
+.monitor-heading::after {
+  background-image: linear-gradient(#d6e8cf24 1px, transparent 1px),
+                    linear-gradient(90deg, #d6e8cf24 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(90deg, transparent, #000);
+}
+.monitor-heading p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--map-accent);
+}
+.monitor-heading p::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+}
 .monitor-heading h1 {
   margin: 0;
-  font: 700 clamp(24px, 2.8vw, 42px)/1 var(--display);
-  letter-spacing: -.055em;
+  font: 700 clamp(32px, 4.5vw, 72px)/1 var(--display);
+  letter-spacing: -.065em;
   text-transform: uppercase;
 }
-.map-page .map-v19-tools button { border-right: 1px solid var(--map-line); }
+@supports (-webkit-text-stroke: 1px currentColor) {
+  .monitor-heading h1 span {
+    color: transparent;
+    -webkit-text-stroke: 1.25px var(--map-paper);
+  }
+}
+.map-page .map-topbar {
+  background: var(--map-paper);
+  border-bottom: 1px solid #a8b2a4;
+}
+.map-page .map-v19-tools button {
+  color: #22382b;
+  border-right: 1px solid #bfc9bb;
+}
+.map-page .map-v19-tools button:hover { background: #dce5d8; }
+.map-page .map-v19-tools button[aria-pressed="true"] {
+  background: var(--map-accent);
+  color: var(--map-charcoal);
+  box-shadow: inset 0 -2px 0 #334e2c;
+}
+.map-page .map-v19-tools button:focus-visible { outline-color: #36503b; }
+.map-page .map-v19-tools #locate-me { background: transparent; color: #22382b; }
+.map-page .map-v19-tools #locate-me:hover { background: #dce5d8; }
+.map-page .map-v19-tools #locate-me .map-locate-icon { color: inherit; }
 .map-page #map-fullscreen { min-width: 42px; font-family: var(--mono); }
 .map-page .explorer-panel {
   --workspace-text: #f2f0e8;
@@ -926,7 +985,11 @@
   .map-page .app-header .header-action { display: none; }
   .map-page .app-header .map-brand { gap: 7px; }
   .map-signature { max-width: 16ch; font-size: 8px; line-height: 1.4; }
-  .monitor-heading { display: grid; gap: 4px; padding: 10px 0; }
+  .monitor-heading { min-height: 90px; gap: 6px; padding: 12px; }
+  .monitor-heading h1 { font-size: clamp(24px, 6vw, 40px); }
+  .monitor-heading::before {
+    background-image: linear-gradient(90deg, #0c1c14, #0c1c1490), url("../images/journey/localize.webp");
+  }
   .map-page .map-canvas-wrap { min-height: max(48svh, calc(100svh - 270px)); }
   .map-page .explorer-panel {
     position: fixed;
