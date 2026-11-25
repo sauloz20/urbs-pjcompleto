@@ -599,25 +599,35 @@
 /* Abertura e legenda seguem a seção Manifesto da Home. */
 .map-page .map-main { padding-top: 0; }
 .map-intro {
-  padding: clamp(13px, 1.15vw, 18px) clamp(16px, 2.4vw, 36px);
-  border-top: 3px solid var(--map-accent);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding: 11px clamp(14px, 2vw, 28px);
+  border-top: 2px solid var(--map-accent);
   background: var(--map-paper);
   color: var(--map-charcoal);
 }
 .map-location {
-  margin: 0 0 6px;
+  margin: 0;
+  white-space: nowrap;
   color: #506957;
   font: var(--map-micro);
   letter-spacing: .07em;
   text-transform: uppercase;
 }
-.map-intro h1, .map-page .map-legend-heading h2 {
+.map-page .map-legend-heading h2 {
   margin: 0;
   font: 700 clamp(42px, 4.8vw, 84px)/.92 var(--display);
   letter-spacing: -.073em;
   text-transform: uppercase;
 }
-.map-intro h1 { font-size: clamp(36px, 4.3vw, 74px); }
+.map-intro h1 {
+  margin: 0;
+  font: 700 clamp(25px, 2.9vw, 42px)/1 var(--display);
+  letter-spacing: -.055em;
+  text-transform: uppercase;
+}
 .map-intro h1 span { color: #577660; }
 .map-page .report-card-symbol {
   width: 3px;
@@ -683,7 +693,7 @@
   .map-pin-example, .map-legend-group { grid-column: 2; }
 }
 @media (max-width: 650px) {
-  .map-intro h1 { font-size: clamp(30px, 7.5vw, 46px); }
+  .map-intro { flex-wrap: wrap; }
 }
 .map-page .map-pin-guide-list,
 .map-page .map-status-grid {
