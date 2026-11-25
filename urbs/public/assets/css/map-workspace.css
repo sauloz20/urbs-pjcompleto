@@ -6,7 +6,7 @@
 
 .map-page .app-header {
   position: relative;
-  border-bottom: 1px solid var(--map-line);
+  border-bottom: 0;
   background: #0c1511;
 }
 
