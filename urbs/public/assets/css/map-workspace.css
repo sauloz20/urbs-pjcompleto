@@ -589,50 +589,19 @@
 }
 
 /* Abertura e legenda seguem a seção Manifesto da Home. */
-.map-ribbon {
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
-  padding-block: clamp(6px, .8vw, 12px);
-  background: #c8f263;
-  color: #102013;
-  font: 700 clamp(15px, 1.65vw, 22px)/1.15 var(--display);
-  letter-spacing: -.035em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.map-ribbon span { flex: none; }
-.map-ribbon b { margin-inline: .75em; }
 .map-page .map-main { padding-top: 0; }
 .map-intro {
-  padding: clamp(16px, 2.4vw, 36px) clamp(16px, 3.8vw, 64px);
+  padding: clamp(16px, 1.8vw, 28px) clamp(16px, 2.4vw, 36px);
+  border-top: 3px solid var(--map-accent);
   background: var(--map-paper);
   color: var(--map-charcoal);
 }
-.map-intro-rule {
-  display: flex;
-  align-items: center;
-  gap: clamp(10px, 1.6vw, 24px);
-  margin: 0;
-  color: #4c6755;
+.map-location {
+  margin: 0 0 8px;
+  color: #506957;
   font: var(--map-micro);
-  letter-spacing: .09em;
+  letter-spacing: .07em;
   text-transform: uppercase;
-}
-.map-intro-rule::after {
-  order: 1;
-  flex: 1;
-  height: 1px;
-  background: #5c74635c;
-  content: "";
-}
-.map-intro-rule span:last-child { order: 2; }
-.map-intro-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-  align-items: end;
-  gap: 18px;
-  margin-top: clamp(16px, 2.4vw, 34px);
 }
 .map-intro h1, .map-page .map-legend-heading h2 {
   margin: 0;
@@ -641,13 +610,6 @@
   text-transform: uppercase;
 }
 .map-intro h1 span { color: #577660; }
-.map-intro-note { display: flex; align-items: flex-start; gap: 12px; }
-.map-intro-note > span { color: #4f755e; font: 400 42px/.92 var(--display); }
-.map-intro-note p {
-  max-width: 32ch;
-  margin: 0;
-  font: 600 clamp(14px, 1.3vw, 20px)/1.35 var(--body);
-}
 .map-page .report-card-symbol {
   width: 3px;
   height: 14px;
@@ -712,10 +674,7 @@
   .map-pin-example, .map-legend-group { grid-column: 2; }
 }
 @media (max-width: 650px) {
-  .map-intro-layout { grid-template-columns: 1fr; gap: 10px; }
-  .map-intro h1 { font-size: clamp(32px, 7.5vw, 48px); }
-  .map-intro-note > span { font-size: 22px; }
-  .map-intro-note p { max-width: 44ch; }
+  .map-intro h1 { font-size: clamp(30px, 7.5vw, 46px); }
 }
 .map-page .map-pin-guide-list,
 .map-page .map-status-grid {
@@ -726,4 +685,89 @@
 .map-category-entry,
 .map-status-grid li {
   border-top: 1px solid #5c746354;
+}
+
+.map-page .app-header nav { margin-left: auto; }
+.map-page .app-header { gap: clamp(12px, 2.2vw, 34px); }
+.map-page .explorer-topline {
+  justify-content: flex-start;
+  gap: 9px;
+  margin-bottom: 12px;
+  padding: 0;
+  border: 0;
+}
+.map-page .explorer-topline h2 {
+  color: var(--map-ink);
+  font: 600 21px/1.2 var(--display);
+  text-transform: none;
+  letter-spacing: -.035em;
+}
+.map-page .result-count {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  color: var(--map-muted);
+}
+.map-page .map-filters {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--map-line);
+}
+.map-page .map-filters summary { padding: 10px 0; }
+.map-page .report-card:first-child { border-top: 0; }
+.map-page .report-card-code { padding-left: 0; border: 0; }
+.map-page .urbs-user-menu { position: relative; }
+.map-page .urbs-user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 150px;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--map-ink);
+  font: 600 13px var(--body);
+  cursor: pointer;
+}
+.map-page .urbs-user-avatar {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: #27352b;
+  color: var(--map-accent);
+}
+.map-page .urbs-user-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.map-page .urbs-user-caret { color: var(--map-muted); }
+.map-page .urbs-user-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 2;
+  display: grid;
+  width: min(210px, 85vw);
+  padding: 8px;
+  border: 1px solid var(--map-line);
+  background: var(--map-surface);
+  box-shadow: 0 10px 25px #0005;
+}
+.map-page .urbs-user-summary { display: grid; padding: 8px; overflow-wrap: anywhere; }
+.map-page .urbs-user-summary span { color: var(--map-muted); font-size: 12px; }
+.map-page .urbs-user-divider { border-top: 1px solid var(--map-line); }
+.map-page .app-header .urbs-user-item {
+  padding: 10px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--map-ink);
+  font: 500 13px var(--body);
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: left;
+  cursor: pointer;
+}
+.map-page .app-header .urbs-user-item:hover { background: var(--map-control); }
+@media (max-width: 650px) {
+  .map-page .urbs-user-trigger { max-width: 92px; }
 }

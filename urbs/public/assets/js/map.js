@@ -241,7 +241,8 @@ document.addEventListener("DOMContentLoaded", () => {
         topline.append(makeElement("span", "report-card-code", reference), badge);
         card.append(topline);
         const titleLine = makeElement("h3");
-        const focusButton = makeElement("button", "report-card-title", report.title);
+        const title = report.demo ? report.title.replace(/\s*— exemplo$/i, "") : report.title;
+        const focusButton = makeElement("button", "report-card-title", title);
         focusButton.type = "button";
         focusButton.dataset.focusId = report.id;
         focusButton.setAttribute("aria-pressed", "false");
@@ -349,7 +350,8 @@ document.addEventListener("DOMContentLoaded", () => {
             marker.on("popupopen", () => selectReport(report.id));
             markersById.set(report.id, marker);
         });
-        resultCount.textContent = `${reports.length} ${reports.length === 1 ? "registro" : "registros"}`;
+        resultCount.textContent = String(reports.length);
+        resultCount.setAttribute("aria-label", `${reports.length} ${reports.length === 1 ? "registro" : "registros"}`);
         updateFilterChips();
         emptyState.hidden = reports.length > 0;
         if (reports.length > 0 && markerLayer.getBounds().isValid()) {
