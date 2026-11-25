@@ -360,18 +360,26 @@
   border: 0;
   background: transparent;
 }
-.map-navigation-tools { border-left: 1px solid var(--map-line); }
+.map-navigation-tools { padding-inline: 4px; }
 .map-page .map-v19-tools button {
   min-width: 0;
   min-height: 44px;
   padding: 6px clamp(7px, .8vw, 15px);
   border: 0;
-  border-right: 1px solid var(--map-line);
   border-radius: 0;
   background: transparent;
   color: var(--map-ink);
 }
-.map-page #map-fullscreen { border-right: 0; }
+.map-page .map-v19-tools #locate-me {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.map-page #locate-me .map-locate-icon {
+  color: var(--map-muted);
+  font: 16px/1 var(--body);
+}
 .map-page .map-v19-tools button:hover { background: var(--map-control); }
 .map-page .map-v19-tools button[aria-pressed="true"] {
   background: var(--map-accent);
@@ -591,13 +599,13 @@
 /* Abertura e legenda seguem a seção Manifesto da Home. */
 .map-page .map-main { padding-top: 0; }
 .map-intro {
-  padding: clamp(16px, 1.8vw, 28px) clamp(16px, 2.4vw, 36px);
+  padding: clamp(13px, 1.15vw, 18px) clamp(16px, 2.4vw, 36px);
   border-top: 3px solid var(--map-accent);
   background: var(--map-paper);
   color: var(--map-charcoal);
 }
 .map-location {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: #506957;
   font: var(--map-micro);
   letter-spacing: .07em;
@@ -609,6 +617,7 @@
   letter-spacing: -.073em;
   text-transform: uppercase;
 }
+.map-intro h1 { font-size: clamp(36px, 4.3vw, 74px); }
 .map-intro h1 span { color: #577660; }
 .map-page .report-card-symbol {
   width: 3px;
@@ -770,4 +779,9 @@
 .map-page .app-header .urbs-user-item:hover { background: var(--map-control); }
 @media (max-width: 650px) {
   .map-page .urbs-user-trigger { max-width: 92px; }
+}
+
+@media (min-width: 801px) {
+  .map-page .explorer-content { padding-top: 0; }
+  .map-page .explorer-topline { min-height: 44px; margin-bottom: 6px; }
 }
