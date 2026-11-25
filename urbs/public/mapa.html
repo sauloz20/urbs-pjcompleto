@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
   <meta content="origin" name="referrer"/>
-  <meta content="#0b1a14" name="theme-color"/>
+  <meta content="#0b100d" name="theme-color"/>
   <meta content="Explore os registros colaborativos de infraestrutura urbana no mapa URBS de Montes Claros, MG." name="description"/>
   <title>
    Mapa colaborativo — URBS
@@ -17,7 +17,7 @@
   <link href="assets/css/map-arrival.css" rel="stylesheet"/>
   <link href="assets/css/map-davi-integration-v19.css?v=1908" rel="stylesheet"/>
   <link href="assets/css/occurrences.css?v=4" rel="stylesheet"/>
-  <link href="assets/css/map-workspace.css" rel="stylesheet"/>
+  <link href="assets/css/map-workspace.css?v=2" rel="stylesheet"/>
   <script>
    // Rodar antes da pintura da página para manter continuidade visual entre telas.
     try {
@@ -40,7 +40,7 @@
   </script>
   <script defer="" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
   </script>
-  <script defer="" src="assets/js/map.js?v=1911">
+  <script defer="" src="assets/js/map.js?v=1912">
   </script>
  </head>
  <body class="app-page map-page">
@@ -57,55 +57,27 @@
    Pular para o conteúdo
   </a>
   <header class="app-header">
-   <a aria-label="URBS — página inicial" class="wordmark" href="index.html">
-    urbs
-    <span>
-     .
-    </span>
-   </a>
+   <a aria-label="URBS — página inicial" class="wordmark" href="index.html">urbs<span>.</span></a>
+   <div class="map-header-tag">SPATIAL INTELLIGENCE <b aria-hidden="true">✳</b> MONTES CLAROS / MG</div>
    <nav aria-label="Navegação principal">
-    <a href="index.html">
-     Início
-    </a>
-    <a aria-current="page" class="active" href="mapa.html">
-     Mapa
-    </a>
-    <a href="registro.html">
-     Registrar
-    </a>
-    <a href="login.html">
-     Entrar
-    </a>
+    <a href="index.html">Início</a>
+    <a aria-current="page" class="active" href="mapa.html">Mapa</a>
+    <a href="login.html">Entrar</a>
    </nav>
-   <a class="header-action" href="registro.html">
-    Registrar ocorrência
-    <span aria-hidden="true">
-     ＋
-    </span>
-   </a>
+   <a class="header-action" href="registro.html">Registrar <span aria-hidden="true">↗</span></a>
   </header>
   <main class="map-main" id="mapa-conteudo">
    <p aria-live="polite" class="visually-hidden" id="map-live-region" role="status">
    </p>
    <div class="map-page-heading">
     <div>
-     <p class="map-city">Montes Claros, MG</p>
+     <p class="map-city"><span aria-hidden="true">✳</span> Montes Claros · MG</p>
      <h1>Mapa de ocorrências</h1>
     </div>
    </div>
    <div class="map-workspace">
     <section aria-label="Mapa e localização das ocorrências" class="map-panel">
      <div class="map-topbar map-v19-bar">
-      <div class="map-v19-place">
-       <span aria-hidden="true" class="map-region-dot">
-       </span>
-       <strong>
-        Montes Claros
-       </strong>
-       <span>
-        MG
-       </span>
-      </div>
       <div aria-label="Controles do mapa" class="map-v19-tools">
        <div aria-label="Tipo de mapa" class="map-v19-switch" role="group">
         <button aria-pressed="true" class="map-v19-layer is-active" id="btnLayerLight" type="button">
@@ -122,10 +94,10 @@
         Centralizar
        </button>
        <button aria-label="Mostrar minha localização no mapa" class="locate-button" id="locate-me" type="button">
-        <span aria-hidden="true">
-         ◎
-        </span>
         Localizar
+       </button>
+       <button class="map-v19-tool" id="map-fullscreen" type="button" aria-pressed="false" hidden>
+        <span>Tela cheia</span> <span aria-hidden="true">↗</span>
        </button>
       </div>
      </div>
@@ -141,25 +113,18 @@
        </span>
       </div>
      </div>
-     <div aria-label="Legenda dos marcadores por situação" class="map-legend">
-      <span><i aria-hidden="true" class="legend-dot legend-new"></i> Novo</span>
-      <span><i aria-hidden="true" class="legend-dot legend-analysis"></i> Em análise</span>
-      <span><i aria-hidden="true" class="legend-dot legend-progress"></i> Em andamento</span>
-      <span><i aria-hidden="true" class="legend-dot legend-solved"></i> Solucionado</span>
-      <span class="map-legend-note">Situação indicada pelo ponto no pino</span>
-     </div>
     </section>
     <aside aria-labelledby="explorer-title" class="explorer-panel" id="occurrence-explorer">
      <div class="map-sheet-bar">
       <button aria-controls="explorer-content" aria-expanded="false" class="map-sheet-toggle" id="explorer-toggle" type="button">
        Ocorrências <span aria-hidden="true" class="map-sheet-arrow"></span>
       </button>
-      <a class="occurrence-primary" href="registro.html">Registrar <span aria-hidden="true">＋</span></a>
+      <a class="occurrence-primary" href="registro.html">Registrar <span aria-hidden="true">↗</span></a>
      </div>
      <p class="report-action-feedback" id="report-action-feedback" role="status"></p>
      <div class="explorer-content" id="explorer-content">
       <div class="explorer-topline">
-       <h2 id="explorer-title">Ocorrências</h2>
+       <h2 id="explorer-title">01 / Registros</h2>
        <span aria-live="polite" class="result-count" id="result-count">—</span>
       </div>
       <div class="filter-location">
@@ -171,11 +136,11 @@
       </div>
       <details class="map-filters">
        <summary>
-        Filtros <span class="active-filter-count" hidden="" id="active-filter-count"></span>
+        <i data-lucide="sliders-horizontal" aria-hidden="true"></i> Filtros <span class="active-filter-count" hidden="" id="active-filter-count"></span>
        </summary>
        <div class="filter-fields">
         <div>
-         <label for="category-filter">Categoria</label>
+         <label for="category-filter"><i data-lucide="tag" aria-hidden="true"></i> Categoria</label>
          <select id="category-filter">
           <option value="all">
            Todas as categorias
@@ -204,7 +169,7 @@
          </select>
         </div>
         <div>
-         <label for="status-filter">Situação</label>
+         <label for="status-filter"><i data-lucide="circle-dot" aria-hidden="true"></i> Situação</label>
          <select id="status-filter">
           <option value="all">
            Todas as situações
@@ -234,10 +199,27 @@
      </div>
     </aside>
    </div>
-   <details class="map-pin-guide" hidden>
-    <summary>Legenda de categorias</summary>
-    <ul class="map-pin-guide-list" id="map-pin-guide-list"></ul>
-   </details>
+   <section class="map-pin-guide" aria-labelledby="map-legend-title">
+    <div class="map-legend-heading">
+     <span class="map-legend-index">02 / Legenda</span>
+     <h2 id="map-legend-title">Como ler o mapa</h2>
+     <span class="map-legend-star" aria-hidden="true">✳</span>
+    </div>
+    <div class="map-legend-group" hidden>
+     <h3>Categorias</h3>
+     <ul class="map-pin-guide-list" id="map-pin-guide-list"></ul>
+    </div>
+    <div class="map-legend-group">
+     <h3>Status <span>· Ponto no pino</span></h3>
+     <ul class="map-status-grid">
+      <li><i aria-hidden="true" class="legend-dot legend-new"></i> Novo</li>
+      <li><i aria-hidden="true" class="legend-dot legend-analysis"></i> Em análise</li>
+      <li><i aria-hidden="true" class="legend-dot legend-progress"></i> Em andamento</li>
+      <li><i aria-hidden="true" class="legend-dot legend-solved"></i> Solucionado</li>
+      <li><i aria-hidden="true" class="legend-dot legend-rejected"></i> Rejeitado</li>
+     </ul>
+    </div>
+   </section>
    <p class="local-notice"><strong>Projeto acadêmico independente.</strong> Os pontos de exemplo são fictícios. Os registros enviados por usuários autenticados ficam no banco MySQL; esta plataforma não é um canal oficial da Prefeitura.</p>
   </main>
   <footer class="app-footer">

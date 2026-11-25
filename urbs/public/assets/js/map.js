@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
             explorerToggle.setAttribute("aria-expanded", String(expanded));
         });
     }
+    window.lucide?.createIcons();
     renderPinGuide();
     if (!window.L) {
         if (mapUnavailable)
@@ -71,6 +72,28 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedLayer = 'light';
     streets.addTo(map);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
+    const fullscreenButton = document.getElementById("map-fullscreen");
+    const mapPanel = fullscreenButton?.closest(".map-panel");
+    if (document.fullscreenEnabled && mapPanel?.requestFullscreen && document.exitFullscreen) {
+        fullscreenButton.hidden = false;
+        fullscreenButton.addEventListener("click", async () => {
+            try {
+                if (document.fullscreenElement === mapPanel) {
+                    await document.exitFullscreen();
+                } else {
+                    await mapPanel.requestFullscreen();
+                }
+            } catch {
+                liveRegion.textContent = "Não foi possível alternar a tela cheia.";
+            }
+        });
+        document.addEventListener("fullscreenchange", () => {
+            const expanded = document.fullscreenElement === mapPanel;
+            fullscreenButton.setAttribute("aria-pressed", String(expanded));
+            fullscreenButton.firstElementChild.textContent = expanded ? "Sair da tela cheia" : "Tela cheia";
+            requestAnimationFrame(() => map.invalidateSize({ pan: false }));
+        });
+    }
     const lightButton = document.getElementById('btnLayerLight');
     const satButton = document.getElementById('btnLayerSat');
     function setMapLayer(mode) {
@@ -215,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (report.demo)
             topline.append(makeElement("span", "demo-badge", "EXEMPLO"));
         const badge = makeElement("span", `status-pill ${statusClass[report.status] || ""}`, report.status);
-        topline.append(badge);
+        topline.append(makeElement("span", "report-card-code", `#${report.id}`), badge);
         card.append(topline);
         const titleLine = makeElement("h3");
         const focusButton = makeElement("button", "report-card-title", report.title);
@@ -269,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
             entry.append(preview, makeElement("span", "", category));
             guide.append(entry);
         });
-        guide.closest("details").hidden = false;
+        guide.closest(".map-legend-group").hidden = false;
     }
     function makeReportMarker(report) {
         const appearance = categoryMarkers.get(report.category) || otherCategory;
