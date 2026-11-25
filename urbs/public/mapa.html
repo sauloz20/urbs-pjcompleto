@@ -17,7 +17,7 @@
   <link href="assets/css/map-arrival.css" rel="stylesheet"/>
   <link href="assets/css/map-davi-integration-v19.css?v=1908" rel="stylesheet"/>
   <link href="assets/css/occurrences.css?v=4" rel="stylesheet"/>
-  <link href="assets/css/map-workspace.css?v=7" rel="stylesheet"/>
+  <link href="assets/css/map-workspace.css?v=8" rel="stylesheet"/>
   <script>
    // Rodar antes da pintura da página para manter continuidade visual entre telas.
     try {
@@ -40,7 +40,7 @@
   </script>
   <script defer="" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
   </script>
-  <script defer="" src="assets/js/map.js?v=1915">
+  <script defer="" src="assets/js/map.js?v=1916">
   </script>
  </head>
  <body class="app-page map-page">
@@ -57,7 +57,10 @@
    Pular para o conteúdo
   </a>
   <header class="app-header">
-   <a aria-label="URBS — página inicial" class="wordmark" href="index.html">urbs<span>.</span></a>
+   <div class="map-brand">
+    <a aria-label="URBS — página inicial" class="wordmark" href="index.html">urbs<span>.</span></a>
+    <h1>Mapa de ocorrências</h1>
+   </div>
    <nav aria-label="Navegação principal">
     <a href="index.html">Início</a>
     <a aria-current="page" class="active" href="mapa.html">Mapa</a>
@@ -68,51 +71,7 @@
   <main class="map-main" id="mapa-conteudo">
    <p aria-live="polite" class="visually-hidden" id="map-live-region" role="status">
    </p>
-   <header class="map-intro">
-    <h1>Mapa de <span>ocorrências</span></h1>
-    <p class="map-location">Montes Claros · MG</p>
-   </header>
    <div class="map-workspace">
-    <section aria-label="Mapa e localização das ocorrências" class="map-panel">
-     <div class="map-topbar map-v19-bar">
-      <div aria-label="Controles do mapa" class="map-v19-tools">
-       <div aria-label="Tipo de mapa" class="map-v19-switch" role="group">
-        <button aria-pressed="true" class="map-v19-layer is-active" id="btnLayerLight" type="button">
-         Ruas
-        </button>
-        <button aria-pressed="false" class="map-v19-layer" id="btnLayerSat" type="button">
-         Satélite
-        </button>
-       </div>
-       <div class="map-navigation-tools" role="group" aria-label="Navegação no mapa">
-        <button class="map-v19-tool" id="map-fit-reports" title="Enquadrar ocorrências" type="button">
-         Ver todos
-        </button>
-        <button class="map-v19-tool" id="map-reset-city" title="Centralizar em Montes Claros" type="button">
-         Centralizar
-        </button>
-        <button aria-label="Mostrar minha localização no mapa" class="locate-button" id="locate-me" type="button">
-         <span class="map-locate-icon" aria-hidden="true">⌖</span> Localizar
-        </button>
-        <button class="map-v19-tool" id="map-fullscreen" type="button" aria-pressed="false" hidden>
-         <span>Tela cheia</span> <span aria-hidden="true">↗</span>
-        </button>
-       </div>
-      </div>
-     </div>
-     <div class="map-canvas-wrap">
-      <div aria-label="Mapa interativo com marcadores de ocorrências em Montes Claros" id="map" role="application">
-      </div>
-      <div class="map-unavailable" hidden="" id="map-unavailable">
-       <strong>
-        O mapa não carregou.
-       </strong>
-       <span>
-        Confira a conexão com a internet e recarregue a página.
-       </span>
-      </div>
-     </div>
-    </section>
     <aside aria-labelledby="explorer-title" class="explorer-panel" id="occurrence-explorer">
      <div class="map-sheet-bar">
       <button aria-controls="explorer-content" aria-expanded="false" class="map-sheet-toggle" id="explorer-toggle" type="button">
@@ -122,6 +81,7 @@
      </div>
      <p class="report-action-feedback" id="report-action-feedback" role="status"></p>
      <div class="explorer-content" id="explorer-content">
+      <p class="map-location">Montes Claros · MG</p>
       <div class="explorer-topline">
        <h2 id="explorer-title">Registros</h2>
        <span aria-live="polite" class="result-count" id="result-count">—</span>
@@ -198,6 +158,46 @@
       </div>
      </div>
     </aside>
+    <section aria-label="Mapa e localização das ocorrências" class="map-panel">
+     <div class="map-topbar map-v19-bar">
+      <div aria-label="Controles do mapa" class="map-v19-tools">
+       <div aria-label="Tipo de mapa" class="map-v19-switch" role="group">
+        <button aria-pressed="true" class="map-v19-layer is-active" id="btnLayerLight" type="button">
+         Ruas
+        </button>
+        <button aria-pressed="false" class="map-v19-layer" id="btnLayerSat" type="button">
+         Satélite
+        </button>
+       </div>
+       <div class="map-navigation-tools" role="group" aria-label="Navegação no mapa">
+        <button class="map-v19-tool" id="map-fit-reports" title="Enquadrar ocorrências" type="button">
+         Ver todos
+        </button>
+        <button class="map-v19-tool" id="map-reset-city" title="Centralizar em Montes Claros" type="button">
+         Centralizar
+        </button>
+        <button aria-label="Mostrar minha localização no mapa" class="locate-button" id="locate-me" type="button">
+         <span class="map-locate-icon" aria-hidden="true">⌖</span> Localizar
+        </button>
+        <button class="map-v19-tool" id="map-fullscreen" type="button" aria-pressed="false" hidden>
+         <span>Tela cheia</span> <span aria-hidden="true">↗</span>
+        </button>
+       </div>
+      </div>
+     </div>
+     <div class="map-canvas-wrap">
+      <div aria-label="Mapa interativo com marcadores de ocorrências em Montes Claros" id="map" role="application">
+      </div>
+      <div class="map-unavailable" hidden="" id="map-unavailable">
+       <strong>
+        O mapa não carregou.
+       </strong>
+       <span>
+        Confira a conexão com a internet e recarregue a página.
+       </span>
+      </div>
+     </div>
+    </section>
    </div>
    <section class="map-pin-guide" aria-labelledby="map-legend-title">
     <div class="map-legend-heading">

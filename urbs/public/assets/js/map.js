@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
         focusButton.dataset.focusId = report.id;
         focusButton.setAttribute("aria-pressed", "false");
         focusButton.setAttribute("aria-label", `Ver no mapa: ${report.title}`);
-        const arrow = makeElement("span", "report-focus-arrow", "↗");
+        const arrow = makeElement("span", "report-focus-arrow", "↗︎");
         arrow.setAttribute("aria-hidden", "true");
         focusButton.append(arrow);
         titleLine.append(focusButton);
