@@ -30,8 +30,10 @@
 }
 
 .map-page .map-main {
-  max-width: 1680px;
-  padding-top: clamp(14px, 1.6vw, 24px);
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: 0;
+  padding-top: 0;
 }
 
 .map-page-heading {
@@ -440,8 +442,6 @@
 }
 .map-page .report-list {
   gap: 0;
-  scrollbar-width: thin;
-  scrollbar-color: #526456 #0b100d;
 }
 .map-page .report-card {
   padding: 13px 9px;
@@ -544,7 +544,6 @@
 }
 
 /* Abertura e legenda seguem a seção Manifesto da Home. */
-.map-page .map-main { padding-top: 0; }
 .map-location {
   margin: 0;
   white-space: nowrap;
@@ -753,7 +752,6 @@
   font: 600 clamp(15px, 1.55vw, 22px)/1.15 var(--display);
   letter-spacing: -.025em;
 }
-.map-page .map-main { max-width: 1800px; }
 .map-page .map-canvas-wrap { min-height: clamp(415px, 70svh, 820px); }
 .map-page .map-panel:fullscreen .map-canvas-wrap { min-height: 0; }
 .map-page .explorer-panel {
@@ -785,7 +783,16 @@
 .map-page .report-focus-arrow { color: #315741; }
 .map-page .explorer-panel :focus-visible { outline-color: #315741; }
 .map-page .map-filters { margin-bottom: 0; }
-.map-page .report-list { scrollbar-color: #899e8d transparent; }
+.map-document,
+.map-page .report-list,
+.map-page .explorer-content {
+  scrollbar-width: none;
+}
+.map-document::-webkit-scrollbar,
+.map-page .report-list::-webkit-scrollbar,
+.map-page .explorer-content::-webkit-scrollbar {
+  display: none;
+}
 .map-page .report-card { padding-inline: 8px; }
 .map-page .report-card:hover,
 .map-page .report-card.is-selected { background: #e4eadc; }
