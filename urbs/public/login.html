@@ -1,153 +1,322 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#020509" />
-  <meta name="description" content="URBS — Spatial Intelligence. Acesso georreferenciado a Montes Claros, MG." />
-  <title>URBS — Spatial Intelligence</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URBS · Acesso Orbital — Montes Claros</title>
+  <meta name="description" content="Acesse ou crie sua conta no URBS para explorar o mapa colaborativo e registrar ocorrências urbanas em Montes Claros." />
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307140e'/%3E%3Ctext x='11' y='46' font-family='Arial,sans-serif' font-weight='700' font-size='38' fill='%23efeee5'%3Eu%3C/text%3E%3Ccircle cx='47' cy='42' r='6' fill='%23c7f36b'/%3E%3C/svg%3E" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/css/auth-globe.css?v=20261124-v2" />
-
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-  <script defer src="assets/js/api.js?v=1"></script>
-  <script type="module" src="assets/js/auth-globe.js?v=20261124-v2"></script>
+  <link rel="stylesheet" href="assets/css/auth-globe.css?v=20261126-e1" />
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script defer src="assets/js/api.js?v=20261126-e1"></script>
 </head>
 <body>
-  <a class="skip-link" href="#login-email">Pular para o formulário</a>
+  <div class="auth-stage" id="app" data-mode="login">
+    <!-- Cena WebGL 3D em tela cheia -->
+    <canvas id="earth-canvas" aria-label="Globo terrestre interativo focado em Montes Claros"></canvas>
+    <div class="space-vignette" aria-hidden="true"></div>
+    <div class="space-grid" aria-hidden="true"></div>
+    <div class="cursor-depth" id="cursor-depth" aria-hidden="true"></div>
 
-  <!-- Notificação Toast -->
-  <div id="auth-toast" class="auth-toast" role="status" aria-live="polite" hidden></div>
-
-  <!-- Cortina atmosférica do mergulho -->
-  <div id="dive-veil" class="dive-veil" aria-hidden="true"></div>
-
-  <main class="auth-stage" id="app" data-mode="login">
-    <canvas id="earth-canvas" class="earth-canvas" aria-label="Planeta Terra interativo em 3D"></canvas>
-    <div id="cursor-depth" class="cursor-depth" aria-hidden="true"></div>
-
-    <!-- Cabeçalho minimalista (sem ícone/logo artificial) -->
+    <!-- Cabeçalho editorial alinhado à Home -->
     <header class="auth-header">
-      <a href="index.html" class="wordmark-link" id="urbs-brand-link" aria-label="URBS — voltar ao início">
-        <span class="wordmark">urbs<span>.</span></span>
-        <span class="wordmark-sub">SPATIAL INTELLIGENCE</span>
+      <a href="index.html" class="auth-logo" id="urbs-brand-link" aria-label="URBS — voltar ao início">
+        urbs<span>.</span>
       </a>
 
-      <a href="index.html" class="header-back">Voltar ao início <span aria-hidden="true">↗</span></a>
+      <div class="auth-header-center" aria-hidden="true">
+        <span>PORTAL DE ACESSO</span>
+        <b>✳</b>
+        <span>MONTES CLAROS / MG</span>
+      </div>
+
+      <a href="index.html" class="header-back">
+        <span aria-hidden="true">←</span>
+        <span>VOLTAR AO INÍCIO</span>
+      </a>
     </header>
 
-    <!-- Formulário de Login (Lado Direito — Terra à Esquerda) -->
-    <section class="auth-pane pane-login" id="login-side" aria-labelledby="login-title">
-      <div class="auth-card" id="panel-login">
-        <span class="card-kicker">SPATIAL INTELLIGENCE</span>
-        <h1 id="login-title">Entrar no <em>urbs.</em></h1>
-        <p class="card-subtitle">Acesse o território georreferenciado de Montes Claros para visualizar e registrar ocorrências.</p>
-
-        <div id="saved-accounts" class="saved-accounts" hidden>
-          <span class="saved-label">Contas recentes</span>
-          <div id="saved-accounts-list" class="saved-list"></div>
+    <!-- HUD de telemetria orbital (visível no desktop e compacto no mobile) -->
+    <aside class="globe-hud" id="globe-hud" aria-label="Telemetria orbital do globo">
+      <div class="globe-hud__row">
+        <span class="globe-hud__dot" aria-hidden="true"></span>
+        <span class="globe-hud__tag">SINAL ORBITAL ATIVO</span>
+      </div>
+      <div class="globe-hud__coords">
+        <div>
+          <small>LATITUDE</small>
+          <strong id="hud-lat">16°43′ S</strong>
         </div>
+        <div>
+          <small>LONGITUDE</small>
+          <strong id="hud-lon">43°51′ W</strong>
+        </div>
+      </div>
+      <div class="globe-hud__actions">
+        <button type="button" class="globe-hud__focus" id="hud-focus-moc" title="Centralizar globo em Montes Claros">
+          <span>FOCAR MONTES CLAROS</span>
+          <b aria-hidden="true">⌖</b>
+        </button>
+        <span class="globe-hud__hint">ARRASTE O PLANETA PARA GIRAR</span>
+      </div>
+    </aside>
 
-        <form id="login-form" novalidate>
-          <div class="field-group">
-            <label for="login-email">E-mail</label>
-            <input id="login-email" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required />
-          </div>
-
-          <div class="field-group">
-            <label for="login-password">Senha</label>
-            <div class="password-field">
-              <input id="login-password" name="password" type="password" placeholder="Sua senha" autocomplete="current-password" minlength="6" required />
-              <button type="button" class="toggle-pass" data-target="login-password" aria-label="Mostrar senha">Mostrar</button>
+    <!-- Área dos painéis (Login à direita / Cadastro à esquerda no desktop) -->
+    <main class="auth-main">
+      <!-- PAINEL 1: LOGIN -->
+      <section class="auth-pane auth-pane--login" id="login-side" aria-labelledby="login-heading">
+        <div class="auth-card">
+          <div class="auth-card__top">
+            <span class="auth-eyebrow"><i aria-hidden="true"></i> 01 / AUTENTICAÇÃO</span>
+            <div class="mode-switch" role="tablist" aria-label="Alternar entre entrar e criar conta">
+              <button type="button" class="is-active" role="tab" aria-selected="true" data-switch="login">Entrar</button>
+              <button type="button" role="tab" aria-selected="false" data-switch="register">Cadastrar</button>
             </div>
           </div>
 
-          <p class="field-error" id="login-error" role="alert" aria-live="polite"></p>
+          <!-- Selo de destino preservado via ?next= -->
+          <div class="dest-badge" id="auth-dest-badge" hidden>
+            <span class="dest-badge__dot" aria-hidden="true"></span>
+            <div class="dest-badge__copy">
+              <small>DESTINO APÓS ENTRAR</small>
+              <strong id="auth-dest-text">Mapa colaborativo</strong>
+            </div>
+          </div>
 
-          <button class="btn-submit" type="submit">
-            <span>Entrar</span>
-            <span class="btn-arrow" aria-hidden="true">→</span>
-          </button>
-        </form>
+          <h1 id="login-heading">ACESSE O <em>MAPA.</em></h1>
+          <p class="auth-lead">
+            Entre com sua conta para acompanhar registros, interagir com o território e gerenciar ocorrências.
+          </p>
 
-        <div class="card-footer">
-          <span>Ainda não possui conta?</span>
-          <button type="button" class="btn-switch" data-switch="register">Não possuo cadastro →</button>
+          <!-- Contas recentes salvas no navegador -->
+          <div class="saved-accounts" id="saved-accounts" hidden>
+            <span class="saved-accounts__label">CONTAS RECENTES NESTE DISPOSITIVO</span>
+            <div class="saved-accounts__list" id="saved-accounts-list"></div>
+          </div>
+
+          <form id="login-form" class="auth-form" novalidate>
+            <div class="field">
+              <label for="login-email">E-mail</label>
+              <input id="login-email" name="email" type="email" autocomplete="email" placeholder="seu@email.com" required />
+            </div>
+
+            <div class="field">
+              <div class="field-label-row">
+                <label for="login-password">Senha</label>
+                <button type="button" class="toggle-pass" data-target="login-password">Mostrar</button>
+              </div>
+              <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Digite sua senha" minlength="6" required />
+            </div>
+
+            <p class="field-error" role="alert" aria-live="polite"></p>
+
+            <button type="submit" class="btn-submit">
+              <span>ENTRAR NA PLATAFORMA</span>
+              <b aria-hidden="true">↗</b>
+            </button>
+          </form>
+
+          <div class="auth-card__foot">
+            <span>Ainda não tem conta?</span>
+            <button type="button" class="text-switch" data-switch="register">Criar cadastro cidadão →</button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Formulário de Cadastro (Lado Esquerdo — Terra gira para a Direita) -->
-    <section class="auth-pane pane-register" id="register-side" aria-labelledby="register-title" inert aria-hidden="true">
-      <div class="auth-card" id="panel-register">
-        <span class="card-kicker">SPATIAL INTELLIGENCE</span>
-        <h2 id="register-title">Criar <em>conta.</em></h2>
-        <p class="card-subtitle">Cadastre-se para participar do mapeamento colaborativo da cidade.</p>
-
-        <form id="register-form" novalidate>
-          <div class="field-group">
-            <label for="register-name">Nome completo</label>
-            <input id="register-name" name="name" type="text" placeholder="Seu nome completo" autocomplete="name" minlength="2" required />
+      <!-- PAINEL 2: CADASTRO -->
+      <section class="auth-pane auth-pane--register" id="register-side" aria-labelledby="register-heading" aria-hidden="true" inert>
+        <div class="auth-card">
+          <div class="auth-card__top">
+            <span class="auth-eyebrow"><i aria-hidden="true"></i> 02 / NOVO REGISTRO</span>
+            <div class="mode-switch" role="tablist" aria-label="Alternar entre entrar e criar conta">
+              <button type="button" role="tab" aria-selected="false" data-switch="login">Entrar</button>
+              <button type="button" class="is-active" role="tab" aria-selected="true" data-switch="register">Cadastrar</button>
+            </div>
           </div>
 
-          <div class="field-group">
-            <label for="register-email">E-mail</label>
-            <input id="register-email" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required />
-          </div>
+          <h1 id="register-heading">CRIE SUA <em>CONTA.</em></h1>
+          <p class="auth-lead">
+            Participe do monitoramento colaborativo da infraestrutura urbana de Montes Claros.
+          </p>
 
-          <div class="field-row">
-            <div class="field-group">
-              <label for="register-password">Senha (mín. 8)</label>
-              <div class="password-field">
-                <input id="register-password" name="password" type="password" placeholder="Mín. 8 dígitos" autocomplete="new-password" minlength="8" required />
-                <button type="button" class="toggle-pass" data-target="register-password" aria-label="Mostrar senha">Ver</button>
+          <form id="register-form" class="auth-form" novalidate>
+            <div class="field">
+              <label for="register-name">Nome completo</label>
+              <input id="register-name" name="name" type="text" autocomplete="name" placeholder="Como devemos te chamar?" minlength="3" required />
+            </div>
+
+            <div class="field">
+              <label for="register-email">E-mail</label>
+              <input id="register-email" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required />
+            </div>
+
+            <div class="field-grid">
+              <div class="field">
+                <div class="field-label-row">
+                  <label for="register-password">Senha</label>
+                  <button type="button" class="toggle-pass" data-target="register-password">Ver</button>
+                </div>
+                <input id="register-password" name="password" type="password" autocomplete="new-password" placeholder="Mín. 8 caracteres" minlength="8" required />
+              </div>
+
+              <div class="field">
+                <div class="field-label-row">
+                  <label for="register-confirm">Confirmar</label>
+                  <button type="button" class="toggle-pass" data-target="register-confirm">Ver</button>
+                </div>
+                <input id="register-confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Repita a senha" minlength="8" required />
               </div>
             </div>
 
-            <div class="field-group">
-              <label for="register-confirm">Confirmar</label>
-              <div class="password-field">
-                <input id="register-confirm" name="confirm" type="password" placeholder="Repita a senha" autocomplete="new-password" minlength="8" required />
-                <button type="button" class="toggle-pass" data-target="register-confirm" aria-label="Mostrar confirmação">Ver</button>
+            <!-- Medidor de força da senha + feedback de confirmação -->
+            <div class="pass-meter" id="pass-strength" data-level="0" hidden>
+              <div class="pass-meter__bars" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <div class="pass-meter__meta">
+                <span id="pass-strength-label">Força: —</span>
+                <span id="pass-match-hint"></span>
               </div>
             </div>
+
+            <p class="field-error" role="alert" aria-live="polite"></p>
+
+            <button type="submit" class="btn-submit">
+              <span>CRIAR MINHA CONTA</span>
+              <b aria-hidden="true">↗</b>
+            </button>
+          </form>
+
+          <div class="role-note">
+            <strong>PERFIL INICIAL · CIDADÃO</strong>
+            <span>Empresas solucionadoras solicitam habilitação por CNPJ/MEI após o primeiro acesso.</span>
           </div>
 
-          <p class="field-error" id="register-error" role="alert" aria-live="polite"></p>
-
-          <button class="btn-submit" type="submit">
-            <span>Criar cadastro</span>
-            <span class="btn-arrow" aria-hidden="true">→</span>
-          </button>
-        </form>
-
-        <div class="card-footer">
-          <span>Já possui conta?</span>
-          <button type="button" class="btn-switch" data-switch="login">← Voltar ao login</button>
+          <div class="auth-card__foot">
+            <span>Já possui cadastro?</span>
+            <button type="button" class="text-switch" data-switch="login">← Voltar para o login</button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
-    <!-- Telemetria minimalista no mergulho orbital -->
-    <div id="dive-hud" class="dive-hud" hidden aria-hidden="true">
-      <div class="dive-reticle"></div>
-      <div class="dive-meta">
-        <span id="dive-phase">DESTINO LOCALIZADO</span>
-        <strong>Montes Claros, MG</strong>
-        <small id="dive-alt">ALTITUDE · 12.400 KM</small>
+    <!-- Rodapé técnico discreto -->
+    <footer class="auth-footer">
+      <span>URBS © 2026 · INTELIGÊNCIA ESPACIAL</span>
+      <span>SESSÃO PROTEGIDA · MONTES CLAROS / MG</span>
+    </footer>
+
+    <!-- Toast de feedback contextual -->
+    <div class="auth-toast" id="auth-toast" role="status" aria-live="polite" hidden></div>
+
+    <!-- HUD de mergulho orbital após login confirmado -->
+    <div class="dive-hud" id="dive-hud" hidden aria-hidden="true">
+      <div class="dive-reticle" id="dive-reticle">
+        <i></i><i></i>
+      </div>
+      <div class="dive-telemetry">
+        <span class="dive-phase" id="dive-phase">DESTINO LOCALIZADO</span>
+        <strong class="dive-target">MONTES CLAROS · 16°43′ S · 43°51′ W</strong>
+        <span class="dive-alt" id="dive-alt">ALTITUDE · 12.400 KM</span>
       </div>
     </div>
 
-    <footer class="auth-footer">
-      <span class="orbit-hint">Arraste o planeta para explorar a órbita</span>
-      <span>16°43′ S · 43°51′ W</span>
-    </footer>
+    <div class="dive-veil" id="dive-veil" aria-hidden="true"></div>
+    <span class="sr-only" id="sr-status" role="status" aria-live="polite"></span>
+  </div>
 
-    <div class="sr-only" id="sr-status" role="status" aria-live="polite"></div>
-  </main>
+  <!-- Comportamentos instantâneos da Etapa 1 (selo de destino, força de senha e validação ao vivo) -->
+  <script>
+    (() => {
+      'use strict';
+
+      // 1. Selo de destino (?next=)
+      const params = new URLSearchParams(window.location.search);
+      const rawNext = (params.get('next') || '').trim();
+      const badge = document.getElementById('auth-dest-badge');
+      const badgeText = document.getElementById('auth-dest-text');
+
+      if (rawNext && badge && badgeText && !/^(?:https?:|\/\/|javascript:|\.\.)/i.test(rawNext)) {
+        const [rawPage, rawQuery = ''] = rawNext.split('?');
+        const page = rawPage.replace(/^\/+/, '').toLowerCase();
+        const cat = (new URLSearchParams(rawQuery).get('categoria') || '').trim();
+
+        let label = '';
+        if (page === 'registro.html') {
+          label = cat ? `Registro em ${cat}` : 'Novo registro de ocorrência';
+        } else if (page === 'mapa.html') {
+          label = cat ? `Mapa filtrado · ${cat}` : 'Mapa interativo de ocorrências';
+        } else if (page === 'painel.html') {
+          label = 'Painel de gestão URBS';
+        }
+
+        if (label) {
+          badgeText.textContent = label;
+          badge.hidden = false;
+        }
+      }
+
+      // 2. Medidor de força da senha e confirmação em tempo real
+      const passInput = document.getElementById('register-password');
+      const confirmInput = document.getElementById('register-confirm');
+      const meter = document.getElementById('pass-strength');
+      const strengthLabel = document.getElementById('pass-strength-label');
+      const matchHint = document.getElementById('pass-match-hint');
+
+      const LEVELS = [
+        { text: 'Muito curta', level: 1 },
+        { text: 'Fraca — adicione números ou maiúsculas', level: 1 },
+        { text: 'Média — quase lá', level: 2 },
+        { text: 'Boa senha', level: 3 },
+        { text: 'Senha forte', level: 4 }
+      ];
+
+      function evaluatePassword() {
+        if (!passInput || !meter) return;
+        const val = passInput.value;
+        const conf = confirmInput ? confirmInput.value : '';
+
+        if (!val && !conf) {
+          meter.hidden = true;
+          return;
+        }
+        meter.hidden = false;
+
+        let score = 0;
+        if (val.length >= 8) score += 1;
+        if (val.length >= 10) score += 1;
+        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score += 1;
+        if (/[0-9]/.test(val) || /[^A-Za-z0-9]/.test(val)) score += 1;
+
+        const info = val.length < 8 ? LEVELS[0] : LEVELS[Math.min(4, score)];
+        meter.dataset.level = String(info.level);
+        if (strengthLabel) strengthLabel.textContent = info.text;
+
+        if (matchHint) {
+          if (!conf) {
+            matchHint.textContent = '';
+            matchHint.className = '';
+          } else if (val === conf) {
+            matchHint.textContent = 'Senhas coincidem ✓';
+            matchHint.className = 'is-ok';
+          } else {
+            matchHint.textContent = 'Senhas diferentes';
+            matchHint.className = 'is-bad';
+          }
+        }
+      }
+
+      passInput?.addEventListener('input', evaluatePassword);
+      confirmInput?.addEventListener('input', evaluatePassword);
+    })();
+  </script>
+
+  <script type="module" src="assets/js/auth-globe.js?v=20261126-integracao"></script>
 </body>
 </html>

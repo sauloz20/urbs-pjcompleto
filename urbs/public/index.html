@@ -2,32 +2,36 @@
 <html lang="pt-BR">
 
 <head>
+   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307140e'/%3E%3Ctext x='11' y='46' font-family='Arial,sans-serif' font-weight='700' font-size='38' fill='%23efeee5'%3Eu%3C/text%3E%3Ccircle cx='47' cy='42' r='6' fill='%23c7f36b'/%3E%3C/svg%3E" />
+
    <meta charset="utf-8" />
    <meta content="width=device-width, initial-scale=1" name="viewport" />
    <meta content="#07140f" name="theme-color" />
    <meta
       content="URBS — Inteligência espacial colaborativa para observar, registrar e acompanhar a infraestrutura urbana de Montes Claros, MG."
       name="description" />
-   <title>URBS — A cidade é de todos</title>
+   <title>
+      URBS — A cidade é de todos
+   </title>
    <link href="https://fonts.googleapis.com" rel="preconnect" />
    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
    <link
       href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet" />
-   <link href="assets/css/urbs-v11.css?v=20261124-s1" rel="stylesheet" />
-   <link href="assets/css/journey-gallery-v12-4.css?v=2010" rel="stylesheet" />
-   <link href="assets/css/urban-split-v17.css?v=1801" rel="stylesheet" />
-   <link href="assets/css/urbs-before-after-v20.css?v=2010" rel="stylesheet" />
+   <link href="assets/css/urbs-v11.css?v=20261126-a11y" rel="stylesheet" />
+   <link href="assets/css/journey-gallery-v12-4.css?v=20261126-a11y" rel="stylesheet" />
+   <link href="assets/css/urban-split-v17.css?v=20261126-a11y" rel="stylesheet" />
+   <link href="assets/css/urbs-before-after-v20.css?v=20261126-a11y" rel="stylesheet" />
    <script>
       try { const t = Number(sessionStorage.getItem('urbs-home-arrival-v9')); sessionStorage.removeItem('urbs-home-arrival-v9'); if (t && Date.now() - t < 20000) document.documentElement.classList.add('urbs-arrival'); } catch (e) { }
    </script>
    <script defer="" src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
    <script defer="" src="assets/js/api.js?v=1"></script>
-   <script defer="" src="assets/js/session-ui.js?v=20261124"></script>
-   <script defer="" src="assets/js/urbs-v11.js?v=1201"></script>
-   <script defer="" src="assets/js/urban-split-v17.js?v=1800"></script>
+   <script defer="" src="assets/js/session-ui.js?v=20261126-integracao"></script>
+   <script defer="" src="assets/js/urbs-v11.js?v=20261126-pc"></script>
+   <script defer="" src="assets/js/urban-split-v17.js?v=20261126-a11y"></script>
    <script defer="" src="https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js"></script>
-   <script defer="" src="assets/js/journey-gallery-v12-4.js?v=2010"></script>
+   <script defer="" src="assets/js/journey-gallery-v12-4.js?v=20261126-a11y"></script>
    <script defer="" src="assets/js/urbs-before-after-v20.js?v=2013"></script>
 </head>
 
@@ -41,21 +45,118 @@
          SPATIAL INTELLIGENCE <b>✳</b> MONTES CLAROS / MG
       </div>
       <nav aria-label="Menu principal" class="nav" id="main-nav">
-         <a href="#manifesto">Manifesto</a>
-         <a href="#experiencia">Transformações</a>
-         <a href="#categorias">Categorias</a>
-         <a href="#territorio">Território</a>
+         <a data-section="manifesto" href="#manifesto">Manifesto</a>
+         <a data-section="experiencia" href="#experiencia">Transformações</a>
+         <a data-section="categorias" href="#categorias">Categorias</a>
+         <a data-section="territorio" href="#territorio">Território</a>
+         <a data-section="funcionamento" href="#funcionamento">Fluxo</a>
          <a href="mapa.html">Mapa</a>
          <a href="login.html">Entrar</a>
       </nav>
       <a class="nav-cta" href="registro.html">
          REGISTRAR <span>↗</span>
       </a>
-      <button aria-controls="main-nav" aria-expanded="false" aria-label="Abrir menu" class="menu-toggle" type="button">
+      <button aria-controls="urbs-curtain" aria-expanded="false" aria-label="Abrir menu de navegação"
+         class="menu-toggle" data-curtain-toggle="" type="button">
          <span></span>
          <span></span>
       </button>
    </header>
+
+   <!-- Pílula flutuante Scroll-Spy (par do logo translúcido durante a rolagem) -->
+   <div aria-label="Navegação rápida por seções" class="urbs-scroll-pill" id="urbs-scroll-pill">
+      <button aria-controls="urbs-curtain" aria-expanded="false" class="urbs-pill-section" data-curtain-toggle=""
+         title="Abrir navegação completa" type="button">
+         <span aria-hidden="true" class="urbs-pill-dot"></span>
+         <span class="urbs-pill-label" id="urbs-pill-label">01 · MANIFESTO</span>
+      </button>
+      <span aria-hidden="true" class="urbs-pill-sep"></span>
+      <a class="urbs-pill-map" href="mapa.html" title="Abrir mapa de ocorrências">MAPA ↗</a>
+      <button aria-controls="urbs-curtain" aria-expanded="false" aria-label="Abrir menu completo" class="urbs-pill-menu"
+         data-curtain-toggle="" type="button">
+         <span>MENU</span>
+         <i aria-hidden="true"><b></b><b></b></i>
+      </button>
+   </div>
+
+   <!-- Cortina Editorial Full-Screen (Desktop + Mobile) -->
+   <div aria-hidden="true" class="urbs-curtain" hidden="" id="urbs-curtain" role="presentation">
+      <div aria-hidden="true" class="urbs-curtain__grid"></div>
+      <div aria-label="Menu de navegação completa" aria-modal="true" class="urbs-curtain__shell" role="dialog"
+         tabindex="-1">
+         <div class="urbs-curtain__top">
+            <a class="logo" data-curtain-close="" href="#topo">urbs<span>.</span></a>
+            <button aria-label="Fechar menu" class="urbs-curtain__close" data-curtain-close="" type="button">
+               <span>FECHAR</span>
+               <b aria-hidden="true">×</b>
+            </button>
+         </div>
+
+         <div class="urbs-curtain__body">
+            <nav aria-label="Seções da página" class="urbs-curtain__nav">
+               <span class="urbs-curtain__kicker">EXPLORAR A PÁGINA</span>
+               <a class="urbs-curtain__link" data-curtain-anchor="" data-section="manifesto" href="#manifesto"
+                  style="--i:0">
+                  <small>01</small>
+                  <strong>Manifesto</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+               <a class="urbs-curtain__link" data-curtain-anchor="" data-section="experiencia" href="#experiencia"
+                  style="--i:1">
+                  <small>02</small>
+                  <strong>Transformações</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+               <a class="urbs-curtain__link" data-curtain-anchor="" data-section="categorias" href="#categorias"
+                  style="--i:2">
+                  <small>03</small>
+                  <strong>Categorias</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+               <a class="urbs-curtain__link" data-curtain-anchor="" data-section="territorio" href="#territorio"
+                  style="--i:3">
+                  <small>04</small>
+                  <strong>Território</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+               <a class="urbs-curtain__link" data-curtain-anchor="" data-section="funcionamento" href="#funcionamento"
+                  style="--i:4">
+                  <small>05</small>
+                  <strong>Como funciona</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+            </nav>
+
+            <aside class="urbs-curtain__aside">
+               <span class="urbs-curtain__kicker">PLATAFORMA URBS</span>
+               <div class="urbs-curtain__cards">
+                  <a class="urbs-curtain__card is-lime" href="mapa.html">
+                     <span>CARTOGRAFIA VIVA</span>
+                     <strong>Explorar o Mapa <b aria-hidden="true">↗</b></strong>
+                  </a>
+                  <a class="urbs-curtain__card" href="registro.html">
+                     <span>COLABORAÇÃO CIDADÃ</span>
+                     <strong>Registrar Ocorrência <b aria-hidden="true">↗</b></strong>
+                  </a>
+                  <a class="urbs-curtain__card" href="login.html">
+                     <span>CONTA &amp; PERFIS</span>
+                     <strong>Acesso / Alternar Usuário <b aria-hidden="true">↗</b></strong>
+                  </a>
+               </div>
+
+               <div class="urbs-curtain__meta">
+                  <span>ÁREA PILOTO · MONTES CLAROS / MG</span>
+                  <small>16°43′ S · 43°51′ W</small>
+               </div>
+            </aside>
+         </div>
+
+         <div class="urbs-curtain__bottom">
+            <span>URBS · SPATIAL INTELLIGENCE</span>
+            <span>ESC PARA FECHAR</span>
+         </div>
+      </div>
+   </div>
 
    <main id="conteudo">
       <section aria-labelledby="hero-title" class="hero" id="topo">
@@ -153,996 +254,886 @@
       </section>
       <section aria-labelledby="comparison-title" class="urbs-transform urb-comparison" id="experiencia">
          <div class="urb-comparison__intro">
-            <span class="urb-comparison__eyebrow">
-               URBS / INFRAESTRUTURA EM MONTES CLAROS, MG
-            </span>
+            <div class="urb-comparison__top-rule">
+               <span class="urb-comparison__eyebrow">02 / TRANSFORMAÇÃO REAL</span>
+               <span class="urb-comparison__rule-line" aria-hidden="true"></span>
+               <span class="urb-comparison__eyebrow">ANTES &amp; DEPOIS</span>
+            </div>
             <div class="urb-comparison__heading">
                <h2 id="comparison-title">
-                  UMA CIDADE.
-                  <br />
-                  <em>
-                     DUAS REALIDADES.
-                  </em>
+                  UMA CIDADE.<br />
+                  <em>DUAS REALIDADES.</em>
                </h2>
                <p>
-                  Conheça quatro tipos de melhoria que ajudam a observar a infraestrutura de Montes Claros, MG. Arraste
-                  o divisor para comparar os exemplos.
+                  Quatro referências reais de requalificação viária, drenagem e calçadas que mostram o impacto de tirar
+                  problemas urbanos do papel. Arraste o divisor para comparar.
                </p>
             </div>
          </div>
+
          <div class="urb-comparison__layout">
             <div class="urb-comparison__left">
                <div class="urb-comparison__viewer-host" id="urb-ba-viewer-host">
                   <div class="urb-comparison__viewer" id="urb-ba-viewer" style="--urb-ba-split:50%">
                      <div aria-label="Fotografia posterior da intervenção"
-                        class="urb-comparison__photo urb-comparison__photo--after" id="urb-ba-after" role="img">
-                     </div>
+                        class="urb-comparison__photo urb-comparison__photo--after" id="urb-ba-after" role="img"></div>
                      <div aria-hidden="true" class="urb-comparison__before-mask">
-                        <div class="urb-comparison__photo urb-comparison__photo--before" id="urb-ba-before">
-                        </div>
+                        <div class="urb-comparison__photo urb-comparison__photo--before" id="urb-ba-before"></div>
                      </div>
-                     <span class="urb-comparison__pill urb-comparison__pill--before">
-                        ANTES
-                     </span>
-                     <span class="urb-comparison__pill urb-comparison__pill--after">
-                        DEPOIS
-                     </span>
+                     <span class="urb-comparison__pill urb-comparison__pill--before">ANTES</span>
+                     <span class="urb-comparison__pill urb-comparison__pill--after">DEPOIS</span>
                      <span aria-hidden="true" class="urb-comparison__divider">
-                        <span>
-                           ‹ ›
-                        </span>
+                        <span>‹ ›</span>
                      </span>
-                     <input aria-label="Arraste para comparar as condições anterior e posterior da rua"
-                        id="urb-ba-slider" max="100" min="0" type="range" value="50" />
+                     <input aria-label="Arraste para comparar o estado anterior e posterior da rua" id="urb-ba-slider"
+                        max="100" min="0" type="range" value="50" />
                      <div class="urb-comparison__error" hidden="" id="urb-ba-image-error" role="status">
-                        Não foi possível carregar a fotografia da prefeitura. Você pode consultar a fonte na coluna ao
-                        lado.
+                        Não foi possível carregar esta fotografia externa. Consulte o link da fonte original ao lado.
                      </div>
                   </div>
                </div>
-               <div class="urb-comparison__navigation">
-                  <button aria-controls="urb-ba-dialog" aria-haspopup="dialog"
-                     aria-label="Ampliar comparador em tela cheia" class="urb-comparison__fullscreen"
-                     id="urb-ba-open-fullscreen" type="button">
-                     <span aria-hidden="true">
-                        ⛶
-                     </span>
-                     EXPANDIR COMPARAÇÃO
-                  </button>
-                  <div class="urb-comparison__arrows">
-                     <button aria-label="Intervenção anterior" id="urb-ba-prev" type="button">
-                        ←
-                     </button>
-                     <button aria-label="Próxima intervenção" id="urb-ba-next" type="button">
-                        →
-                     </button>
+
+               <div class="urb-comparison__controls-bar">
+                  <div aria-label="Posições rápidas da comparação" class="urb-comparison__quick" role="group">
+                     <button aria-label="Mostrar somente o depois" data-urb-ba-preset="0" type="button">DEPOIS</button>
+                     <button aria-label="Dividir a comparação ao meio" aria-pressed="true" class="is-active"
+                        data-urb-ba-preset="50" type="button">50 / 50</button>
+                     <button aria-label="Mostrar somente o antes" data-urb-ba-preset="100" type="button">ANTES</button>
                   </div>
-                  <div aria-label="Posição do projeto no carrossel" class="urb-comparison__progress">
-                     <span class="urb-comparison__counter" id="urb-ba-counter">
-                        01 / 04
-                     </span>
-                     <span class="urb-comparison__progress-track">
-                        <span id="urb-ba-progress-fill">
+
+                  <div class="urb-comparison__navigation">
+                     <button aria-controls="urb-ba-dialog" aria-haspopup="dialog"
+                        aria-label="Ampliar comparador em tela cheia" class="urb-comparison__fullscreen"
+                        id="urb-ba-open-fullscreen" type="button">
+                        <span aria-hidden="true">⛶</span> TELA CHEIA
+                     </button>
+                     <div class="urb-comparison__arrows">
+                        <button aria-label="Intervenção anterior" id="urb-ba-prev" type="button">←</button>
+                        <button aria-label="Próxima intervenção" id="urb-ba-next" type="button">→</button>
+                     </div>
+                     <div aria-label="Posição no comparador" class="urb-comparison__progress">
+                        <span class="urb-comparison__counter" id="urb-ba-counter">01 / 04</span>
+                        <span class="urb-comparison__progress-track">
+                           <span id="urb-ba-progress-fill"></span>
                         </span>
-                     </span>
+                     </div>
                   </div>
                </div>
-               <div aria-label="Posições rápidas da comparação" class="urb-comparison__quick" role="group">
-                  <span>
-                     VISUALIZAÇÃO
-                  </span>
-                  <button aria-label="Mostrar somente a imagem posterior" data-urb-ba-preset="0" type="button">
-                     VER MELHORIA
-                  </button>
-                  <button aria-label="Dividir a comparação ao meio" aria-pressed="true" class="is-active"
-                     data-urb-ba-preset="50" type="button">
-                     50 / 50
-                  </button>
-                  <button aria-label="Mostrar somente a imagem anterior" data-urb-ba-preset="100" type="button">
-                     VER ORIGINAL
-                  </button>
-               </div>
+
                <div aria-label="Selecione uma das quatro intervenções" class="urb-comparison__thumbnails"
-                  id="urb-ba-thumbnails" role="group">
-               </div>
+                  id="urb-ba-thumbnails" role="group"></div>
             </div>
+
             <aside aria-live="polite" class="urb-comparison__info" id="urb-ba-details">
-               <span class="urb-comparison__category" id="urb-ba-category">
-                  PAVIMENTAÇÃO
-               </span>
-               <h3 id="urb-ba-title">
-                  Carregando intervenção
-               </h3>
-               <p id="urb-ba-description">
-               </p>
-               <div class="urb-comparison__separator">
+               <div class="urb-comparison__info-head">
+                  <span class="urb-comparison__category" id="urb-ba-category">PAVIMENTAÇÃO</span>
+                  <span class="urb-comparison__badge-ref">REFERÊNCIA DOCUMENTAL</span>
                </div>
-               <span class="urb-comparison__metrics-title">
-                  DADOS DO EXEMPLO
-               </span>
+               <h3 id="urb-ba-title">Pavimentação de vias locais</h3>
+               <p id="urb-ba-description"></p>
+
+               <div class="urb-comparison__separator"></div>
+
+               <span class="urb-comparison__metrics-title">IMPACTO DA INTERVENÇÃO</span>
                <div class="urb-comparison__metrics">
                   <div class="urb-comparison__metric">
-                     <span id="urb-ba-metric-label-1">
-                        EXTENSÃO
-                     </span>
-                     <strong id="urb-ba-metric-1">
-                        —
-                     </strong>
+                     <span id="urb-ba-metric-label-1">EXTENSÃO</span>
+                     <strong id="urb-ba-metric-1">—</strong>
                   </div>
                   <div class="urb-comparison__metric">
-                     <span id="urb-ba-metric-label-2">
-                        MELHORIA
-                     </span>
-                     <strong id="urb-ba-metric-2">
-                        —
-                     </strong>
+                     <span id="urb-ba-metric-label-2">GANHO DIRETO</span>
+                     <strong id="urb-ba-metric-2">—</strong>
                   </div>
                   <div class="urb-comparison__metric">
-                     <span id="urb-ba-metric-label-3">
-                        CIDADE
-                     </span>
-                     <strong id="urb-ba-metric-3">
-                        —
-                     </strong>
+                     <span id="urb-ba-metric-label-3">SOLUÇÃO</span>
+                     <strong id="urb-ba-metric-3">—</strong>
                   </div>
                </div>
+
+               <a class="urb-comparison__cta" href="registro.html?categoria=Pavimentação" id="urb-ba-report-cta">
+                  <span>Registrar problema semelhante em Montes Claros</span>
+                  <b aria-hidden="true">↗</b>
+               </a>
+
                <div class="urb-comparison__bottom">
-                  <span id="urb-ba-location">
-                     FOTOS: CURITIBA / PR
-                  </span>
+                  <span id="urb-ba-location">CURITIBA / PR</span>
                   <a href="#" id="urb-ba-source" rel="noopener noreferrer" target="_blank">
-                     VER FONTE ORIGINAL ↗
+                     FONTE ORIGINAL ↗
                   </a>
                </div>
             </aside>
          </div>
+
          <dialog aria-label="Comparação fotográfica ampliada" class="urb-comparison__dialog" id="urb-ba-dialog">
             <div class="urb-comparison__dialog-shell">
                <div class="urb-comparison__dialog-bar">
-                  <span>
-                     URBS / EXPLORAR TRANSFORMAÇÃO
-                  </span>
+                  <span>URBS / COMPARAÇÃO EM TELA CHEIA</span>
                   <div class="urb-comparison__dialog-controls">
-                     <button aria-label="Local anterior" id="urb-ba-dialog-prev" type="button">
-                        ←
-                     </button>
-                     <span id="urb-ba-dialog-counter">
-                        01 / 04
-                     </span>
-                     <button aria-label="Próximo local" id="urb-ba-dialog-next" type="button">
-                        →
-                     </button>
-                     <button aria-label="Fechar tela cheia" id="urb-ba-dialog-close" type="button">
-                        FECHAR ✕
-                     </button>
+                     <button aria-label="Local anterior" id="urb-ba-dialog-prev" type="button">←</button>
+                     <span id="urb-ba-dialog-counter">01 / 04</span>
+                     <button aria-label="Próximo local" id="urb-ba-dialog-next" type="button">→</button>
+                     <button aria-label="Fechar tela cheia" id="urb-ba-dialog-close" type="button">FECHAR ✕</button>
                   </div>
                </div>
-               <div class="urb-comparison__dialog-stage" id="urb-ba-dialog-stage">
-               </div>
+               <div class="urb-comparison__dialog-stage" id="urb-ba-dialog-stage"></div>
                <div class="urb-comparison__dialog-caption">
-                  <strong id="urb-ba-dialog-title">
-                  </strong>
-                  <span>
-                     ARRASTE O DIVISOR PARA COMPARAR · ESC PARA SAIR
-                  </span>
+                  <strong id="urb-ba-dialog-title"></strong>
+                  <span>ARRASTE O DIVISOR · SETAS TROCAM O CASO · ESC PARA SAIR</span>
                </div>
             </div>
          </dialog>
+
          <p class="urb-comparison__disclaimer">
-            Montes Claros, MG, é a área piloto da URBS. As fotos mostram obras de Curitiba e Fortaleza usadas como
-            referência. Consulte a fonte original de cada exemplo.
+            Montes Claros, MG, é a área piloto da URBS. As imagens documentam obras públicas concluídas em Curitiba e
+            Fortaleza usadas como referência visual de melhoria urbana.
          </p>
       </section>
       <section aria-label="Manifesto visual" class="impact">
-         <div class="impact-photo">
-         </div>
-         <div class="impact-tint">
-         </div>
+         <div class="impact-photo" aria-hidden="true"></div>
+         <div class="impact-tint" aria-hidden="true"></div>
          <div class="impact-text">
-            <span class="micro">
-               AS RUAS TÊM ALGO A DIZER
-            </span>
+            <span class="micro">MONTES CLAROS · AS RUAS TÊM ALGO A DIZER</span>
             <h2>
-               CADA
-               <br />
-               DETALHE
-               <br />
-               <em>
-                  CONTA.
-               </em>
+               CADA<br />
+               DETALHE<br />
+               <em>CONTA.</em>
             </h2>
             <p>
-               O que parece pequeno no mapa faz diferença na vida real.
+               Um poste apagado, uma calçada rompida ou um bueiro entupido parecem pequenos isoladamente — no mapa,
+               revelam onde a cidade precisa de ação imediata.
             </p>
          </div>
-         <div class="impact-side">
-            UM TERRITÓRIO. MILHARES DE PERSPECTIVAS.
+         <div class="impact-side" aria-hidden="true">
+            MONTES CLAROS · TERRITÓRIO EM MOVIMENTO
          </div>
       </section>
-      <section class="observations block-pad" id="categorias">
-         <div class="section-header">
-            <span class="micro">
-               OLHARES SOBRE A CIDADE
-            </span>
-            <span class="line">
-            </span>
-            <span class="micro">
-               EXPLORAR
-            </span>
+      <section class="observations" id="categorias">
+         <div class="observations-inner">
+            <div class="section-header">
+               <span class="micro">03 / OLHARES SOBRE A CIDADE</span>
+               <span class="line"></span>
+               <span class="micro">06 FRENTES URBANAS</span>
+            </div>
+
+            <div class="observations-head">
+               <h2>
+                  ONDE VOCÊ<br />
+                  <em>OLHA,</em> A CIDADE<br />
+                  REVELA.
+               </h2>
+               <p>
+                  Cada frente urbana corresponde a uma categoria ativa no mapa de Montes Claros. Arraste a faixa ou
+                  clique em qualquer cartão para abrir um registro já direcionado.
+               </p>
+            </div>
          </div>
-         <div class="observations-head">
-            <h2>
-               ONDE VOCÊ
-               <br />
-               <em>
-                  OLHA,
-               </em>
-               A CIDADE
-               <br />
-               REVELA.
-            </h2>
-            <p>
-               Arraste as histórias e descubra situações que fazem parte do cotidiano urbano. Cada categoria abre um
-               caminho para observar e registrar.
-            </p>
-         </div>
-         <div aria-label="Categorias urbanas; navegue horizontalmente" class="story-viewport" id="story-viewport"
-            tabindex="0">
+
+         <div aria-label="Categorias urbanas em movimento contínuo; arraste ou use as setas" class="story-viewport"
+            id="story-viewport" tabindex="0">
             <div class="story-track">
-               <a class="story-card story-one" href="registro.html?categoria=Pavimentação">
-                  <span>
-                     MOBILIDADE URBANA
-                  </span>
-                  <strong>
-                     CAMINHOS
-                     <br />
-                     QUE CONECTAM.
-                  </strong>
-                  <small>
-                     VIAS E PAVIMENTAÇÃO ↗
-                  </small>
+               <a class="story-card" href="registro.html?categoria=Pavimentação" style="--card-accent:#f4a96e">
+                  <img alt="Via urbana asfaltada em perspectiva" class="story-card-img" decoding="async" loading="eager"
+                     onerror="this.src='assets/images/journey/localize.webp'"
+                     src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&amp;w=1000&amp;q=82" />
+                  <div class="story-card-shade" aria-hidden="true"></div>
+                  <div class="story-card-top">
+                     <span class="story-index">01 / 06</span>
+                     <span class="story-tag"><i></i> PAVIMENTAÇÃO</span>
+                  </div>
+                  <div class="story-card-bottom">
+                     <strong>CAMINHOS<br />QUE CONECTAM.</strong>
+                     <div class="story-reveal">
+                        <p>Buracos, afundamento de asfalto e desníveis que comprometem a circulação diária nas vias.</p>
+                     </div>
+                     <div class="story-card-bar">
+                        <span>MOBILIDADE URBANA</span>
+                        <span class="story-arrow" aria-hidden="true">↗</span>
+                     </div>
+                  </div>
+                  <span class="story-accent-line" aria-hidden="true"></span>
                </a>
-               <a class="story-card story-two" href="registro.html?categoria=Iluminação%20pública">
-                  <span>
-                     ILUMINAÇÃO
-                  </span>
-                  <strong>
-                     UMA CIDADE
-                     <br />
-                     QUE NÃO DORME.
-                  </strong>
-                  <small>
-                     ILUMINAÇÃO PÚBLICA ↗
-                  </small>
+
+               <a class="story-card" href="registro.html?categoria=Iluminação%20pública" style="--card-accent:#f8df75">
+                  <img alt="Rua urbana iluminada durante a noite" class="story-card-img" decoding="async"
+                     loading="eager" onerror="this.src='assets/images/journey/observe.webp'"
+                     src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&amp;w=1000&amp;q=82" />
+                  <div class="story-card-shade" aria-hidden="true"></div>
+                  <div class="story-card-top">
+                     <span class="story-index">02 / 06</span>
+                     <span class="story-tag"><i></i> ILUMINAÇÃO</span>
+                  </div>
+                  <div class="story-card-bottom">
+                     <strong>UMA CIDADE<br />QUE NÃO APAGA.</strong>
+                     <div class="story-reveal">
+                        <p>Postes apagados, luminárias oscilando e pontos escuros em travessias, praças e avenidas.</p>
+                     </div>
+                     <div class="story-card-bar">
+                        <span>VISIBILIDADE NOTURNA</span>
+                        <span class="story-arrow" aria-hidden="true">↗</span>
+                     </div>
+                  </div>
+                  <span class="story-accent-line" aria-hidden="true"></span>
                </a>
-               <a class="story-card story-three" href="registro.html?categoria=Acessibilidade">
-                  <span>
-                     ACESSIBILIDADE
-                  </span>
-                  <strong>
-                     ESPAÇO
-                     <br />
-                     PARA TODOS.
-                  </strong>
-                  <small>
-                     CALÇADAS E TRAVESSIAS ↗
-                  </small>
+
+               <a class="story-card" href="registro.html?categoria=Acessibilidade" style="--card-accent:#9ce0a3">
+                  <img alt="Avenida e calçadas urbanas vistas em perspectiva" class="story-card-img" decoding="async"
+                     loading="eager" onerror="this.src='assets/images/journey/acompanhe.webp'"
+                     src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&amp;w=1000&amp;q=82" />
+                  <div class="story-card-shade" aria-hidden="true"></div>
+                  <div class="story-card-top">
+                     <span class="story-index">03 / 06</span>
+                     <span class="story-tag"><i></i> ACESSIBILIDADE</span>
+                  </div>
+                  <div class="story-card-bottom">
+                     <strong>ESPAÇO<br />PARA TODOS.</strong>
+                     <div class="story-reveal">
+                        <p>Calçadas rompidas, falta de rampas, piso tátil danificado e obstáculos no trajeto do
+                           pedestre.</p>
+                     </div>
+                     <div class="story-card-bar">
+                        <span>CALÇADAS E RAMPAS</span>
+                        <span class="story-arrow" aria-hidden="true">↗</span>
+                     </div>
+                  </div>
+                  <span class="story-accent-line" aria-hidden="true"></span>
                </a>
-               <a class="story-card story-four" href="registro.html?categoria=Descarte%20irregular%20de%20resíduos">
-                  <span>
-                     AMBIENTE
-                  </span>
-                  <strong>
-                     CUIDAR
-                     <br />
-                     É TRANSFORMAR.
-                  </strong>
-                  <small>
-                     DESCARTE E RESÍDUOS ↗
-                  </small>
+
+               <a class="story-card" href="registro.html?categoria=Descarte%20irregular%20de%20resíduos"
+                  style="--card-accent:#c9b7f4">
+                  <img alt="Trecho residencial e área urbana compartilhada" class="story-card-img" decoding="async"
+                     loading="eager" onerror="this.src='assets/images/journey/observe.webp'"
+                     src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&amp;w=1000&amp;q=82" />
+                  <div class="story-card-shade" aria-hidden="true"></div>
+                  <div class="story-card-top">
+                     <span class="story-index">04 / 06</span>
+                     <span class="story-tag"><i></i> RESÍDUOS</span>
+                  </div>
+                  <div class="story-card-bottom">
+                     <strong>CUIDAR<br />É TRANSFORMAR.</strong>
+                     <div class="story-reveal">
+                        <p>Entulho acumulado, descarte irregular em calçadas ou lotes e mobiliário abandonado em área
+                           pública.</p>
+                     </div>
+                     <div class="story-card-bar">
+                        <span>ZELADORIA URBANA</span>
+                        <span class="story-arrow" aria-hidden="true">↗</span>
+                     </div>
+                  </div>
+                  <span class="story-accent-line" aria-hidden="true"></span>
+               </a>
+
+               <a class="story-card" href="registro.html?categoria=Drenagem" style="--card-accent:#8dcdf3">
+                  <img alt="Superfície urbana sob chuva e água corrente" class="story-card-img" decoding="async"
+                     loading="eager" onerror="this.src='assets/images/journey/localize.webp'"
+                     src="https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&amp;w=1000&amp;q=82" />
+                  <div class="story-card-shade" aria-hidden="true"></div>
+                  <div class="story-card-top">
+                     <span class="story-index">05 / 06</span>
+                     <span class="story-tag"><i></i> DRENAGEM</span>
+                  </div>
+                  <div class="story-card-bottom">
+                     <strong>ÁGUA QUE<br />PRECISA ESCOAR.</strong>
+                     <div class="story-reveal">
+                        <p>Bueiros obstruídos, bocas de lobo quebradas, água empoçada e pontos críticos de alagamento.
+                        </p>
+                     </div>
+                     <div class="story-card-bar">
+                        <span>ESCOAMENTO PLUVIAL</span>
+                        <span class="story-arrow" aria-hidden="true">↗</span>
+                     </div>
+                  </div>
+                  <span class="story-accent-line" aria-hidden="true"></span>
+               </a>
+
+               <a class="story-card" href="registro.html?categoria=Sinalização" style="--card-accent:#f6a6bf">
+                  <img alt="Avenida urbana ao entardecer com fluxo e sinalização" class="story-card-img"
+                     decoding="async" loading="eager" onerror="this.src='assets/images/journey/acompanhe.webp'"
+                     src="https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&amp;w=1000&amp;q=82" />
+                  <div class="story-card-shade" aria-hidden="true"></div>
+                  <div class="story-card-top">
+                     <span class="story-index">06 / 06</span>
+                     <span class="story-tag"><i></i> SINALIZAÇÃO</span>
+                  </div>
+                  <div class="story-card-bottom">
+                     <strong>ORIENTAÇÃO<br />QUE PROTEGE.</strong>
+                     <div class="story-reveal">
+                        <p>Placas danificadas ou encobertas, faixas de pedestres apagadas e semáforos fora de operação.
+                        </p>
+                     </div>
+                     <div class="story-card-bar">
+                        <span>TRÂNSITO E TRAVESSIA</span>
+                        <span class="story-arrow" aria-hidden="true">↗</span>
+                     </div>
+                  </div>
+                  <span class="story-accent-line" aria-hidden="true"></span>
                </a>
             </div>
          </div>
-         <div class="story-actions">
-            <span>
-               HISTÓRIAS EM MOVIMENTO CONTÍNUO · ARRASTE PARA EXPLORAR
-            </span>
+
+         <div class="observations-inner">
+            <div class="story-actions">
+               <div class="story-meta-hint">
+                  <span class="story-live-dot" aria-hidden="true"></span>
+                  <span class="story-hint-desktop">ARRASTE A FAIXA OU PASSE O MOUSE PARA EXPLORAR</span>
+                  <span class="story-hint-touch">DESLIZE PARA EXPLORAR AS CATEGORIAS</span>
+               </div>
+               <div class="story-controls">
+                  <button aria-label="Pausar movimento automático" aria-pressed="false" class="story-toggle-play"
+                     id="story-toggle-play" type="button">PAUSAR</button>
+                  <div class="story-nav-buttons">
+                     <button aria-label="Categoria anterior" id="story-prev" type="button">←</button>
+                     <button aria-label="Próxima categoria" id="story-next" type="button">→</button>
+                  </div>
+               </div>
+            </div>
          </div>
       </section>
       <section aria-labelledby="urban-split-title" class="urban-split" id="territorio">
          <div class="urban-split__intro">
-            <span class="micro urban-split__eyebrow">
-               URBS / MONTES CLAROS · EXPLORAÇÃO VISUAL
-            </span>
+            <div class="urban-split__rule">
+               <span class="micro urban-split__eyebrow">04 / LEITURA TERRITORIAL</span>
+               <span class="urban-split__line" aria-hidden="true"></span>
+               <span class="micro urban-split__eyebrow">MONTES CLAROS · MG</span>
+            </div>
             <div class="urban-split__top">
                <h2 id="urban-split-title">
-                  A CIDADE
-                  <br />
-                  <em>
-                     EM CAMADAS.
-                  </em>
+                  A CIDADE<br />
+                  <em>EM CAMADAS.</em>
                </h2>
                <p>
-                  Cinco perspectivas para entender como o território pode ser observado. Passe o cursor ou selecione uma
-                  faixa para expandir sua história.
+                  Cinco frentes que mostram como o URBS organiza ocorrências por setor, localização e estágio de
+                  atendimento. Passe o cursor ou selecione uma faixa para explorar.
                </p>
             </div>
          </div>
-         <div aria-label="Cinco registros demonstrativos do URBS" class="split-accordion" id="splitAccordion">
-            <article aria-controls="split-content-1" aria-expanded="true"
-               aria-label="Abrir registro demonstrativo: PAVIMENTAÇÃO" class="split-panel is-active"
-               data-demo-id="demo-pavimento" role="button" tabindex="0">
-               <div aria-label="Fotografia ilustrativa de uma avenida urbana com veículos" class="split-panel__photo"
-                  role="img"
-                  style="--panel-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&amp;fit=crop&amp;w=1400&amp;q=82')">
+
+         <div aria-label="Cinco cenários urbanos em Montes Claros" class="split-accordion" id="splitAccordion">
+            <article aria-labelledby="split-heading-1" class="split-panel is-active" data-category="Pavimentação"
+               data-demo-id="demo-pavimento" style="--panel-accent:#f4a96e">
+               <div aria-label="Corredor viário urbano em perspectiva" class="split-panel__photo" role="img"
+                  style="--panel-image: url('https://images.unsplash.com/photo-1465447142348-e9952c393450?auto=format&amp;fit=crop&amp;w=1400&amp;q=82'); --panel-fallback: url('assets/images/journey/localize.webp')">
                </div>
-               <div aria-hidden="true" class="split-panel__wash">
-               </div>
-               <div aria-hidden="true" class="split-panel__collapsed">
-                  <span class="split-panel__index">
-                     01
-                  </span>
-                  <span class="split-panel__category">
-                     PAVIMENTAÇÃO
-                  </span>
-               </div>
+               <div aria-hidden="true" class="split-panel__wash"></div>
+               <button aria-controls="split-content-1" aria-expanded="true"
+                  aria-label="Expandir cenário 01: Pavimentação" class="split-panel__collapsed" type="button">
+                  <span class="split-panel__index">01</span>
+                  <span class="split-panel__category">PAVIMENTAÇÃO</span>
+                  <span aria-hidden="true" class="split-panel__plus">+</span>
+               </button>
                <div class="split-panel__content" id="split-content-1">
                   <div class="split-panel__meta">
-                     <span>
-                        URBS / EXEMPLO DEMONSTRATIVO
-                     </span>
-                     <b>
-                        01 / 05
-                     </b>
+                     <span class="split-panel__sector-pill"><i></i> MOBILIDADE URBANA</span>
+                     <b>01 / 05</b>
                   </div>
-                  <span class="split-panel__kicker">
-                     MOBILIDADE URBANA
-                  </span>
-                  <h3>
-                     PAVIMENTAÇÃO — EXEMPLO
-                  </h3>
+                  <h3 id="split-heading-1">Desgaste viário em corredor central</h3>
                   <p>
-                     Registro fictício usado para demonstrar a identificação de situações relacionadas às vias e ao
-                     deslocamento urbano.
+                     Afundamento de pista e buracos recorrentes em vias de alto fluxo comprometem o transporte coletivo,
+                     ciclistas e motoristas.
                   </p>
-                  <button aria-label="Ler o relato demonstrativo" class="split-panel__story-button" tabindex="-1"
-                     type="button">
-                     CONHECER HISTÓRIA
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </button>
                   <div class="split-panel__coords">
                      <span>
-                        <strong>
-                           COORDENADAS ILUSTRATIVAS
-                        </strong>
-                        <small>
-                           -16.7248, -43.8631
-                        </small>
+                        <strong>REFERÊNCIA PILOTO</strong>
+                        <small>Av. Dep. Esteves Rodrigues</small>
                      </span>
                      <span>
-                        <strong>
-                           STATUS DE EXEMPLO
-                        </strong>
-                        <small>
-                           Em análise
-                        </small>
+                        <strong>COORDENADAS</strong>
+                        <small>-16.7248, -43.8631</small>
+                     </span>
+                     <span>
+                        <strong>ESTÁGIO</strong>
+                        <small class="status-tag">Em análise</small>
                      </span>
                   </div>
-                  <a class="split-panel__action" href="mapa.html">
-                     EXPLORAR MAPA DE OCORRÊNCIAS
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </a>
+                  <div class="split-panel__buttons">
+                     <button aria-label="Ler relato completo sobre Pavimentação" class="split-panel__story-button"
+                        type="button">
+                        CONHECER HISTÓRIA <span aria-hidden="true">↗</span>
+                     </button>
+                     <a class="split-panel__action" href="mapa.html?categoria=Pavimentação">
+                        VER NO MAPA <span aria-hidden="true">↗</span>
+                     </a>
+                  </div>
                </div>
             </article>
-            <article aria-controls="split-content-2" aria-expanded="false"
-               aria-label="Abrir registro demonstrativo: ILUMINAÇÃO" class="split-panel" data-demo-id="demo-iluminacao"
-               role="button" tabindex="0">
-               <div aria-label="Fotografia ilustrativa de iluminação urbana noturna" class="split-panel__photo"
-                  role="img"
-                  style="--panel-image: url('https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&amp;fit=crop&amp;w=1400&amp;q=82')">
+
+            <article aria-labelledby="split-heading-2" class="split-panel" data-category="Iluminação pública"
+               data-demo-id="demo-iluminacao" style="--panel-accent:#f8df75">
+               <div aria-label="Via urbana iluminada à noite" class="split-panel__photo" role="img"
+                  style="--panel-image: url('https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?auto=format&amp;fit=crop&amp;w=1400&amp;q=82'); --panel-fallback: url('assets/images/journey/observe.webp')">
                </div>
-               <div aria-hidden="true" class="split-panel__wash">
-               </div>
-               <div aria-hidden="true" class="split-panel__collapsed">
-                  <span class="split-panel__index">
-                     02
-                  </span>
-                  <span class="split-panel__category">
-                     ILUMINAÇÃO
-                  </span>
-               </div>
+               <div aria-hidden="true" class="split-panel__wash"></div>
+               <button aria-controls="split-content-2" aria-expanded="false"
+                  aria-label="Expandir cenário 02: Iluminação pública" class="split-panel__collapsed" type="button">
+                  <span class="split-panel__index">02</span>
+                  <span class="split-panel__category">ILUMINAÇÃO</span>
+                  <span aria-hidden="true" class="split-panel__plus">+</span>
+               </button>
                <div class="split-panel__content" id="split-content-2" inert="">
                   <div class="split-panel__meta">
-                     <span>
-                        URBS / EXEMPLO DEMONSTRATIVO
-                     </span>
-                     <b>
-                        02 / 05
-                     </b>
+                     <span class="split-panel__sector-pill"><i></i> ILUMINAÇÃO PÚBLICA</span>
+                     <b>02 / 05</b>
                   </div>
-                  <span class="split-panel__kicker">
-                     ILUMINAÇÃO PÚBLICA
-                  </span>
-                  <h3>
-                     ILUMINAÇÃO PÚBLICA — EXEMPLO
-                  </h3>
+                  <h3 id="split-heading-2">Pontos escuros em travessia noturna</h3>
                   <p>
-                     Exemplo fictício de uma observação sobre iluminação, visibilidade e experiência nas ruas durante a
-                     noite.
+                     Luminárias queimadas ou oscilando reduzem a visibilidade de pedestres e aumentam a sensação de
+                     insegurança após o anoitecer.
                   </p>
-                  <button aria-label="Ler o relato demonstrativo" class="split-panel__story-button" tabindex="-1"
-                     type="button">
-                     CONHECER HISTÓRIA
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </button>
                   <div class="split-panel__coords">
                      <span>
-                        <strong>
-                           COORDENADAS ILUSTRATIVAS
-                        </strong>
-                        <small>
-                           -16.7315, -43.8483
-                        </small>
+                        <strong>REFERÊNCIA PILOTO</strong>
+                        <small>Entorno do Parque Sagarana</small>
                      </span>
                      <span>
-                        <strong>
-                           STATUS DE EXEMPLO
-                        </strong>
-                        <small>
-                           Em andamento
-                        </small>
+                        <strong>COORDENADAS</strong>
+                        <small>-16.7315, -43.8483</small>
+                     </span>
+                     <span>
+                        <strong>ESTÁGIO</strong>
+                        <small class="status-tag">Em andamento</small>
                      </span>
                   </div>
-                  <a class="split-panel__action" href="mapa.html">
-                     EXPLORAR MAPA DE OCORRÊNCIAS
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </a>
+                  <div class="split-panel__buttons">
+                     <button aria-label="Ler relato completo sobre Iluminação pública" class="split-panel__story-button"
+                        tabindex="-1" type="button">
+                        CONHECER HISTÓRIA <span aria-hidden="true">↗</span>
+                     </button>
+                     <a class="split-panel__action" href="mapa.html?categoria=Iluminação%20pública" tabindex="-1">
+                        VER NO MAPA <span aria-hidden="true">↗</span>
+                     </a>
+                  </div>
                </div>
             </article>
-            <article aria-controls="split-content-3" aria-expanded="false"
-               aria-label="Abrir registro demonstrativo: ACESSIBILIDADE" class="split-panel"
-               data-demo-id="demo-acessibilidade" role="button" tabindex="0">
-               <div aria-label="Fotografia ilustrativa de edifícios e ruas de uma cidade" class="split-panel__photo"
-                  role="img"
-                  style="--panel-image: url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&amp;fit=crop&amp;w=1400&amp;q=82')">
+
+            <article aria-labelledby="split-heading-3" class="split-panel" data-category="Acessibilidade"
+               data-demo-id="demo-acessibilidade" style="--panel-accent:#9ce0a3">
+               <div aria-label="Área urbana comercial e circulação de pedestres" class="split-panel__photo" role="img"
+                  style="--panel-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=1400&amp;q=82'); --panel-fallback: url('assets/images/journey/acompanhe.webp')">
                </div>
-               <div aria-hidden="true" class="split-panel__wash">
-               </div>
-               <div aria-hidden="true" class="split-panel__collapsed">
-                  <span class="split-panel__index">
-                     03
-                  </span>
-                  <span class="split-panel__category">
-                     ACESSIBILIDADE
-                  </span>
-               </div>
+               <div aria-hidden="true" class="split-panel__wash"></div>
+               <button aria-controls="split-content-3" aria-expanded="false"
+                  aria-label="Expandir cenário 03: Acessibilidade" class="split-panel__collapsed" type="button">
+                  <span class="split-panel__index">03</span>
+                  <span class="split-panel__category">ACESSIBILIDADE</span>
+                  <span aria-hidden="true" class="split-panel__plus">+</span>
+               </button>
                <div class="split-panel__content" id="split-content-3" inert="">
                   <div class="split-panel__meta">
-                     <span>
-                        URBS / EXEMPLO DEMONSTRATIVO
-                     </span>
-                     <b>
-                        03 / 05
-                     </b>
+                     <span class="split-panel__sector-pill"><i></i> ESPAÇOS ACESSÍVEIS</span>
+                     <b>03 / 05</b>
                   </div>
-                  <span class="split-panel__kicker">
-                     ESPAÇOS ACESSÍVEIS
-                  </span>
-                  <h3>
-                     CALÇADA E ACESSIBILIDADE — EXEMPLO
-                  </h3>
+                  <h3 id="split-heading-3">Rampa e calçada em área comercial</h3>
                   <p>
-                     Ponto demonstrativo que apresenta como o URBS pode organizar informações sobre calçadas e
-                     acessibilidade.
+                     Desníveis abruptos, piso tátil danificado e ausência de rebaixamento impedem a autonomia de
+                     cadeirantes, idosos e carrinhos.
                   </p>
-                  <button aria-label="Ler o relato demonstrativo" class="split-panel__story-button" tabindex="-1"
-                     type="button">
-                     CONHECER HISTÓRIA
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </button>
                   <div class="split-panel__coords">
                      <span>
-                        <strong>
-                           COORDENADAS ILUSTRATIVAS
-                        </strong>
-                        <small>
-                           -16.7169, -43.8736
-                        </small>
+                        <strong>REFERÊNCIA PILOTO</strong>
+                        <small>Rua Doutor Veloso · Centro</small>
                      </span>
                      <span>
-                        <strong>
-                           STATUS DE EXEMPLO
-                        </strong>
-                        <small>
-                           Novo
-                        </small>
+                        <strong>COORDENADAS</strong>
+                        <small>-16.7169, -43.8736</small>
+                     </span>
+                     <span>
+                        <strong>ESTÁGIO</strong>
+                        <small class="status-tag">Novo</small>
                      </span>
                   </div>
-                  <a class="split-panel__action" href="mapa.html">
-                     EXPLORAR MAPA DE OCORRÊNCIAS
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </a>
+                  <div class="split-panel__buttons">
+                     <button aria-label="Ler relato completo sobre Acessibilidade" class="split-panel__story-button"
+                        tabindex="-1" type="button">
+                        CONHECER HISTÓRIA <span aria-hidden="true">↗</span>
+                     </button>
+                     <a class="split-panel__action" href="mapa.html?categoria=Acessibilidade" tabindex="-1">
+                        VER NO MAPA <span aria-hidden="true">↗</span>
+                     </a>
+                  </div>
                </div>
             </article>
-            <article aria-controls="split-content-4" aria-expanded="false"
-               aria-label="Abrir registro demonstrativo: ZELADORIA" class="split-panel" data-demo-id="demo-residuos"
-               role="button" tabindex="0">
-               <div aria-label="Fotografia ilustrativa de ambiente construído urbano" class="split-panel__photo"
-                  role="img"
-                  style="--panel-image: url('https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&amp;fit=crop&amp;w=1400&amp;q=82')">
+
+            <article aria-labelledby="split-heading-4" class="split-panel"
+               data-category="Descarte irregular de resíduos" data-demo-id="demo-residuos"
+               style="--panel-accent:#c9b7f4">
+               <div aria-label="Área verde e entorno urbano compartilhado" class="split-panel__photo" role="img"
+                  style="--panel-image: url('https://images.unsplash.com/photo-1496568816309-51d7c20e3b21?auto=format&amp;fit=crop&amp;w=1400&amp;q=82'); --panel-fallback: url('assets/images/journey/observe.webp')">
                </div>
-               <div aria-hidden="true" class="split-panel__wash">
-               </div>
-               <div aria-hidden="true" class="split-panel__collapsed">
-                  <span class="split-panel__index">
-                     04
-                  </span>
-                  <span class="split-panel__category">
-                     ZELADORIA
-                  </span>
-               </div>
+               <div aria-hidden="true" class="split-panel__wash"></div>
+               <button aria-controls="split-content-4" aria-expanded="false"
+                  aria-label="Expandir cenário 04: Resíduos urbanos" class="split-panel__collapsed" type="button">
+                  <span class="split-panel__index">04</span>
+                  <span class="split-panel__category">ZELADORIA</span>
+                  <span aria-hidden="true" class="split-panel__plus">+</span>
+               </button>
                <div class="split-panel__content" id="split-content-4" inert="">
                   <div class="split-panel__meta">
-                     <span>
-                        URBS / EXEMPLO DEMONSTRATIVO
-                     </span>
-                     <b>
-                        04 / 05
-                     </b>
+                     <span class="split-panel__sector-pill"><i></i> RESÍDUOS URBANOS</span>
+                     <b>04 / 05</b>
                   </div>
-                  <span class="split-panel__kicker">
-                     RESÍDUOS URBANOS
-                  </span>
-                  <h3>
-                     DESCARTE DE RESÍDUOS — EXEMPLO
-                  </h3>
+                  <h3 id="split-heading-4">Ponto recorrente de descarte irregular</h3>
                   <p>
-                     Exemplo fictício de acompanhamento de cuidados com os espaços compartilhados e a limpeza urbana.
+                     Acúmulo de entulho e resíduos em passeios e lotes abertos gera riscos sanitários e bloqueia a
+                     circulação da vizinhança.
                   </p>
-                  <button aria-label="Ler o relato demonstrativo" class="split-panel__story-button" tabindex="-1"
-                     type="button">
-                     CONHECER HISTÓRIA
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </button>
                   <div class="split-panel__coords">
                      <span>
-                        <strong>
-                           COORDENADAS ILUSTRATIVAS
-                        </strong>
-                        <small>
-                           -16.7392, -43.8674
-                        </small>
+                        <strong>REFERÊNCIA PILOTO</strong>
+                        <small>Av. Mestra Fininha · Melo</small>
                      </span>
                      <span>
-                        <strong>
-                           STATUS DE EXEMPLO
-                        </strong>
-                        <small>
-                           Solucionado
-                        </small>
+                        <strong>COORDENADAS</strong>
+                        <small>-16.7392, -43.8674</small>
+                     </span>
+                     <span>
+                        <strong>ESTÁGIO</strong>
+                        <small class="status-tag">Solucionado</small>
                      </span>
                   </div>
-                  <a class="split-panel__action" href="mapa.html">
-                     EXPLORAR MAPA DE OCORRÊNCIAS
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </a>
+                  <div class="split-panel__buttons">
+                     <button aria-label="Ler relato completo sobre Resíduos urbanos" class="split-panel__story-button"
+                        tabindex="-1" type="button">
+                        CONHECER HISTÓRIA <span aria-hidden="true">↗</span>
+                     </button>
+                     <a class="split-panel__action" href="mapa.html?categoria=Descarte%20irregular%20de%20resíduos"
+                        tabindex="-1">
+                        VER NO MAPA <span aria-hidden="true">↗</span>
+                     </a>
+                  </div>
                </div>
             </article>
-            <article aria-controls="split-content-5" aria-expanded="false"
-               aria-label="Abrir registro demonstrativo: DRENAGEM" class="split-panel" data-demo-id="demo-drenagem"
-               role="button" tabindex="0">
-               <div aria-label="Fotografia ilustrativa de ambiente urbano e vias públicas" class="split-panel__photo"
-                  role="img"
-                  style="--panel-image: url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&amp;fit=crop&amp;w=1400&amp;q=82')">
+
+            <article aria-labelledby="split-heading-5" class="split-panel" data-category="Drenagem"
+               data-demo-id="demo-drenagem" style="--panel-accent:#8dcdf3">
+               <div aria-label="Via pública durante chuva intensa" class="split-panel__photo" role="img"
+                  style="--panel-image: url('https://images.unsplash.com/photo-1501696461415-6bd6660c6742?auto=format&amp;fit=crop&amp;w=1400&amp;q=82'); --panel-fallback: url('assets/images/journey/localize.webp')">
                </div>
-               <div aria-hidden="true" class="split-panel__wash">
-               </div>
-               <div aria-hidden="true" class="split-panel__collapsed">
-                  <span class="split-panel__index">
-                     05
-                  </span>
-                  <span class="split-panel__category">
-                     DRENAGEM
-                  </span>
-               </div>
+               <div aria-hidden="true" class="split-panel__wash"></div>
+               <button aria-controls="split-content-5" aria-expanded="false" aria-label="Expandir cenário 05: Drenagem"
+                  class="split-panel__collapsed" type="button">
+                  <span class="split-panel__index">05</span>
+                  <span class="split-panel__category">DRENAGEM</span>
+                  <span aria-hidden="true" class="split-panel__plus">+</span>
+               </button>
                <div class="split-panel__content" id="split-content-5" inert="">
                   <div class="split-panel__meta">
-                     <span>
-                        URBS / EXEMPLO DEMONSTRATIVO
-                     </span>
-                     <b>
-                        05 / 05
-                     </b>
+                     <span class="split-panel__sector-pill"><i></i> INFRAESTRUTURA PLUVIAL</span>
+                     <b>05 / 05</b>
                   </div>
-                  <span class="split-panel__kicker">
-                     INFRAESTRUTURA
-                  </span>
-                  <h3>
-                     DRENAGEM URBANA — EXEMPLO
-                  </h3>
+                  <h3 id="split-heading-5">Obstrução de bueiro em período chuvoso</h3>
                   <p>
-                     Demonstração de uma categoria que permite localizar e acompanhar situações associadas à drenagem
-                     urbana.
+                     Bocas de lobo bloqueadas por sedimentos provocam lâminas d'água rápidas e aceleram a erosão do
+                     asfalto nos bairros.
                   </p>
-                  <button aria-label="Ler o relato demonstrativo" class="split-panel__story-button" tabindex="-1"
-                     type="button">
-                     CONHECER HISTÓRIA
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </button>
                   <div class="split-panel__coords">
                      <span>
-                        <strong>
-                           COORDENADAS ILUSTRATIVAS
-                        </strong>
-                        <small>
-                           -16.7203, -43.8408
-                        </small>
+                        <strong>REFERÊNCIA PILOTO</strong>
+                        <small>Bairro Todos os Santos</small>
                      </span>
                      <span>
-                        <strong>
-                           STATUS DE EXEMPLO
-                        </strong>
-                        <small>
-                           Novo
-                        </small>
+                        <strong>COORDENADAS</strong>
+                        <small>-16.7203, -43.8408</small>
+                     </span>
+                     <span>
+                        <strong>ESTÁGIO</strong>
+                        <small class="status-tag">Novo</small>
                      </span>
                   </div>
-                  <a class="split-panel__action" href="mapa.html">
-                     EXPLORAR MAPA DE OCORRÊNCIAS
-                     <span aria-hidden="true">
-                        ↗
-                     </span>
-                  </a>
+                  <div class="split-panel__buttons">
+                     <button aria-label="Ler relato completo sobre Drenagem" class="split-panel__story-button"
+                        tabindex="-1" type="button">
+                        CONHECER HISTÓRIA <span aria-hidden="true">↗</span>
+                     </button>
+                     <a class="split-panel__action" href="mapa.html?categoria=Drenagem" tabindex="-1">
+                        VER NO MAPA <span aria-hidden="true">↗</span>
+                     </a>
+                  </div>
                </div>
             </article>
          </div>
-         <!-- URBS V18: modal editorial acessível; os dados são os exemplos já contidos nos cinco cards. -->
+
+         <!-- Modal editorial com relato aprofundado, checklist e ações diretas -->
          <div class="urbs-story-modal" hidden="" id="urbs-story-modal" role="presentation">
-            <div class="urbs-story-modal__backdrop" data-close-story="true">
-            </div>
+            <div class="urbs-story-modal__backdrop" data-close-story="true"></div>
             <section aria-describedby="urbs-story-description" aria-labelledby="urbs-story-title" aria-modal="true"
                class="urbs-story-modal__dialog" role="dialog" tabindex="-1">
                <div class="urbs-story-modal__paper">
                   <div class="urbs-story-modal__top">
-                     <span class="urbs-story-modal__eyebrow">
-                        URBS / RELATO DEMONSTRATIVO
-                     </span>
-                     <button aria-label="Fechar detalhes do registro" class="urbs-story-modal__close" type="button">
-                        ×
-                     </button>
+                     <span class="urbs-story-modal__eyebrow">URBS / DOSSIÊ TERRITORIAL</span>
+                     <button aria-label="Fechar detalhes" class="urbs-story-modal__close" type="button">×</button>
                   </div>
+
                   <div class="urbs-story-modal__hero">
-                     <span class="urbs-story-modal__number" id="urbs-story-number">
-                        01 / 05
-                     </span>
-                     <span class="urbs-story-modal__sector" id="urbs-story-sector">
-                        MOBILIDADE URBANA
-                     </span>
+                     <span class="urbs-story-modal__number" id="urbs-story-number">01 / 05</span>
+                     <span class="urbs-story-modal__sector" id="urbs-story-sector">MOBILIDADE URBANA</span>
                   </div>
-                  <h3 class="urbs-story-modal__title" id="urbs-story-title">
-                     PAVIMENTAÇÃO — EXEMPLO
-                  </h3>
-                  <p class="urbs-story-modal__description" id="urbs-story-description">
-                  </p>
+
+                  <h3 class="urbs-story-modal__title" id="urbs-story-title">Desgaste viário em corredor central</h3>
+                  <p class="urbs-story-modal__description" id="urbs-story-description"></p>
+
+                  <div class="urbs-story-modal__checklist">
+                     <span class="urbs-story-modal__sublabel">O QUE INFORMAR AO REGISTRAR</span>
+                     <ul id="urbs-story-checklist"></ul>
+                  </div>
+
                   <div class="urbs-story-modal__stats">
                      <div>
-                        <small>
-                           LOCALIZAÇÃO ILUSTRATIVA
-                        </small>
-                        <strong id="urbs-story-coords">
-                        </strong>
+                        <small>PONTO DE REFERÊNCIA</small>
+                        <strong id="urbs-story-ref"></strong>
                      </div>
                      <div>
-                        <small>
-                           ESTADO DEMONSTRATIVO
-                        </small>
-                        <strong id="urbs-story-status">
-                        </strong>
+                        <small>SETOR DE ATENDIMENTO</small>
+                        <strong id="urbs-story-team"></strong>
+                     </div>
+                     <div>
+                        <small>COORDENADAS</small>
+                        <strong id="urbs-story-coords"></strong>
                      </div>
                   </div>
+
                   <div class="urbs-story-modal__footer">
-                     <span>
-                        EXEMPLO FICTÍCIO · NÃO É UMA OCORRÊNCIA OFICIAL
-                     </span>
-                     <a href="mapa.html">
-                        EXPLORAR MAPA
-                        <span aria-hidden="true">
-                           ↗
-                        </span>
+                     <a class="urbs-story-modal__btn-secondary" href="mapa.html" id="urbs-story-map-link">
+                        VER NO MAPA <span aria-hidden="true">↗</span>
+                     </a>
+                     <a class="urbs-story-modal__btn-primary" href="registro.html" id="urbs-story-register-link">
+                        REGISTRAR NESTA CATEGORIA <span aria-hidden="true">↗</span>
                      </a>
                   </div>
                </div>
-               <div aria-hidden="true" class="urbs-story-modal__pixels">
-               </div>
+               <div aria-hidden="true" class="urbs-story-modal__pixels"></div>
             </section>
          </div>
+
          <div class="urban-split__footer">
-            <span>
-               <i>
-               </i>
-               PASSE O MOUSE, CLIQUE OU USE AS SETAS DO TECLADO
-            </span>
-            <a href="mapa.html">
-               VER MAPA COMPLETO ↗
-            </a>
+            <span><i></i> <em class="split-hint-desktop">PASSE O MOUSE, CLIQUE OU USE AS SETAS DO TECLADO</em><em
+                  class="split-hint-touch">TOQUE EM UMA FAIXA PARA EXPANDIR</em></span>
+            <a href="mapa.html">VER MAPA COMPLETO ↗</a>
          </div>
          <p class="urban-split__note">
-            As fotografias são ilustrativas e não retratam as ocorrências. Os cinco registros são exemplos fictícios do
-            protótipo acadêmico, sem vínculo com serviços oficiais.
+            Cenários ilustrativos estruturados para demonstrar a organização por categoria e território no protótipo
+            acadêmico URBS. Registros reais são criados por usuários autenticados no mapa.
          </p>
       </section>
       <section aria-labelledby="journey-heading" class="journey journey-gallery" id="funcionamento">
-         <div class="journey-gallery-head block-pad">
-            <div class="journey-gallery-heading">
-               <span class="micro">
-                  COMO FUNCIONA · URBS
-               </span>
-               <h2 id="journey-heading">
-                  DO OLHAR
-                  <br />
-                  <em>
-                     À AÇÃO.
-                  </em>
-               </h2>
+         <div class="journey-gallery-inner">
+            <div class="journey-top-rule">
+               <span class="micro">05 / COMO FUNCIONA</span>
+               <span class="journey-rule-line" aria-hidden="true"></span>
+               <span class="micro">FLUXO URBS</span>
             </div>
-            <p>
-               Três momentos, uma nova perspectiva. Observe o território, localize o que importa e acompanhe os
-               registros no mapa.
-            </p>
-         </div>
-         <!-- Three editorial cards move horizontally as a single continuous reel.
-       The cards are present in HTML: the gallery is still browsable without JS. -->
-         <div aria-label="Três etapas da experiência URBS" aria-roledescription="carrossel" class="journey-reel"
-            id="journey-reel" role="region" tabindex="0">
-            <div class="journey-reel-track">
-               <article aria-label="Observe: identificar situações no território" class="journey-reel-card"
-                  data-step="observe" tabindex="0">
-                  <div aria-label="Imagem ilustrativa de um espaço urbano para observação"
-                     class="journey-reel-media image-observe" data-image="assets/images/journey/observe.webp"
-                     role="img">
-                     <img alt="" class="journey-reel-photo" decoding="async" loading="eager"
-                        src="assets/images/journey/observe.webp" />
-                  </div>
-                  <div aria-hidden="true" class="journey-reel-shade">
-                  </div>
-                  <div aria-hidden="true" class="journey-neon-frame">
-                     <i>
-                     </i>
-                     <b>
-                        URBS / OBSERVE
-                     </b>
-                  </div>
-                  <div class="journey-reel-body">
-                     <span class="journey-reel-eyebrow">
-                        LEITURA URBANA
-                     </span>
-                     <h3>
-                        OBSERVE
-                        <span>
-                           .
-                        </span>
-                     </h3>
-                     <p>
-                        Perceba situações que fazem parte do cotidiano da cidade.
-                     </p>
-                     <span class="journey-reel-foot">
-                        O TERRITÓRIO FALA
-                        <span aria-hidden="true">
-                           ↗
-                        </span>
-                     </span>
-                  </div>
-               </article>
-               <article aria-label="Localize: registrar o contexto e a posição no mapa" class="journey-reel-card"
-                  data-step="localize" tabindex="0">
-                  <div aria-label="Imagem ilustrativa de via urbana para localização"
-                     class="journey-reel-media image-localize" data-image="assets/images/journey/localize.webp"
-                     role="img">
-                     <img alt="" class="journey-reel-photo" decoding="async" loading="eager"
-                        src="assets/images/journey/localize.webp" />
-                  </div>
-                  <div aria-hidden="true" class="journey-reel-shade">
-                  </div>
-                  <div aria-hidden="true" class="journey-neon-frame">
-                     <i>
-                     </i>
-                     <b>
-                        URBS / LOCALIZE
-                     </b>
-                  </div>
-                  <div class="journey-reel-body">
-                     <span class="journey-reel-eyebrow">
-                        CONTEXTO ESPACIAL
-                     </span>
-                     <h3>
-                        LOCALIZE
-                        <span>
-                           .
-                        </span>
-                     </h3>
-                     <p>
-                        Descreva, escolha uma categoria e marque a localização.
-                     </p>
-                     <span class="journey-reel-foot">
-                        CADA LUGAR IMPORTA
-                        <span aria-hidden="true">
-                           ↗
-                        </span>
-                     </span>
-                  </div>
-               </article>
-               <article aria-label="Acompanhe: visualizar registros e consultar seus status" class="journey-reel-card"
-                  data-step="acompanhe" tabindex="0">
-                  <div aria-label="Imagem ilustrativa de infraestrutura urbana acessível"
-                     class="journey-reel-media image-follow" data-image="assets/images/journey/acompanhe.webp"
-                     role="img">
-                     <img alt="" class="journey-reel-photo" decoding="async" loading="eager"
-                        src="assets/images/journey/acompanhe.webp" />
-                  </div>
-                  <div aria-hidden="true" class="journey-reel-shade">
-                  </div>
-                  <div aria-hidden="true" class="journey-neon-frame">
-                     <i>
-                     </i>
-                     <b>
-                        URBS / ACOMPANHE
-                     </b>
-                  </div>
-                  <div class="journey-reel-body">
-                     <span class="journey-reel-eyebrow">
-                        VISÃO CONTÍNUA
-                     </span>
-                     <h3>
-                        ACOMPANHE
-                        <span>
-                           .
-                        </span>
-                     </h3>
-                     <p>
-                        Veja os registros no mapa e acompanhe suas informações.
-                     </p>
-                     <span class="journey-reel-foot">
-                        UM NOVO OLHAR
-                        <span aria-hidden="true">
-                           ↗
-                        </span>
-                     </span>
-                  </div>
-               </article>
-            </div>
-         </div>
-         <div aria-hidden="true" class="journey-reel-caption">
-            <span>
-               UM TERRITÓRIO · TRÊS PERSPECTIVAS
-            </span>
-            <span>
-               MOVIMENTO CONTÍNUO — PASSE O MOUSE PARA DISTORCER
-            </span>
-         </div>
-         <div class="journey-gallery-bottom block-pad">
-            <p>
-               UM OLHAR PODE TRANSFORMAR A FORMA COMO ENXERGAMOS A CIDADE.
-            </p>
-            <a class="journey-gallery-cta" href="registro.html">
-               COMEÇAR UM REGISTRO
-               <span aria-hidden="true">
-                  ↗
-               </span>
-            </a>
-         </div>
-         <p class="journey-gallery-note">
-            Imagens ilustrativas geradas digitalmente para a experiência URBS. Plataforma acadêmica em demonstração; não
-            representa um serviço oficial da Prefeitura.
-         </p>
-      </section>
-      <section class="final-cta">
-         <div aria-hidden="true" class="cta-art">
-         </div>
-         <div class="cta-content">
-            <div aria-hidden="true" class="cta-orbit">
-               <i>
-               </i>
-               <i>
-               </i>
-               <i>
-               </i>
-            </div>
-            <span class="micro">
-               A SUA CIDADE. A SUA PERSPECTIVA.
-            </span>
-            <h2>
-               A CIDADE
-               <br />
-               É
-               <em>
-                  VIVA.
-               </em>
-               <br />
-               PARTICIPE.
-            </h2>
-            <div class="cta-bottom">
+
+            <div class="journey-gallery-head">
+               <div class="journey-gallery-heading">
+                  <h2 id="journey-heading">
+                     DO OLHAR<br />
+                     <em>À AÇÃO.</em>
+                  </h2>
+               </div>
                <p>
-                  Um olhar pode iniciar uma transformação. Explore a cidade, registre possibilidades e participe dessa
-                  experiência.
+                  Três passos diretos conectam o que você percebe na rua ao mapa vivo da cidade. Clique em qualquer
+                  etapa para experimentar o fluxo agora.
                </p>
-               <a href="mapa.html">
-                  EXPLORAR O TERRITÓRIO
-                  <span>
-                     ↗
-                  </span>
+            </div>
+         </div>
+
+         <div aria-label="Três etapas do fluxo URBS; arraste ou use as setas" aria-roledescription="carrossel"
+            class="journey-reel" id="journey-reel" role="region" tabindex="0">
+            <div class="journey-reel-track">
+               <a aria-label="Etapa 1 — Observe: explorar categorias urbanas" class="journey-reel-card"
+                  data-step="observe" href="#categorias">
+                  <div class="journey-reel-media image-observe" data-image="assets/images/journey/observe.webp">
+                     <img alt="Ambiente urbano para observação de infraestrutura" class="journey-reel-photo"
+                        decoding="async" loading="lazy" src="assets/images/journey/observe.webp" />
+                  </div>
+                  <div aria-hidden="true" class="journey-reel-shade"></div>
+                  <div class="journey-reel-body">
+                     <div class="journey-reel-top">
+                        <span class="journey-step-num">01 / 03</span>
+                        <span class="journey-reel-eyebrow">LEITURA URBANA</span>
+                     </div>
+                     <div class="journey-reel-copy">
+                        <h3>OBSERVE<span>.</span></h3>
+                        <p>Identifique buracos, postes apagados, calçadas quebradas e falhas que afetam o trajeto
+                           diário.</p>
+                        <span class="journey-reel-foot">
+                           <span>VER CATEGORIAS</span>
+                           <b class="journey-arrow" aria-hidden="true">↗</b>
+                        </span>
+                     </div>
+                  </div>
+               </a>
+
+               <a aria-label="Etapa 2 — Localize: abrir formulário de registro" class="journey-reel-card"
+                  data-step="localize" href="registro.html">
+                  <div class="journey-reel-media image-localize" data-image="assets/images/journey/localize.webp">
+                     <img alt="Via urbana com marcação georreferenciada" class="journey-reel-photo" decoding="async"
+                        loading="lazy" src="assets/images/journey/localize.webp" />
+                  </div>
+                  <div aria-hidden="true" class="journey-reel-shade"></div>
+                  <div class="journey-reel-body">
+                     <div class="journey-reel-top">
+                        <span class="journey-step-num">02 / 03</span>
+                        <span class="journey-reel-eyebrow">GEORREFERENCIAMENTO</span>
+                     </div>
+                     <div class="journey-reel-copy">
+                        <h3>LOCALIZE<span>.</span></h3>
+                        <p>Descreva o problema, selecione a categoria e marque a posição exata no mapa ou pelo GPS.</p>
+                        <span class="journey-reel-foot">
+                           <span>REGISTRAR OCORRÊNCIA</span>
+                           <b class="journey-arrow" aria-hidden="true">↗</b>
+                        </span>
+                     </div>
+                  </div>
+               </a>
+
+               <a aria-label="Etapa 3 — Acompanhe: abrir mapa interativo" class="journey-reel-card"
+                  data-step="acompanhe" href="mapa.html">
+                  <div class="journey-reel-media image-follow" data-image="assets/images/journey/acompanhe.webp">
+                     <img alt="Infraestrutura urbana e acompanhamento no mapa" class="journey-reel-photo"
+                        decoding="async" loading="lazy" src="assets/images/journey/acompanhe.webp" />
+                  </div>
+                  <div aria-hidden="true" class="journey-reel-shade"></div>
+                  <div class="journey-reel-body">
+                     <div class="journey-reel-top">
+                        <span class="journey-step-num">03 / 03</span>
+                        <span class="journey-reel-eyebrow">TRANSPARÊNCIA</span>
+                     </div>
+                     <div class="journey-reel-copy">
+                        <h3>ACOMPANHE<span>.</span></h3>
+                        <p>Visualize os registros no mapa de Montes Claros e acompanhe cada atualização até a solução.
+                        </p>
+                        <span class="journey-reel-foot">
+                           <span>ABRIR MAPA INTERATIVO</span>
+                           <b class="journey-arrow" aria-hidden="true">↗</b>
+                        </span>
+                     </div>
+                  </div>
+               </a>
+            </div>
+         </div>
+
+         <div class="journey-gallery-inner">
+            <div class="journey-reel-caption">
+               <span class="journey-hint-desktop"><i></i> PASSE O MOUSE PARA DISTORCER · ARRASTE OU CLIQUE EM UMA
+                  ETAPA</span>
+               <span class="journey-hint-touch"><i></i> DESLIZE PARA EXPLORAR · TOQUE EM UMA ETAPA</span>
+               <div class="journey-controls">
+                  <button aria-label="Pausar movimento automático" aria-pressed="false" class="journey-toggle-play"
+                     id="journey-toggle-play" type="button">PAUSAR</button>
+                  <div class="journey-nav-buttons">
+                     <button aria-label="Etapa anterior" id="journey-prev" type="button">←</button>
+                     <button aria-label="Próxima etapa" id="journey-next" type="button">→</button>
+                  </div>
+               </div>
+            </div>
+
+            <div class="journey-gallery-bottom">
+               <p>UM OLHAR PODE TRANSFORMAR A FORMA COMO ENXERGAMOS A CIDADE.</p>
+               <a class="journey-gallery-cta" href="registro.html">
+                  COMEÇAR UM REGISTRO <span aria-hidden="true">↗</span>
                </a>
             </div>
          </div>
       </section>
-      <section class="fineprint block-pad">
-         <div>
-            <span class="micro">
-               SOBRE O PROTÓTIPO
-            </span>
-            <h2>
-               CLAREZA EM CADA
-               <br />
-               ETAPA.
+      <section aria-labelledby="final-cta-title" class="final-cta">
+         <div aria-hidden="true" class="cta-art"></div>
+         <div aria-hidden="true" class="cta-grid"></div>
+         <div class="cta-content">
+            <div aria-hidden="true" class="cta-orbit">
+               <i></i>
+               <i></i>
+               <i></i>
+            </div>
+
+            <div class="cta-rule">
+               <span class="micro">06 / PARTICIPE DO MAPEAMENTO</span>
+               <span class="cta-rule-line" aria-hidden="true"></span>
+               <span class="micro">MONTES CLAROS · MG</span>
+            </div>
+
+            <h2 id="final-cta-title">
+               A CIDADE<br />
+               É <em>VIVA.</em><br />
+               PARTICIPE.
+            </h2>
+
+            <div class="cta-bottom">
+               <p>
+                  Cada ponto registrado aproxima o problema da solução. Explore o mapa colaborativo ou envie sua
+                  primeira observação agora mesmo.
+               </p>
+               <div class="cta-actions">
+                  <a class="cta-btn-primary" href="mapa.html">
+                     <span>EXPLORAR O MAPA</span>
+                     <b aria-hidden="true">↗</b>
+                  </a>
+                  <a class="cta-btn-secondary" href="registro.html">
+                     <span>REGISTRAR OCORRÊNCIA</span>
+                     <b aria-hidden="true">↗</b>
+                  </a>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <section aria-labelledby="architecture-title" class="fineprint block-pad">
+         <div class="fineprint-left">
+            <span class="micro">ARQUITETURA &amp; TRANSPARÊNCIA</span>
+            <h2 id="architecture-title">
+               CLAREZA EM<br />
+               CADA ETAPA.
             </h2>
          </div>
-         <p>
-            O URBS é um projeto acadêmico independente, sem vínculo institucional com a Prefeitura de Montes Claros. Os
-            marcadores de exemplo são fictícios. Registros enviados por pessoas autenticadas ficam no banco MySQL do
-            projeto.
-         </p>
+
+         <div class="fineprint-right">
+            <p>
+               O <strong>URBS</strong> é uma plataforma acadêmica independente voltada ao mapeamento colaborativo da
+               infraestrutura urbana de Montes Claros — MG. O sistema integra cartografia interativa, controle de acesso
+               por níveis (Cidadão, Empresa Solucionadora e Administrador Master) e persistência relacional em banco de
+               dados.
+            </p>
+            <p class="fineprint-disclaimer">
+               Esta plataforma não possui vínculo institucional com a Prefeitura de Montes Claros. Ocorrências enviadas
+               por usuários autenticados ficam armazenadas no banco MySQL do projeto para acompanhamento dentro do
+               sistema.
+            </p>
+            <div class="fineprint-specs">
+               <span>GEORREFERENCIAMENTO · LEAFLET</span>
+               <span>BACKEND · PHP REST + MYSQL</span>
+               <span>CONTROLE DE ACESSO · 3 PERFIS</span>
+            </div>
+         </div>
       </section>
    </main>
+
    <footer class="footer">
-      <div class="footer-top">
-         <a class="logo" href="#topo">
-            urbs
-            <span>
-               .
-            </span>
-         </a>
-         <p>
-            UM NOVO OLHAR SOBRE O TERRITÓRIO.
-         </p>
-         <a href="#topo">
-            VOLTAR AO TOPO ↑
-         </a>
-      </div>
-      <div class="footer-bottom">
-         <span>
-            URBS · MONTES CLAROS / MG
-         </span>
-         <div>
-            <a href="mapa.html">
-               MAPA
-            </a>
-            <a href="registro.html">
-               REGISTRAR
-            </a>
-            <a href="login.html">
-               ACESSO
-            </a>
+      <div class="footer-grid">
+         <div class="footer-brand">
+            <a aria-label="URBS — voltar ao topo" class="logo" href="#topo">urbs<span>.</span></a>
+            <p>Inteligência espacial colaborativa para enxergar, localizar e acompanhar a infraestrutura urbana.</p>
+            <span class="footer-coords">16°43′ S · 43°51′ W · MONTES CLAROS, MG</span>
          </div>
-         <span>
-            PROJETO ACADÊMICO INDEPENDENTE
-         </span>
+
+         <div class="footer-col">
+            <span class="footer-col-title">NAVEGAÇÃO</span>
+            <a href="#manifesto">Manifesto</a>
+            <a href="#experiencia">Transformações</a>
+            <a href="#categorias">Categorias</a>
+            <a href="#territorio">Território</a>
+            <a href="#funcionamento">Como funciona</a>
+         </div>
+
+         <div class="footer-col">
+            <span class="footer-col-title">PLATAFORMA</span>
+            <a href="mapa.html">Mapa de ocorrências</a>
+            <a href="registro.html">Registrar ocorrência</a>
+            <a href="login.html">Acesso à conta</a>
+            <a class="footer-top-link" href="#topo">Voltar ao topo ↑</a>
+         </div>
+      </div>
+
+      <div class="footer-bottom">
+         <span>URBS © 2026 · SPATIAL INTELLIGENCE</span>
+         <span>PROJETO ACADÊMICO INDEPENDENTE · MONTES CLAROS / MG</span>
       </div>
    </footer>
 </body>

@@ -1,4 +1,4 @@
-/* URBS — Globo Terrestre Fotorrealista (Custom GLSL Shader + Texturas Locais) + Autenticação PHP */
+/* URBS — Globo Terrestre Fotorrealista (Custom GLSL Shader) + Autenticação PHP + Preservação de Destino (?next=) */
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
 
 (() => {
@@ -21,12 +21,47 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
   const srStatus = document.getElementById('sr-status');
 
   const ROLE_LABELS = { citizen: 'Cidadão', resolver: 'Empresa', master: 'Master' };
+  const ALLOWED_NEXT_PAGES = new Set(['mapa.html', 'registro.html', 'painel.html', 'index.html']);
   const MOC_LAT = -16.7286;
   const MOC_LON = -43.8582;
 
   let mode = 'login';
   let switching = false;
   let diving = false;
+
+  // ================= VALIDAÇÃO SEGURA DO DESTINO (?next=) =================
+  function parseSafeNext(rawNext) {
+    if (!rawNext || typeof rawNext !== 'string') {
+      return { url: 'mapa.html', page: 'mapa.html', category: '' };
+    }
+    const trimmed = rawNext.trim();
+    const cleanPage = /^([a-z]+\.html)(?=[?#]|$)/i.exec(trimmed)?.[1].toLowerCase();
+    if (!ALLOWED_NEXT_PAGES.has(cleanPage)) {
+      return { url: 'mapa.html', page: 'mapa.html', category: '' };
+    }
+
+    const destination = new URL(trimmed, window.location.href);
+    const category = (destination.searchParams.get('categoria') || '').trim();
+    return { url: `${cleanPage}${destination.search}${destination.hash}`, page: cleanPage, category };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const nextDestination = parseSafeNext(params.get('next'));
+
+  function buildRestrictedMessage(dest) {
+    if (dest.page === 'registro.html') {
+      return dest.category
+        ? `Entre ou cadastre-se para registrar uma ocorrência em ${dest.category}.`
+        : 'Entre ou cadastre-se para registrar uma nova ocorrência em Montes Claros.';
+    }
+    if (dest.page === 'mapa.html' && dest.category) {
+      return `Entre ou cadastre-se para explorar ${dest.category} no mapa.`;
+    }
+    if (dest.page === 'painel.html') {
+      return 'Faça login para acessar o painel de gestão do URBS.';
+    }
+    return 'Entre na sua conta ou cadastre-se para acessar o mapa e registrar ocorrências.';
+  }
 
   // Objetos Three.js
   let scene, camera, renderer, earthGroup, earthMesh, cloudsMesh, cloudsMat, beaconGroup;
@@ -51,7 +86,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     window.clearTimeout(toastEl._timer);
     toastEl._timer = window.setTimeout(() => {
       toastEl.hidden = true;
-    }, 3800);
+    }, 4400);
   }
 
   function saveAccount(user, emailUsed) {
@@ -174,7 +209,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     raycaster = new THREE.Raycaster();
     mouseNDC = new THREE.Vector2();
 
-    // Direção do Sol fixa no espaço (cria terminador realista dia/crepusculo/noite)
     const sunDir = new THREE.Vector3(0.88, 0.24, 0.62).normalize();
 
     earthGroup = new THREE.Group();
@@ -201,7 +235,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     const cloudsTex = loader.load('assets/textures/earth-clouds.png');
     cloudsTex.anisotropy = maxAniso;
 
-    // 1. SUPERFÍCIE DA TERRA — Shader GLSL fotorrealista (Dia, Noite com cidades, Relevo, Brilho Oceânico, Rayleigh)
     const earthGeo = new THREE.SphereGeometry(1.52, 112, 112);
     const earthMat = new THREE.ShaderMaterial({
       uniforms: {
@@ -241,7 +274,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
 
           float ocean = smoothstep(0.2, 0.8, texture2D(uOceanMask, vUv).r);
 
-          // Perturbação sutil de relevo topográfico apenas nos continentes
           float hL = texture2D(uReliefMap, vUv - vec2(0.001, 0.0)).r;
           float hR = texture2D(uReliefMap, vUv + vec2(0.001, 0.0)).r;
           float hD = texture2D(uReliefMap, vUv - vec2(0.0, 0.002)).r;
@@ -255,7 +287,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
           float rawDot = dot(N, L);
           float litDot = max(dot(landN, L), 0.0);
 
-          // Curvas suaves de dia, crepúsculo e noite
           float dayMix = smoothstep(-0.14, 0.24, rawDot);
           float nightMix = 1.0 - smoothstep(-0.22, 0.06, rawDot);
           float twilight = exp(-pow((rawDot + 0.015) * 8.5, 2.0));
@@ -263,22 +294,18 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
           vec3 dayColor = texture2D(uDayMap, vUv).rgb;
           vec3 nightLights = texture2D(uNightMap, vUv).rgb;
 
-          // Iluminação difusa natural com leve luz ambiente do espaço
           vec3 litSurface = dayColor * (0.045 + pow(litDot, 0.88) * 1.18);
 
-          // Reflexo solar realista restrito aos oceanos (Fresnel + brilho suave + núcleo solar)
           vec3 H = normalize(L + V);
           float NdotH = max(dot(N, H), 0.0);
           float fresnelWater = 0.04 + 0.96 * pow(1.0 - max(dot(N, V), 0.0), 4.0);
           float sunGlint = (pow(NdotH, 92.0) * 0.62 + pow(NdotH, 16.0) * 0.16) * fresnelWater;
           litSurface += vec3(0.95, 0.97, 1.0) * sunGlint * ocean * smoothstep(0.0, 0.22, rawDot);
 
-          // Luzes urbanas quentes na face noturna + leve tom de crepúsculo no horizonte
           vec3 darkSurface = dayColor * 0.025 + nightLights * vec3(1.35, 0.95, 0.55) * 0.85 * nightMix;
           vec3 color = mix(darkSurface, litSurface, dayMix);
           color += vec3(0.55, 0.22, 0.08) * twilight * 0.16 * (1.0 - ocean * 0.4);
 
-          // Dispersão atmosférica Rayleigh nas bordas iluminadas do planeta
           float limb = pow(1.0 - max(dot(N, V), 0.0), 3.1);
           float sunFacing = smoothstep(-0.28, 0.45, rawDot);
           color += vec3(0.30, 0.62, 0.98) * limb * (0.07 + 0.68 * sunFacing);
@@ -292,7 +319,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     earthMesh = new THREE.Mesh(earthGeo, earthMat);
     earthGroup.add(earthMesh);
 
-    // 2. CAMADA DE NUVENS REAIS — Iluminadas no lado do dia e sombreadas na noite
     const cloudsGeo = new THREE.SphereGeometry(1.544, 80, 80);
     cloudsMat = new THREE.ShaderMaterial({
       uniforms: {
@@ -329,7 +355,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
     earthGroup.add(cloudsMesh);
 
-    // 3. HALO ATMOSFÉRICO CRESCENTE (BackSide — acompanha a luz solar, sem brilho artificial uniforme)
     const atmosGeo = new THREE.SphereGeometry(1.66, 72, 72);
     const atmosMat = new THREE.ShaderMaterial({
       uniforms: { uSunDir: { value: sunDir } },
@@ -360,7 +385,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     });
     earthGroup.add(new THREE.Mesh(atmosGeo, atmosMat));
 
-    // 4. Ponto discreto de Montes Claros - MG (-16.7286, -43.8582)
     const mocPos = latLonToVec3(MOC_LAT, MOC_LON, 1.532);
     beaconGroup = new THREE.Group();
     beaconGroup.position.copy(mocPos);
@@ -378,7 +402,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     beaconGroup.userData.pulse = pulseRing;
     earthGroup.add(beaconGroup);
 
-    // 5. Estrelas em 3 temperaturas e profundidades
     const sprite = createStarSprite();
     const sFar = createStarLayer(1600, 68, 0.22, 0.5, 0xcbd5e1, sprite);
     const sMid = createStarLayer(650, 46, 0.34, 0.78, 0xdbeafe, sprite);
@@ -386,7 +409,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     starLayers = [sFar, sMid, sNear];
     scene.add(sFar, sMid, sNear);
 
-    // Enquadramento inicial elegante com América do Sul / Atlântico em destaque
     earthGroup.rotation.set(-0.22, -1.08, 0);
 
     bindGlobeInteractions();
@@ -427,7 +449,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
         beaconGroup.userData.pulse.material.opacity = Math.max(0, 0.8 - (s - 1) * 0.95);
       }
 
-      // Movimento contínuo das estrelas + efeito warp durante o mergulho orbital
       starLayers.forEach((layer, idx) => {
         const factor = idx + 1;
         layer.rotation.y -= 0.008 * factor * dt;
@@ -585,7 +606,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
       .fromTo(incoming, { autoAlpha: 0, x: toRegister ? -44 : 44 }, { autoAlpha: 1, x: 0, duration: 0.68, ease: 'power3.out' }, 0.56);
   }
 
-  // Mergulho Cinematográfico em 3 estágios: Alinhamento -> Aceleração Orbital + FOV Warp -> Entrada na Atmosfera
   function diveIntoMontesClaros() {
     diving = true;
     autoRotate = false;
@@ -601,13 +621,32 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     if (deltaY > Math.PI) deltaY -= twoPi;
     const finalRotY = earthGroup.rotation.y + deltaY;
 
-    const finishToMap = () => {
-      try { sessionStorage.setItem('urbs-arrival-v8', String(Date.now())); } catch (_) {}
-      window.location.assign('mapa.html');
+    // Personaliza o rótulo do HUD conforme o destino preservado
+    if (divePhase) {
+      if (nextDestination.page === 'registro.html') {
+        divePhase.textContent = nextDestination.category
+          ? `REGISTRO · ${nextDestination.category.toUpperCase()}`
+          : 'NOVO REGISTRO EM MONTES CLAROS';
+      } else if (nextDestination.page === 'mapa.html' && nextDestination.category) {
+        divePhase.textContent = `MAPA · ${nextDestination.category.toUpperCase()}`;
+      } else {
+        divePhase.textContent = 'DESTINO LOCALIZADO';
+      }
+    }
+
+    const finishNavigation = () => {
+      try {
+        if (nextDestination.page === 'mapa.html') {
+          sessionStorage.setItem('urbs-arrival-v8', String(Date.now()));
+        } else {
+          sessionStorage.setItem('urbs:page_transition', String(Date.now()));
+        }
+      } catch (_) {}
+      window.location.assign(nextDestination.url);
     };
 
     if (!gsap || reduced) {
-      finishToMap();
+      finishNavigation();
       return;
     }
 
@@ -617,14 +656,12 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
 
     const tl = gsap.timeline();
 
-    // Estágio 1: Limpa a tela e alinha Montes Claros no centro exato da lente
     tl.to(uiChrome, { autoAlpha: 0, y: -12, duration: 0.45, stagger: 0.03, ease: 'power2.in' }, 0)
       .fromTo(diveHud, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.25)
       .to(earthGroup.scale, { x: 1, y: 1, z: 1, duration: 0.5 }, 0)
       .to(earthGroup.position, { x: 0, y: 0, duration: 1.05, ease: 'power3.inOut' }, 0.08)
       .to(earthGroup.rotation, { x: targetRotX, y: finalRotY, z: 0.08, duration: 1.15, ease: 'power3.inOut' }, 0.08)
 
-      // Estágio 2: Aproximação com abertura gradual de lente (FOV Warp) e aceleração das estrelas
       .to(camera.position, { z: 2.35, duration: 0.85, ease: 'power2.inOut' }, 0.7)
       .to(telemetry, {
         km: 1800,
@@ -637,7 +674,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
         }
       }, 0.7)
 
-      // Estágio 3: Mergulho final atravessando a camada de nuvens até Montes Claros
       .add(() => {
         if (divePhase) divePhase.textContent = 'ENTRANDO NA ATMOSFERA';
       }, 1.45)
@@ -663,7 +699,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
       .add(() => {
         diveVeil.style.opacity = '1';
       }, 2.22)
-      .add(finishToMap, 2.75);
+      .add(finishNavigation, 2.75);
   }
 
   // ================= EVENTOS DE INTERFACE & API PHP =================
@@ -677,11 +713,27 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
     });
   });
 
+  // Transição suave ao voltar para a Home (ou rebobina para o login se estiver no cadastro)
+  const leaveToHome = (event, href) => {
+    if (reduced) return;
+    event.preventDefault();
+    try { sessionStorage.setItem('urbs-home-arrival-v9', String(Date.now())); } catch (_) {}
+    diveVeil.style.background = '#020805';
+    diveVeil.style.opacity = '1';
+    window.setTimeout(() => window.location.assign(href), 360);
+  };
+
   document.getElementById('urbs-brand-link')?.addEventListener('click', (event) => {
     if (mode === 'register') {
       event.preventDefault();
       switchMode('login');
+      return;
     }
+    leaveToHome(event, 'index.html');
+  });
+
+  document.querySelector('.header-back')?.addEventListener('click', (event) => {
+    leaveToHome(event, 'index.html');
   });
 
   document.querySelectorAll('.toggle-pass').forEach(btn => {
@@ -760,14 +812,14 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
         const loginEmail = document.getElementById('login-email');
         if (loginEmail) loginEmail.value = emailVal;
 
-        showToast('Cadastro criado com sucesso! Faça login para entrar.');
+        showToast('Cadastro criado com sucesso! Faça login para continuar.');
         switchMode('login');
         window.setTimeout(() => document.getElementById('login-password')?.focus({ preventScroll: true }), reduced ? 0 : 1150);
         return;
       }
 
       if (result.user) saveAccount(result.user, emailVal);
-      if (srStatus) srStatus.textContent = 'Acesso confirmado. Abrindo o mapa de Montes Claros.';
+      if (srStatus) srStatus.textContent = 'Acesso confirmado. Redirecionando para o URBS.';
       form.reset();
       diveIntoMontesClaros();
     } catch (apiErr) {
@@ -784,12 +836,11 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
   initEarth3D();
   renderSavedAccounts();
 
-  const params = new URLSearchParams(window.location.search);
   const startInRegister = params.get('modo') === 'cadastro';
   playInitialArrival(startInRegister);
 
   if (params.get('acesso') === 'restrito') {
-    showToast('Entre na sua conta ou cadastre-se para acessar o mapa e registrar ocorrências.');
+    showToast(buildRestrictedMessage(nextDestination));
   } else if (params.get('trocar') === '1') {
     showToast('Selecione uma conta recente ou informe outro e-mail para alternar.');
   }
