@@ -17,7 +17,7 @@
   <link href="assets/css/map-arrival.css" rel="stylesheet"/>
   <link href="assets/css/map-davi-integration-v19.css?v=1908" rel="stylesheet"/>
   <link href="assets/css/occurrences.css?v=4" rel="stylesheet"/>
-  <link href="assets/css/map-workspace.css?v=17" rel="stylesheet"/>
+  <link href="assets/css/map-workspace.css?v=18" rel="stylesheet"/>
   <script>
    // Rodar antes da pintura da página para manter continuidade visual entre telas.
     try {
@@ -68,13 +68,13 @@
    </nav>
    <a class="header-action" href="registro.html">Registrar <span aria-hidden="true">↗</span></a>
   </header>
-  <main class="map-main" id="mapa-conteudo">
+  <div class="monitor-heading">
+   <p>01 / Monitoramento urbano</p>
+   <h1 id="map-title">Mapa de <span>ocorrências</span></h1>
+  </div>
+  <main aria-labelledby="map-title" class="map-main" id="mapa-conteudo">
    <p aria-live="polite" class="visually-hidden" id="map-live-region" role="status">
    </p>
-   <header class="monitor-heading">
-    <p>01 / Monitoramento urbano</p>
-    <h1>Mapa de <span>ocorrências</span></h1>
-   </header>
    <div class="map-workspace">
     <section aria-label="Mapa e localização das ocorrências" class="map-panel">
      <div class="map-topbar map-v19-bar">
