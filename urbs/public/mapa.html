@@ -17,8 +17,8 @@
   <link href="assets/css/style.css" rel="stylesheet"/>
   <link href="assets/css/map-arrival.css" rel="stylesheet"/>
   <link href="assets/css/map-davi-integration-v19.css?v=1908" rel="stylesheet"/>
-  <link href="assets/css/occurrences.css?v=4" rel="stylesheet"/>
-  <link href="assets/css/map-workspace.css?v=19" rel="stylesheet"/>
+  <link href="assets/css/occurrences.css?v=20261126-portal" rel="stylesheet"/>
+  <link href="assets/css/map-workspace.css?v=20261126-map-controls" rel="stylesheet"/>
   <script>
    // Rodar antes da pintura da página para manter continuidade visual entre telas.
     try {
@@ -41,7 +41,7 @@
   </script>
   <script defer="" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
   </script>
-  <script defer="" src="assets/js/map.js?v=20261126-integracao">
+  <script defer="" src="assets/js/map.js?v=20261126-map-controls">
   </script>
  </head>
  <body class="app-page map-page">
@@ -71,7 +71,7 @@
   </header>
   <div class="monitor-heading">
    <p>01 / Monitoramento urbano</p>
-   <h1 id="map-title">Mapa de <span>ocorrências</span></h1>
+   <h1 id="map-title">Mapa de ocorrências</h1>
   </div>
   <main aria-labelledby="map-title" class="map-main" id="mapa-conteudo">
    <p aria-live="polite" class="visually-hidden" id="map-live-region" role="status">
@@ -86,7 +86,7 @@
       <div class="map-actions" role="group" aria-label="Navegação no mapa">
        <button id="map-fit-reports" type="button">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/><g fill="currentColor" stroke="none"><circle cx="8" cy="13" r="1.6"/><circle cx="13" cy="8" r="1.6"/><circle cx="16" cy="15" r="1.6"/></g></svg>
-        <span>Ver todos</span>
+        <span>Ver resultados no mapa</span>
        </button>
        <button id="map-reset-city" type="button" title="Centralizar em Montes Claros">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 9c0 5-7 12-7 12S5 14 5 9a7 7 0 1 1 14 0Z"/><circle cx="12" cy="9" r="2.3"/></svg>
@@ -97,11 +97,18 @@
         <span>Minha localização</span>
        </button>
       </div>
+      <button class="map-legend-trigger" popovertarget="map-quick-legend" type="button">Legenda</button>
       <button class="map-expand" id="map-fullscreen" type="button" aria-pressed="false" hidden>
        <span class="map-control-hint">Tela cheia</span>
        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>
       </button>
      </div>
+     <section aria-labelledby="map-quick-legend-title" class="map-quick-legend" id="map-quick-legend" popover>
+      <h2 id="map-quick-legend-title">Legenda do mapa</h2>
+      <p>A cor e o ícone do pino indicam a categoria. O ponto lateral indica a situação.</p>
+      <ul aria-label="Situação do registro" class="map-status-grid" id="map-quick-statuses"></ul>
+      <a href="#map-legend-title" class="map-legend-link">Ver guia completo <span aria-hidden="true">↓</span></a>
+     </section>
      <div class="map-canvas-wrap">
       <div aria-label="Mapa interativo com marcadores de ocorrências em Montes Claros" id="map" role="application">
       </div>
@@ -126,13 +133,13 @@
      <div class="explorer-content" id="explorer-content">
       <div class="explorer-topline">
        <h2 id="explorer-title">Registros</h2>
-       <span aria-live="polite" class="result-count" id="result-count">—</span>
+       <span class="result-count" id="result-count">—</span>
       </div>
       <div class="filter-location">
        <label for="location-filter" class="visually-hidden">Buscar ocorrências</label>
        <div class="search-field">
         <span aria-hidden="true" class="map-search-icon"></span>
-        <input autocomplete="off" id="location-filter" placeholder="Rua ou bairro: Todos os Santos, Centro…" type="search"/>
+        <input autocomplete="off" id="location-filter" placeholder="Buscar rua ou bairro" type="search"/>
        </div>
       </div>
       <div class="category-tabs" id="category-tabs" role="group" aria-label="Filtrar por categoria"></div>
@@ -187,6 +194,16 @@
         <button class="clear-filters" id="clear-filters" type="button">Limpar filtros</button>
       </div>
       <div id="filter-chips" aria-label="Filtros aplicados" role="group" hidden></div>
+      <div class="report-sources">
+       <p aria-live="polite" aria-atomic="true" class="report-source-counts">
+        <span id="real-report-count">0 registros reais</span>
+        <span id="demo-report-count">0 exemplos</span>
+       </p>
+       <label class="report-demo-toggle">
+        <input id="show-demo-reports" type="checkbox" checked/>
+        Mostrar exemplos
+       </label>
+      </div>
       <div aria-label="Lista de ocorrências" class="report-list" id="report-list"></div>
       <div class="empty-state" hidden="" id="empty-state">
        <h3>Nenhuma ocorrência encontrada</h3>
@@ -199,7 +216,7 @@
     <div class="legend-overview">
      <div class="map-legend-heading">
       <span class="map-legend-index">Guia dos marcadores</span>
-      <h2 id="map-legend-title">Como ler o mapa</h2>
+      <h2 id="map-legend-title" tabindex="-1">Como ler <span>o mapa</span></h2>
       <p class="pin-reading">A cor e o ícone mostram o tipo de ocorrência. O ponto lateral indica a situação.</p>
      </div>
      <div class="map-pin-example" hidden>

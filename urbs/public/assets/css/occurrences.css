@@ -1,6 +1,18 @@
 /* Interface compartilhada de mapa e registro da URBS. */
 .map-page,
 .form-page-body {
+  --portal-bg: #040c08;
+  --portal-panel: #091610;
+  --portal-field: #06110c;
+  --portal-raised: #102219;
+  --portal-text: #f1f6ec;
+  --portal-muted: #a8beae;
+  --portal-placeholder: #8ca495;
+  --portal-line: #34473a;
+  --portal-accent: #c7f36b;
+  --portal-accent-line: #41552b;
+  --portal-danger: #ffabb4;
+  --portal-radius: 8px;
   --workspace-bg: #f0f3ed;
   --workspace-border: #d6e0d5;
   --workspace-text: #102a20;
@@ -10,6 +22,63 @@
   --workspace-radius: 16px;
   background: var(--workspace-bg);
   color: var(--workspace-text);
+}
+
+.app-page .urbs-user-menu { position: relative; }
+.app-page .urbs-user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 150px;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--portal-text);
+  font: 600 13px var(--body);
+  cursor: pointer;
+}
+.app-page .urbs-user-avatar {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--portal-raised);
+  color: var(--portal-accent);
+}
+.app-page .urbs-user-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app-page .urbs-user-caret { color: var(--portal-muted); }
+.app-page .urbs-user-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 2;
+  display: grid;
+  width: min(210px, 85vw);
+  padding: 8px;
+  border: 1px solid var(--portal-line);
+  border-radius: var(--portal-radius);
+  background: var(--portal-panel);
+  box-shadow: 0 10px 25px #0005;
+}
+.app-page .urbs-user-summary { display: grid; padding: 8px; overflow-wrap: anywhere; }
+.app-page .urbs-user-summary span { color: var(--portal-muted); font-size: 12px; }
+.app-page .urbs-user-divider { border-top: 1px solid var(--portal-line); }
+.app-page .app-header nav .urbs-user-item {
+  padding: 10px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--portal-text);
+  font: 500 13px var(--body);
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: left;
+  cursor: pointer;
+}
+.app-page .app-header nav .urbs-user-item:hover { background: var(--portal-raised); }
+@media (max-width: 650px) {
+  .app-page .urbs-user-trigger { max-width: 92px; }
 }
 
 .map-main,
@@ -504,8 +573,24 @@
   display: block;
 }
 
+.form-page-body {
+  --workspace-text: var(--portal-text);
+  --workspace-muted: var(--portal-muted);
+  --workspace-border: var(--portal-line);
+  --workspace-accent: var(--portal-accent);
+  color-scheme: dark;
+  background: radial-gradient(ellipse at 78% 0%, #172c1d, transparent 45%), var(--portal-bg);
+}
+
 .form-page-body .form-heading {
   position: static;
+}
+
+.form-page-body .form-heading h1 {
+  border-left: 3px solid var(--portal-accent);
+  padding-left: 14px;
+  font-size: clamp(27px, 4.1vw, 49px);
+  text-transform: uppercase;
 }
 
 .form-heading .form-context {
@@ -514,10 +599,9 @@
   padding: 7px 12px;
   border-color: var(--workspace-border);
   border-radius: 30px;
-  color: var(--workspace-text);
-  background: #e6efe3;
-  font-size: 12px;
-  font-weight: 700;
+  color: var(--portal-accent);
+  background: var(--portal-panel);
+  font: 500 11px/1.4 var(--mono);
 }
 
 .form-page-body .report-form {
@@ -536,12 +620,18 @@
 
 .registration-panel {
   --registration-inset: clamp(14px, 2.3vw, 25px);
+  min-width: 0;
   padding: var(--registration-inset);
+  border-color: var(--portal-accent-line);
+  border-radius: var(--portal-radius);
+  background: linear-gradient(150deg, var(--portal-raised), var(--portal-panel) 50%, var(--portal-field));
+  box-shadow: none;
 }
 
 .registration-panel .form-section-title {
   margin-bottom: 15px;
   padding-bottom: 12px;
+  border-color: var(--portal-line);
 }
 
 .registration-panel .form-section-title h2 {
@@ -550,21 +640,35 @@
 }
 
 .registration-panel label {
-  font-size: 13px;
+  color: var(--portal-muted);
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: .075em;
+  text-transform: uppercase;
 }
 
 .registration-panel label small {
-  font: 500 12px/1.3 var(--body);
+  color: var(--portal-muted);
+  font: 500 11px/1.4 var(--body);
   letter-spacing: 0;
+  text-transform: none;
 }
 
 .registration-panel :is(input, select, textarea) {
   min-height: 48px;
   border-color: var(--workspace-border);
-  border-radius: 9px;
+  border-radius: 5px;
   font-size: 16px;
   color: var(--workspace-text);
-  background: #fcfdfb;
+  background: var(--portal-field);
+}
+
+.registration-panel :is(input, select, textarea):focus {
+  border-color: var(--portal-accent);
+  box-shadow: 0 0 0 3px #c7f36b2b;
+}
+
+.registration-panel :is(input, textarea)::placeholder {
+  color: var(--portal-placeholder);
 }
 
 .registration-panel textarea {
@@ -574,13 +678,13 @@
 .registration-panel .character-count {
   margin-top: 6px;
   color: var(--workspace-muted);
-  font-size: 11px;
+  font: 500 11px/1.4 var(--mono);
 }
 
 .registration-panel .picker-map-wrap {
-  margin: 14px calc(8px - var(--registration-inset)) calc(8px - var(--registration-inset));
+  margin: 14px 0 0;
   border-color: var(--workspace-border);
-  border-radius: 11px;
+  border-radius: var(--portal-radius);
   isolation: isolate;
 }
 
@@ -590,18 +694,26 @@
   flex-wrap: wrap;
   padding: 9px 11px;
   border-bottom: 1px solid var(--workspace-border);
-  background: #f7f9f5;
+  background: var(--portal-raised);
 }
 
 .registration-panel .picker-map-toolbar > span,
 .registration-panel .picker-map-toolbar .locate-button {
-  font-size: 12px;
+  color: var(--portal-text);
+  font: 500 11px/1.4 var(--mono);
 }
 
 .registration-panel .picker-map-toolbar .locate-button {
   min-height: 40px;
   padding: 5px 9px;
   border-radius: 7px;
+  border-color: var(--portal-line);
+  background: var(--portal-field);
+}
+
+.registration-panel .picker-map-toolbar .locate-button:hover {
+  border-color: var(--portal-accent);
+  color: var(--portal-accent);
 }
 
 .registration-panel .picker-map-wrap #picker-map {
@@ -612,17 +724,15 @@
   min-height: 42px;
   padding: 9px 10px;
   color: var(--workspace-muted);
-  background: #f2f6f1;
-  font-size: 12px;
-  line-height: 1.4;
+  background: var(--portal-field);
+  font: 500 11px/1.55 var(--mono);
 }
 
 .registration-panel .picker-coordinates.is-picked {
-  border-top: 1px solid #b6cd99;
-  color: #244e26;
-  background: #e8f5d8;
-  box-shadow: inset 4px 0 #94bd5b;
-  font-weight: 750;
+  border-top: 1px solid var(--portal-accent-line);
+  color: var(--portal-accent);
+  background: var(--portal-raised);
+  box-shadow: inset 3px 0 var(--portal-accent);
 }
 
 .registration-footer {
@@ -637,6 +747,11 @@
   min-height: 0;
   margin: 0;
   font-size: 13px;
+  color: var(--portal-accent);
+}
+
+.registration-footer .form-feedback.is-error {
+  color: var(--portal-danger);
 }
 
 .registration-footer .form-feedback:empty {
@@ -651,6 +766,8 @@
 }
 
 .registration-footer .form-actions .text-link {
+  color: var(--portal-accent);
+  border-color: var(--portal-accent-line);
   font-size: 13px;
 }
 
@@ -658,7 +775,12 @@
   width: auto;
   min-height: 50px;
   padding-inline: 18px;
-  box-shadow: 0 4px 10px #21412624;
+  border-color: var(--portal-accent);
+  border-radius: 5px;
+  color: var(--portal-bg);
+  font: 500 12px/1.35 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
 #report-submit-label {
@@ -666,9 +788,29 @@
 }
 
 .registration-footer .submit-button:hover {
-  color: #19351d;
-  background: #d5f7a2;
+  color: var(--portal-bg);
+  background: #dcff9f;
   transform: none;
+}
+
+.registration-footer .submit-button span {
+  color: inherit;
+}
+
+.form-page-body :focus-visible {
+  outline-color: var(--portal-accent);
+}
+
+.form-page-body .local-notice {
+  margin-top: 20px;
+  padding: 10px 13px;
+  border-left: 2px solid var(--portal-accent);
+  border-radius: 5px;
+  background: var(--portal-raised);
+}
+
+.form-page-body .local-notice strong {
+  color: var(--portal-accent);
 }
 
 .registration-footer .submit-button:disabled {

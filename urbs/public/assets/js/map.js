@@ -35,6 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = document.getElementById("report-list");
     const emptyState = document.getElementById("empty-state");
     const resultCount = document.getElementById("result-count");
+    const realReportCount = document.getElementById("real-report-count");
+    const demoReportCount = document.getElementById("demo-report-count");
+    const showDemoReports = document.getElementById("show-demo-reports");
     const categoryTabs = document.getElementById("category-tabs");
     const filterChips = document.getElementById("filter-chips");
     const clearButton = document.getElementById("clear-filters");
@@ -46,6 +49,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const isMobile = window.matchMedia("(max-width: 760px)");
     const content = document.getElementById("explorer-content");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const quickLegend = document.getElementById("map-quick-legend");
+    const quickStatuses = document.getElementById("map-quick-statuses");
+    quickStatuses.append(...Array.from(document.querySelectorAll(".map-pin-guide .map-status-grid li"), item => item.cloneNode(true)));
+    quickLegend.querySelector(".map-legend-link").addEventListener("click", () => quickLegend.hidePopover());
     function setSheet(open) {
         explorer.dataset.expanded = String(open);
         explorerToggle.setAttribute("aria-expanded", String(open));
@@ -167,17 +174,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const markersById = new Map();
     const resetCityButton = document.getElementById('map-reset-city');
     const fitReportsButton = document.getElementById('map-fit-reports');
-    function centerCity() { map.flyTo(center, 15, { duration: 1.25 }); }
-    function showAllPoints() {
-        if (markerLayer.getLayers().length && markerLayer.getBounds().isValid()) {
-            map.flyToBounds(markerLayer.getBounds().pad(.22), { maxZoom: 14, duration: 1.35 });
-        }
-        else {
-            centerCity();
-        }
+    function goToPoint(position, zoom) {
+        if (reducedMotion.matches)
+            map.setView(position, zoom, { animate: false });
+        else
+            map.flyTo(position, zoom, { duration: 1.25 });
     }
-    resetCityButton?.addEventListener('click', centerCity);
-    fitReportsButton?.addEventListener('click', showAllPoints);
+    function fitVisibleReports() {
+        const bounds = markerLayer.getBounds();
+        if (!bounds.isValid()) return;
+        const options = { maxZoom: 14, padding: [36, 36] };
+        if (reducedMotion.matches)
+            map.fitBounds(bounds, { ...options, animate: false });
+        else
+            map.flyToBounds(bounds, { ...options, duration: .8 });
+    }
+    resetCityButton?.addEventListener('click', () => goToPoint(center, 15));
+    fitReportsButton.addEventListener('click', fitVisibleReports);
     function normalizeText(value) {
         return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
     }
@@ -198,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const matchesStatus = status === "all" || report.status === status;
             const haystack = normalizeText(`${report.address} ${report.title} ${report.description}`);
             return matchesCategory && matchesStatus && (!term || haystack.includes(term));
-        }).sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+        }).sort((a, b) => Number(a.demo) - Number(b.demo) || Date.parse(b.createdAt) - Date.parse(a.createdAt));
     }
     function popupContent(report) {
         const wrapper = makeElement("div", "map-popup");
@@ -340,6 +353,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const sample = document.getElementById("pin-example");
         sample.append(makePin(categoryMarkers.get("Iluminação pública"), "Em análise"));
         sample.parentElement.hidden = false;
+
+        if (reducedMotion.matches || !("IntersectionObserver" in window))
+            return;
+        const observer = new IntersectionObserver((entries) => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting)
+                    continue;
+                entry.target.classList.add("is-guide-revealed");
+                observer.unobserve(entry.target);
+            }
+        }, { threshold: 0.2 });
+        const guideSection = guide.closest(".map-pin-guide");
+        guideSection.querySelectorAll(".map-legend-heading, .map-pin-example, .map-category-entry")
+            .forEach(element => observer.observe(element));
     }
     function makeReportMarker(report) {
         const appearance = categoryMarkers.get(report.category) || otherCategory;
@@ -381,7 +408,11 @@ document.addEventListener("DOMContentLoaded", () => {
             button.setAttribute("aria-pressed", String(button.value === categoryFilter.value));
     }
     function render() {
-        const reports = getFilteredReports();
+        const matches = getFilteredReports();
+        const realCount = matches.filter(report => !report.demo).length;
+        const demoCount = matches.length - realCount;
+        const reports = showDemoReports.checked ? matches : matches.filter(report => !report.demo);
+        window.clearTimeout(pendingPopup);
         markerLayer.clearLayers();
         markersById.clear();
         list.replaceChildren();
@@ -403,14 +434,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         resultCount.textContent = String(reports.length);
         resultCount.setAttribute("aria-label", `${reports.length} ${reports.length === 1 ? "registro" : "registros"}`);
+        realReportCount.textContent = `${realCount} ${realCount === 1 ? "registro real" : "registros reais"}`;
+        demoReportCount.textContent = `${demoCount} ${demoCount === 1 ? "exemplo" : "exemplos"}${!showDemoReports.checked && demoCount > 0 ? (demoCount === 1 ? " oculto" : " ocultos") : ""}`;
         updateFilterChips();
         emptyState.hidden = reports.length > 0;
-        if (reports.length > 0 && markerLayer.getBounds().isValid()) {
-            map.fitBounds(markerLayer.getBounds().pad(.22), { maxZoom: 14, animate: false });
-        }
-        else {
-            map.setView(center, 13);
-        }
+        emptyState.querySelector("p").textContent = demoCount > 0 && !showDemoReports.checked
+            ? "Ative Mostrar exemplos para ver os pontos demonstrativos."
+            : "Ajuste os filtros ou faça um novo registro.";
+        fitReportsButton.disabled = reports.length === 0;
+        if (selectedReportId && markersById.has(selectedReportId))
+            selectReport(selectedReportId);
+        else
+            selectedReportId = null;
     }
     let selectedReportId = null;
     let pendingPopup = 0;
@@ -449,6 +484,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     [categoryFilter, statusFilter].forEach((field) => field?.addEventListener("change", render));
     locationFilter?.addEventListener("input", render);
+    showDemoReports.addEventListener("change", render);
     clearButton?.addEventListener("click", () => {
         categoryFilter.value = "all";
         statusFilter.value = "all";
@@ -456,24 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
         render();
         locationFilter.focus();
     });
-    let hoverTimer;
-    list.addEventListener("pointerover", event => {
-        const card = event.target.closest(".report-card");
-        if (event.pointerType !== "mouse" || !card || card.contains(event.relatedTarget)) return;
-        hoverTimer = setTimeout(() => {
-            const marker = markersById.get(card.dataset.reportId);
-            if (!marker) return;
-            window.clearTimeout(pendingPopup);
-            selectReport(card.dataset.reportId);
-            map.panTo(marker.getLatLng(), { animate: !reducedMotion.matches, duration: .35 });
-        }, 300);
-    });
-    list.addEventListener("pointerout", event => {
-        const card = event.target.closest(".report-card");
-        if (card && !card.contains(event.relatedTarget)) clearTimeout(hoverTimer);
-    });
     list.addEventListener("click", (event) => {
-        clearTimeout(hoverTimer);
         const button = event.target.closest("[data-focus-id]");
         if (button && focusReport(button.dataset.focusId, !isMobile.matches && !reducedMotion.matches) && isMobile.matches) {
             setSheet(false);
@@ -503,7 +522,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         locateButton.disabled = true;
         navigator.geolocation.getCurrentPosition((position) => {
-            map.flyTo([position.coords.latitude, position.coords.longitude], 16, { duration: 1.25 });
+            goToPoint([position.coords.latitude, position.coords.longitude], 16);
             locateButton.disabled = false;
             if (liveRegion)
                 liveRegion.textContent = "Mapa centralizado na sua localização.";
