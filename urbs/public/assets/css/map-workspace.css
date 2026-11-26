@@ -73,47 +73,6 @@
   flex-direction: column;
 }
 
-.map-page .map-topbar {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 11px 13px;
-}
-
-.map-page .map-v19-tools {
-  width: auto;
-  margin-left: 0;
-  justify-content: flex-start;
-  gap: 6px;
-}
-
-.map-page .map-v19-tool,
-.map-page .map-v19-bar .locate-button {
-  min-height: 38px;
-  border-color: var(--map-line);
-  background: var(--map-control);
-  font-size: 12px;
-  padding-inline: 9px;
-}
-
-.map-page .map-v19-tool:hover,
-.map-page .map-v19-bar .locate-button:hover {
-  background: #2b4134;
-}
-
-.map-page .map-v19-switch {
-  flex: 0 0 auto;
-  border-color: var(--map-line);
-  background: #101c16;
-}
-
-.map-page .map-v19-layer {
-  min-height: 32px;
-  padding-inline: 10px;
-  font-size: 12px;
-}
-
 .map-page .map-canvas-wrap {
   min-height: clamp(395px, 61svh, 730px);
   border: solid var(--map-line);
@@ -261,18 +220,6 @@
   .map-page .app-header nav {
     gap: 10px;
   }
-
-  .map-page .map-topbar {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .map-page .map-v19-tool,
-  .map-page .map-v19-layer,
-  .map-page .map-v19-bar .locate-button {
-    font-size: 11px;
-    padding-inline: 7px;
-  }
 }
 
 /* Identidade editorial da Home aplicada à interface ao redor do mapa. */
@@ -301,7 +248,6 @@
 .map-header-tag,
 .map-page .app-header nav a,
 .map-page .app-header .header-action,
-.map-page .map-v19-tools button,
 .map-page .explorer-topline,
 .map-page .filter-location label,
 .map-page .filter-fields label,
@@ -347,46 +293,6 @@
   box-shadow: none;
 }
 
-.map-page .map-topbar { padding: 0; }
-.map-page .map-v19-tools {
-  display: flex;
-  width: 100%;
-  gap: 0;
-  justify-content: flex-start;
-}
-.map-page .map-v19-switch,
-.map-navigation-tools {
-  display: flex;
-  padding: 0;
-  gap: 0;
-  border: 0;
-  background: transparent;
-}
-.map-page .map-v19-tools button {
-  min-width: 0;
-  min-height: 44px;
-  padding: 6px clamp(7px, .8vw, 15px);
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: var(--map-ink);
-}
-.map-page .map-v19-tools #locate-me {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-.map-page #locate-me .map-locate-icon {
-  color: var(--map-muted);
-  font: 16px/1 var(--body);
-}
-.map-page .map-v19-tools button:hover { background: var(--map-control); }
-.map-page .map-v19-tools button[aria-pressed="true"] {
-  background: var(--map-accent);
-  color: var(--map-charcoal);
-}
-.map-page .map-v19-tools button:focus-visible { outline-offset: -3px; }
 .map-panel:fullscreen { display: flex; flex-direction: column; }
 .map-panel:fullscreen .map-canvas-wrap { flex: 1; min-height: 0; }
 
@@ -476,11 +382,6 @@
 
 @media (max-width: 1100px) {
   .map-header-tag { display: none; }
-  .map-page .map-v19-tools { display: grid; grid-template-columns: 1fr; }
-  .map-page .map-v19-switch,
-  .map-navigation-tools { border: 0; width: 100%; }
-  .map-page .map-v19-tools button { flex: 1; }
-  .map-page .map-v19-tools button { border-bottom: 1px solid var(--map-line); }
 }
 
 @media (max-width: 800px) {
@@ -931,25 +832,79 @@
     -webkit-text-stroke: clamp(1.1px, .11vw, 1.65px) var(--map-paper);
   }
 }
-.map-page .map-topbar {
+.map-controls {
+  position: relative;
+  z-index: 450;
+  container-type: inline-size;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 6px;
+  border-bottom: 1px solid #acb7ab;
   background: var(--map-paper);
-  border-bottom: 1px solid #a8b2a4;
-}
-.map-page .map-v19-tools button {
   color: #22382b;
-  border-right: 1px solid #bfc9bb;
 }
-.map-page .map-v19-tools button:hover { background: #dce5d8; }
-.map-page .map-v19-tools button[aria-pressed="true"] {
-  background: var(--map-accent);
-  color: var(--map-charcoal);
-  box-shadow: inset 0 -2px 0 #334e2c;
+.map-layer-switch, .map-actions { display: flex; align-items: center; }
+.map-layer-switch { border: 1px solid #a6b5a5; }
+.map-controls button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 9px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: var(--map-micro);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
 }
-.map-page .map-v19-tools button:focus-visible { outline-color: #36503b; }
-.map-page .map-v19-tools #locate-me { background: transparent; color: #22382b; }
-.map-page .map-v19-tools #locate-me:hover { background: #dce5d8; }
-.map-page .map-v19-tools #locate-me .map-locate-icon { color: inherit; }
-.map-page #map-fullscreen { min-width: 42px; font-family: var(--mono); }
+.map-layer-switch button { min-height: 38px; }
+.map-layer-switch button[aria-pressed="true"] { background: var(--map-accent); color: var(--map-charcoal); }
+.map-controls button:not([aria-pressed="true"]):hover,
+.map-expand[aria-pressed="true"] { background: #dce5d8; }
+.map-controls button:focus-visible { outline: 2px solid #36503b; outline-offset: -3px; }
+.map-controls button:disabled { opacity: .55; cursor: wait; }
+.map-controls svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.map-expand { margin-inline-start: auto; min-width: 44px; }
+.map-control-hint {
+  position: absolute;
+  inset: calc(100% + 4px) 0 auto auto;
+  padding: 6px 9px;
+  background: #193326;
+  color: var(--map-paper);
+  opacity: 0;
+  pointer-events: none;
+}
+.map-expand:is(:hover, :focus-visible) .map-control-hint { opacity: 1; }
+@container (max-width: 650px) {
+  .map-layer-switch button { padding-inline: 5px; }
+  .map-actions button { width: 44px; }
+  .map-actions span {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    padding: 6px 9px;
+    background: #193326;
+    color: var(--map-paper);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .map-actions button:is(:hover, :focus-visible) span { opacity: 1; }
+}
 .map-page .explorer-panel {
   --workspace-text: #f2f0e8;
   --workspace-muted: #b1c1b5;
@@ -1064,11 +1019,6 @@
 .map-page .report-card .report-description { color: var(--map-muted); font: 14px/1.45 var(--body); }
 .map-page .header-action span { color: inherit; }
 @media (max-width: 760px) {
-  .map-page .map-navigation-tools button {
-    padding-inline: 3px;
-    letter-spacing: .025em;
-    font-size: 10px;
-  }
   .map-page .map-sheet-toggle::before {
     width: 18px;
     height: 3px;
