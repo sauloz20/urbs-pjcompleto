@@ -41,12 +41,12 @@
   </script>
   <script defer="" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
   </script>
-  <script defer="" src="assets/js/map.js?v=20261127-guide">
+  <script defer="" src="assets/js/map.js?v=20261127-simulator">
   </script>
    <link rel="stylesheet" href="assets/css/platform-nav.css?v=20261127-scroll"/>
   <script defer src="assets/js/platform-nav.js?v=20261127-scroll"></script>
    <link rel="stylesheet" href="assets/css/map-atlas.css?v=20261127-compact"/>
-   <link rel="stylesheet" href="assets/css/map-guide.css?v=20261127-editorial"/>
+   <link rel="stylesheet" href="assets/css/map-guide.css?v=20261127-simulator"/>
  </head>
  <body class="app-page map-page">
   <div aria-hidden="true" class="urbs-arrival-curtain">
@@ -336,12 +336,13 @@
       <div class="atlas-anatomy">
         <div class="atlas-guide-label"><span>01 / ANATOMIA DO PINO</span><span>FIG. 01</span></div>
         <div class="map-pin-example" hidden>
-          <div class="atlas-pin-stage"><div class="atlas-pin-orbit" aria-hidden="true"></div><span class="map-pin-sample" id="pin-example" aria-hidden="true"></span><span class="atlas-pin-tag">EXEMPLO ILUSTRATIVO</span></div>
+          <div class="atlas-pin-stage"><div class="atlas-pin-orbit" aria-hidden="true"></div><span class="map-pin-sample" id="pin-example" aria-hidden="true"></span><span class="atlas-pin-tag">SIMULADOR · EXEMPLO ILUSTRATIVO</span></div>
           <dl>
-            <div><dt>01 · Cor</dt><dd>Categoria urbana</dd></div>
-            <div><dt>02 · Ícone</dt><dd>Iluminação pública</dd></div>
-            <div><dt>03 · Ponto lateral</dt><dd>Em análise</dd></div>
+            <div><dt>01 · Categoria / cor</dt><dd id="guide-category-label">Iluminação pública</dd></div>
+            <div><dt>02 · Ícone</dt><dd>Identifica o tipo de ocorrência</dd></div>
+            <div><dt>03 · Ponto lateral</dt><dd id="guide-status-label">Em análise</dd></div>
           </dl>
+          <div class="atlas-simulator"><label for="guide-status-select">Experimente outra situação</label><select id="guide-status-select"><option>Novo</option><option selected>Em análise</option><option>Em andamento</option><option>Solucionado</option><option>Rejeitado</option></select><p>Selecione uma categoria ao lado para testar o marcador. Esta simulação não altera os registros do mapa.</p></div>
         </div>
       </div>
       <div class="map-legend-group atlas-categories" hidden>

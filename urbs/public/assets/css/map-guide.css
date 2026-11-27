@@ -47,3 +47,15 @@
 @media(max-width:1000px){.atlas-guide .atlas-status .map-status-grid{grid-template-columns:repeat(3,minmax(0,1fr));}.atlas-guide-layout{gap:24px;}}
 @media(max-width:800px){.map-page .atlas-guide{margin-top:40px;padding-top:28px;}.atlas-guide .map-legend-heading{grid-template-columns:1fr;gap:10px;margin-bottom:24px;}.atlas-guide-layout{grid-template-columns:1fr;}.atlas-pin-stage{min-height:210px;}.atlas-status{margin-top:32px;}}
 @media(max-width:520px){.map-page .atlas-guide .map-pin-guide-list{grid-template-columns:1fr;}.atlas-guide .atlas-status .map-status-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.map-page .atlas-guide .atlas-institution{grid-template-columns:1fr;gap:8px;}.atlas-guide .map-category-entry{min-height:80px;}.atlas-guide .map-pin-example dl{padding-inline:14px;}}
+
+/* Simulador independente do mapa: categorias clicáveis e situação selecionável. */
+.atlas-guide .map-category-entry{padding:0;align-items:stretch;}
+.atlas-category-button{display:flex;align-items:center;text-align:left;gap:16px;width:100%;min-width:0;border:0;background:transparent;color:inherit;padding:18px 15px;font:inherit;cursor:pointer;border-radius:7px;}
+.atlas-category-button[aria-pressed="true"]{box-shadow:inset 0 0 0 1px var(--category-color);background:color-mix(in srgb,var(--category-color) 8%,transparent);}
+.atlas-category-button:focus-visible{outline:2px solid var(--category-color);outline-offset:-3px;}
+.atlas-pin-stage{flex:1;min-height:230px;}
+.atlas-simulator{display:grid;gap:8px;padding:0 20px 18px;}
+.atlas-simulator label{font:600 12px/1.4 var(--body);color:var(--atlas-text);}
+.atlas-simulator select{width:100%;min-height:42px;background:#091510;border:1px solid var(--atlas-line);border-radius:6px;padding:8px 12px;color:var(--atlas-text);font:500 13px/1.4 var(--body);color-scheme:dark;}
+.atlas-simulator p{margin:0;color:var(--atlas-muted);font:400 11px/1.6 var(--body);}
+@media(max-width:520px){.atlas-simulator{padding-inline:14px}.atlas-category-button{padding:14px;}}

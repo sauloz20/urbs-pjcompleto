@@ -340,21 +340,43 @@ document.addEventListener("DOMContentLoaded", () => {
         const guide = document.getElementById("map-pin-guide-list");
         if (!guide)
             return;
+        const sample = document.getElementById("pin-example");
+        const statusSelect = document.getElementById("guide-status-select");
+        const categoryLabel = document.getElementById("guide-category-label");
+        const statusLabel = document.getElementById("guide-status-label");
+        let activeCategory = "Iluminação pública";
+        const categoryButtons = new Map();
+        function updateSample() {
+            const status = statusSelect.value;
+            sample.replaceChildren(makePin(categoryMarkers.get(activeCategory), status));
+            categoryLabel.textContent = activeCategory;
+            statusLabel.textContent = status;
+            categoryButtons.forEach((button, name) => button.setAttribute("aria-pressed", String(name === activeCategory)));
+        }
         categoryMarkers.forEach((appearance, category) => {
             const entry = makeElement("li", "map-category-entry");
             entry.style.setProperty("--category-color", appearance.color);
+            const button = makeElement("button", "atlas-category-button");
+            button.type = "button";
+            button.setAttribute("aria-label", "Simular marcador: " + category);
             const preview = makeElement("span", "map-category-preview");
             preview.setAttribute("aria-hidden", "true");
             preview.append(makePin(appearance));
             const caption = makeElement("span", "category-caption");
             caption.append(makeElement("strong", "", category), makeElement("small", "", appearance.examples));
-            entry.append(preview, caption);
+            button.append(preview, caption);
+            entry.append(button);
             guide.append(entry);
+            categoryButtons.set(category, button);
+            button.addEventListener("click", () => {
+                activeCategory = category;
+                updateSample();
+            });
         });
         guide.closest(".map-legend-group").hidden = false;
-        const sample = document.getElementById("pin-example");
-        sample.append(makePin(categoryMarkers.get("Iluminação pública"), "Em análise"));
-        sample.parentElement.hidden = false;
+        sample.closest(".map-pin-example").hidden = false;
+        statusSelect.addEventListener("change", updateSample);
+        updateSample();
 
         if (reducedMotion.matches || !("IntersectionObserver" in window))
             return;
