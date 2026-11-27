@@ -6,13 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     const center = [-16.7286, -43.8578];
     const categoryMarkers = new Map([
-        ["Pavimentação", { icon: "construction", symbol: "║", color: "#f4a96e", examples: "Buracos, asfalto quebrado e desníveis na via." }],
-        ["Iluminação pública", { icon: "lightbulb", symbol: "✦", color: "#f8df75", examples: "Lâmpadas apagadas, intermitentes ou danificadas." }],
-        ["Acessibilidade", { icon: "accessibility", symbol: "♿︎", color: "#9ce0a3", examples: "Calçadas obstruídas, rampas danificadas ou ausentes." }],
-        ["Descarte irregular de resíduos", { icon: "trash-2", symbol: "▤", color: "#c9b7f4", examples: "Lixo, entulho ou móveis descartados em área pública." }],
-        ["Drenagem", { icon: "droplets", symbol: "≋", color: "#8dcdf3", examples: "Bueiros entupidos e acúmulo de água na rua." }],
-        ["Sinalização", { icon: "signpost", symbol: "!", color: "#f6a6bf", examples: "Placas danificadas, semáforos com defeito e faixas apagadas." }],
-        ["Outro", { icon: "map-pin", symbol: "•", color: "#cbd4ca", examples: "Problemas de infraestrutura fora das demais categorias." }]
+        ["Pavimentação", { icon: "construction", symbol: "║", color: "#f4a96e", examples: "Buracos, asfalto danificado e desníveis." }],
+        ["Iluminação pública", { icon: "lightbulb", symbol: "✦", color: "#f8df75", examples: "Postes apagados e lâmpadas defeituosas." }],
+        ["Acessibilidade", { icon: "accessibility", symbol: "♿︎", color: "#9ce0a3", examples: "Calçadas, rampas e travessias." }],
+        ["Descarte irregular de resíduos", { icon: "trash-2", symbol: "▤", color: "#c9b7f4", examples: "Lixo e entulho em espaços públicos." }],
+        ["Drenagem", { icon: "droplets", symbol: "≋", color: "#8dcdf3", examples: "Bueiros obstruídos e acúmulo de água." }],
+        ["Sinalização", { icon: "signpost", symbol: "!", color: "#f6a6bf", examples: "Placas, semáforos e faixas de trânsito." }],
+        ["Outro", { icon: "map-pin", symbol: "•", color: "#cbd4ca", examples: "Outras questões de infraestrutura urbana." }]
     ]);
     const otherCategory = categoryMarkers.get("Outro");
     const statusColors = {
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const quickLegend = document.getElementById("map-quick-legend");
     const quickStatuses = document.getElementById("map-quick-statuses");
-    quickStatuses.append(...Array.from(document.querySelectorAll(".map-pin-guide .map-status-grid li"), item => item.cloneNode(true)));
+    quickStatuses.append(...Array.from(document.querySelectorAll(".map-pin-guide .map-status-grid li"), item => { const copy = item.cloneNode(true); copy.querySelector("small")?.remove(); return copy; }));
     quickLegend.querySelector(".map-legend-link").addEventListener("click", () => quickLegend.hidePopover());
     function setSheet(open) {
         explorer.dataset.expanded = String(open);
@@ -342,6 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         categoryMarkers.forEach((appearance, category) => {
             const entry = makeElement("li", "map-category-entry");
+            entry.style.setProperty("--category-color", appearance.color);
             const preview = makeElement("span", "map-category-preview");
             preview.setAttribute("aria-hidden", "true");
             preview.append(makePin(appearance));

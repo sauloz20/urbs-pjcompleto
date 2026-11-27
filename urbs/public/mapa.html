@@ -41,11 +41,12 @@
   </script>
   <script defer="" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
   </script>
-  <script defer="" src="assets/js/map.js?v=20261127-atlas">
+  <script defer="" src="assets/js/map.js?v=20261127-guide">
   </script>
    <link rel="stylesheet" href="assets/css/platform-nav.css?v=20261127-scroll"/>
   <script defer src="assets/js/platform-nav.js?v=20261127-scroll"></script>
    <link rel="stylesheet" href="assets/css/map-atlas.css?v=20261127-compact"/>
+   <link rel="stylesheet" href="assets/css/map-guide.css?v=20261127-editorial"/>
  </head>
  <body class="app-page map-page">
   <div aria-hidden="true" class="urbs-arrival-curtain">
@@ -325,36 +326,42 @@
      </div>
     </aside>
    </div>
-   <section class="map-pin-guide" aria-labelledby="map-legend-title">
-    <div class="legend-overview">
-     <div class="map-legend-heading">
-      <span class="map-legend-index">Guia dos marcadores</span>
-      <h2 id="map-legend-title" tabindex="-1">Como ler <span>o mapa</span></h2>
-      <p class="pin-reading">A cor e o ícone mostram o tipo de ocorrência. O ponto lateral indica a situação.</p>
-     </div>
-     <div class="map-pin-example" hidden>
-      <span class="map-pin-sample" id="pin-example" aria-hidden="true"></span>
-      <dl>
-       <div><dt>Ícone e cor</dt><dd>Iluminação pública</dd></div>
-       <div><dt>Ponto lateral</dt><dd>Em análise</dd></div>
-      </dl>
-     </div>
-     <div class="map-legend-group">
-      <h3>Situação do registro</h3>
+   <section class="map-pin-guide atlas-guide" aria-labelledby="map-legend-title">
+    <div class="map-legend-heading">
+      <span class="map-legend-index">03 / Linguagem cartográfica</span>
+      <h2 id="map-legend-title" tabindex="-1">Leitura dos <span>marcadores.</span></h2>
+      <p class="pin-reading">Cada marcador traduz uma ocorrência em três sinais visuais: cor, ícone e situação.</p>
+    </div>
+    <div class="atlas-guide-layout">
+      <div class="atlas-anatomy">
+        <div class="atlas-guide-label"><span>01 / ANATOMIA DO PINO</span><span>FIG. 01</span></div>
+        <div class="map-pin-example" hidden>
+          <div class="atlas-pin-stage"><div class="atlas-pin-orbit" aria-hidden="true"></div><span class="map-pin-sample" id="pin-example" aria-hidden="true"></span><span class="atlas-pin-tag">EXEMPLO ILUSTRATIVO</span></div>
+          <dl>
+            <div><dt>01 · Cor</dt><dd>Categoria urbana</dd></div>
+            <div><dt>02 · Ícone</dt><dd>Iluminação pública</dd></div>
+            <div><dt>03 · Ponto lateral</dt><dd>Em análise</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div class="map-legend-group atlas-categories" hidden>
+        <div class="atlas-guide-label"><span>02 / CATEGORIAS URBANAS</span><span>07 TIPOS</span></div>
+        <h3>O que observamos</h3>
+        <ul class="map-pin-guide-list" id="map-pin-guide-list"></ul>
+      </div>
+    </div>
+    <div class="map-legend-group atlas-status">
+      <div class="atlas-guide-label"><span>03 / SITUAÇÃO DO REGISTRO</span></div>
+      <h3>Acompanhe cada etapa</h3>
       <ul class="map-status-grid">
-       <li><i aria-hidden="true" class="legend-dot legend-new"></i> Novo</li>
-       <li><i aria-hidden="true" class="legend-dot legend-analysis"></i> Em análise</li>
-       <li><i aria-hidden="true" class="legend-dot legend-progress"></i> Em andamento</li>
-       <li><i aria-hidden="true" class="legend-dot legend-solved"></i> Solucionado</li>
-       <li><i aria-hidden="true" class="legend-dot legend-rejected"></i> Rejeitado</li>
+        <li><i aria-hidden="true" class="legend-dot legend-new"></i><span><strong>Novo</strong><small>Registro recebido</small></span></li>
+        <li><i aria-hidden="true" class="legend-dot legend-analysis"></i><span><strong>Em análise</strong><small>Avaliação do registro</small></span></li>
+        <li><i aria-hidden="true" class="legend-dot legend-progress"></i><span><strong>Em andamento</strong><small>Tratamento em curso</small></span></li>
+        <li><i aria-hidden="true" class="legend-dot legend-solved"></i><span><strong>Solucionado</strong><small>Ocorrência concluída</small></span></li>
+        <li><i aria-hidden="true" class="legend-dot legend-rejected"></i><span><strong>Rejeitado</strong><small>Registro não aceito</small></span></li>
       </ul>
-     </div>
     </div>
-    <div class="map-legend-group" hidden>
-     <h3>Categorias</h3>
-     <ul class="map-pin-guide-list" id="map-pin-guide-list"></ul>
-    </div>
-    <p class="local-notice"><strong>Projeto acadêmico independente.</strong> Os pontos de exemplo são fictícios. Os registros enviados por usuários autenticados ficam no banco MySQL; esta plataforma não é um canal oficial da Prefeitura.</p>
+    <div class="local-notice atlas-institution"><span class="atlas-note-label">NOTA INSTITUCIONAL</span><div><strong>Projeto acadêmico independente.</strong><p>Os pontos demonstrativos são fictícios. Os registros enviados por usuários autenticados são armazenados no banco MySQL do projeto. O URBS não é um canal oficial da Prefeitura.</p></div></div>
    </section>
   </main>
   <footer class="app-footer">
