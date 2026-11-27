@@ -128,4 +128,20 @@
   }
 
 
+
+  // Mesmo limiar de rolagem da home; sem interferir no arraste ou zoom do Leaflet.
+  const floatLogo = document.querySelector('.urbs-platform-float-logo');
+  const updateFloating = () => {
+    document.documentElement.classList.toggle('urbs-logo-floating', window.scrollY > 110);
+  };
+  window.addEventListener('scroll', updateFloating, { passive: true });
+  window.addEventListener('resize', updateFloating, { passive: true });
+  window.addEventListener('pageshow', updateFloating);
+  updateFloating();
+  floatLogo?.addEventListener('click', (event) => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+  });
+
 })();

@@ -589,3 +589,158 @@ html.urbs-curtain-open.urbs-logo-floating .header .logo {
 @media(max-width:860px){.urbs-platform-header{height:70px;padding:0 18px;gap:10px}.urbs-platform-header .logo{font-size:32px}.urbs-platform-header .nav-cta{padding:9px 12px;gap:8px}.urbs-curtain__body{grid-template-columns:1fr;gap:32px;align-items:start}.urbs-curtain__link{grid-template-columns:32px 1fr auto;gap:10px}.urbs-curtain__link strong{font-size:clamp(26px,8vw,40px)}}
 @media(max-width:480px){.urbs-platform-header{padding:0 12px;gap:8px}.urbs-platform-header .nav-cta{padding:8px;font-size:9px;gap:4px}.urbs-platform-header .urbs-user-name{display:none}.app-page .urbs-platform-header .urbs-user-trigger{padding:5px 7px;gap:4px}.urbs-curtain__bottom span:last-child{display:none}}
 @media(prefers-reduced-motion:reduce){.urbs-curtain,.urbs-curtain__link,.urbs-platform-header *{transition:none!important;animation:none!important}}
+
+.urbs-scroll-pill {
+  position: fixed;
+  top: 16px;
+  right: clamp(16px, 3.6vw, 52px);
+  z-index: 260;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 999px;
+  background: rgba(7, 20, 14, 0.48);
+  border: 1px solid rgba(239, 238, 229, 0.18);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: #edf5ea;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-10px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    border-color 0.25s ease,
+    visibility 0s linear 0.3s;
+}
+
+html.urbs-logo-floating:not(.urbs-curtain-open):not(.urbs-modal-open) .urbs-scroll-pill {
+  opacity: 0.54;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition:
+    opacity 0.3s ease,
+    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    border-color 0.25s ease,
+    visibility 0s;
+}
+
+html.urbs-logo-floating .urbs-scroll-pill:hover,
+html.urbs-logo-floating .urbs-scroll-pill:focus-within {
+  opacity: 1;
+  background: rgba(7, 20, 14, 0.92);
+  border-color: rgba(199, 243, 107, 0.48);
+}
+
+.urbs-pill-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 4px 0;
+  font: 500 10px/1 'DM Mono', monospace;
+  letter-spacing: 0.11em;
+  white-space: nowrap;
+}
+
+.urbs-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 10px var(--lime);
+  flex-shrink: 0;
+}
+
+.urbs-pill-label {
+  display: inline-block;
+  transition: opacity 0.18s ease, transform 0.22s ease;
+}
+
+.urbs-pill-label.is-changing {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.urbs-pill-sep {
+  width: 1px;
+  height: 16px;
+  background: rgba(239, 245, 225, 0.18);
+}
+
+.urbs-pill-map {
+  padding: 6px 8px;
+  font: 600 9.5px/1 'DM Mono', monospace;
+  letter-spacing: 0.1em;
+  color: #cfe0d1;
+  white-space: nowrap;
+  transition: color 0.18s ease;
+}
+
+.urbs-pill-map:hover {
+  color: var(--lime);
+}
+
+.urbs-pill-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(199, 243, 107, 0.4);
+  background: rgba(199, 243, 107, 0.12);
+  color: var(--lime);
+  font: 700 9.5px/1 'DM Mono', monospace;
+  letter-spacing: 0.12em;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.urbs-pill-menu:hover {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: #07140e;
+}
+
+.urbs-pill-menu i {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 12px;
+}
+
+.urbs-pill-menu i b {
+  display: block;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+
+/* A barra completa acompanha o documento; logo e cápsula assumem após a rolagem. */
+.urbs-platform-header {position:relative;top:auto;}
+.urbs-platform-float-logo,.urbs-scroll-pill {--lime:#c7f36b;--ink:#07140e;z-index:1100;}
+.urbs-platform-float-logo {
+  position:fixed;top:16px;left:clamp(16px,3.6vw,52px);
+  font:700 28px/1 'Space Grotesk',sans-serif;letter-spacing:-.095em;
+  padding:8px 15px 10px;border-radius:999px;
+  background:rgba(7,20,14,.64);border:1px solid rgba(199,243,107,.48);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  color:#efeee5;text-decoration:none;opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateY(-10px);transition:opacity .3s ease,transform .36s ease,visibility 0s linear .3s;
+}
+.urbs-platform-float-logo span {color:var(--lime);}
+html.urbs-logo-floating:not(.urbs-curtain-open):not(.urbs-modal-open) .urbs-platform-float-logo {opacity:.78;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s;}
+html.urbs-logo-floating .urbs-platform-float-logo:hover,html.urbs-logo-floating .urbs-platform-float-logo:focus-visible {opacity:1;background:#07140e;border-color:var(--lime);}
+html.urbs-logo-floating:not(.urbs-curtain-open):not(.urbs-modal-open) .urbs-scroll-pill {opacity:.82;}
+.urbs-scroll-pill a {text-decoration:none;}
+.urbs-scroll-pill button:focus-visible,.urbs-scroll-pill a:focus-visible,.urbs-platform-float-logo:focus-visible {outline:2px solid var(--lime);outline-offset:3px;}
+@media(max-width:860px){.urbs-platform-float-logo{top:12px;left:14px;font-size:24px;padding:6px 12px 8px}.urbs-scroll-pill{top:12px;right:14px;padding:5px 6px 5px 12px;gap:8px}.urbs-pill-map,.urbs-pill-sep{display:none}}
+@media(max-width:360px){.urbs-pill-section{letter-spacing:.04em;font-size:9px}.urbs-pill-menu{padding:7px 9px}.urbs-scroll-pill{gap:5px}}
+@media(prefers-reduced-motion:reduce){.urbs-scroll-pill,.urbs-platform-float-logo,.urbs-pill-label{transition:none!important}}
