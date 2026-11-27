@@ -22,43 +22,117 @@
   </script>
   <script defer="" src="assets/js/store.js?v=2">
   </script>
-  <script defer="" src="assets/js/session-ui.js?v=20261127-integrado">
+  <script defer="" src="assets/js/session-ui.js?v=20261127-nav">
   </script>
   <script defer="" src="assets/js/registro.js?v=1904">
   </script>
+   <link rel="stylesheet" href="assets/css/platform-nav.css?v=20261127-nav"/>
+  <script defer src="assets/js/platform-nav.js?v=20261127-nav"></script>
  </head>
  <body class="app-page form-page-body">
   <a class="skip-link" href="#registro-conteudo">
    Pular para o conteúdo
   </a>
-  <header class="app-header">
-   <a aria-label="URBS — página inicial" class="wordmark" href="index.html">
-    urbs
-    <span>
-     .
-    </span>
-   </a>
-   <nav aria-label="Navegação principal">
-    <a href="index.html">
-     Início
-    </a>
-    <a href="mapa.html">
-     Mapa
-    </a>
-    <a aria-current="page" class="active" href="registro.html">
-     Registrar
-    </a>
-    <a href="login.html">
-     Entrar
-    </a>
-   </nav>
-   <a class="header-action" href="mapa.html">
-    Ver mapa
-    <span aria-hidden="true">
-     ↗
-    </span>
-   </a>
-  </header>
+  <header class="header urbs-platform-header">
+      <a aria-label="URBS — página inicial" class="logo" href="index.html">urbs<span>.</span></a>
+      <div class="header-center">
+         SPATIAL INTELLIGENCE <b>✳</b> MONTES CLAROS / MG
+      </div>
+      <nav aria-label="Menu principal" class="nav" id="main-nav">
+         <a data-section="manifesto" href="index.html#manifesto">Manifesto</a>
+         <a data-section="experiencia" href="index.html#experiencia">Transformações</a>
+         <a data-section="categorias" href="index.html#categorias">Categorias</a>
+         <a data-section="territorio" href="index.html#territorio">Território</a>
+         <a data-section="funcionamento" href="index.html#funcionamento">Fluxo</a>
+         <a href="mapa.html">Mapa</a>
+         <a href="login.html">Entrar</a>
+      </nav>
+      <a class="nav-cta is-active" aria-current="page" href="registro.html">
+         REGISTRAR <span>↗</span>
+      </a>
+      <button aria-controls="urbs-curtain" aria-expanded="false" aria-label="Abrir menu de navegação"
+         class="menu-toggle" data-curtain-toggle="" type="button">
+         <span></span>
+         <span></span>
+      </button>
+   </header>
+  <div aria-hidden="true" class="urbs-curtain" hidden="" id="urbs-curtain" role="presentation">
+      <div aria-hidden="true" class="urbs-curtain__grid"></div>
+      <div aria-label="Menu de navegação completa" aria-modal="true" class="urbs-curtain__shell" role="dialog"
+         tabindex="-1">
+         <div class="urbs-curtain__top">
+            <a class="logo" href="index.html">urbs<span>.</span></a>
+            <button aria-label="Fechar menu" class="urbs-curtain__close" data-curtain-close="" type="button">
+               <span>FECHAR</span>
+               <b aria-hidden="true">×</b>
+            </button>
+         </div>
+
+         <div class="urbs-curtain__body">
+            <nav aria-label="Seções da página" class="urbs-curtain__nav">
+               <span class="urbs-curtain__kicker">EXPLORAR A PÁGINA</span>
+               <a class="urbs-curtain__link"  data-section="manifesto" href="index.html#manifesto"
+                  style="--i:0">
+                  <small>01</small>
+                  <strong>Manifesto</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+               <a class="urbs-curtain__link"  data-section="experiencia" href="index.html#experiencia"
+                  style="--i:1">
+                  <small>02</small>
+                  <strong>Transformações</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+               <a class="urbs-curtain__link"  data-section="categorias" href="index.html#categorias"
+                  style="--i:2">
+                  <small>03</small>
+                  <strong>Categorias</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+               <a class="urbs-curtain__link"  data-section="territorio" href="index.html#territorio"
+                  style="--i:3">
+                  <small>04</small>
+                  <strong>Território</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+               <a class="urbs-curtain__link"  data-section="funcionamento" href="index.html#funcionamento"
+                  style="--i:4">
+                  <small>05</small>
+                  <strong>Como funciona</strong>
+                  <em aria-hidden="true">→</em>
+               </a>
+            </nav>
+
+            <aside class="urbs-curtain__aside">
+               <span class="urbs-curtain__kicker">PLATAFORMA URBS</span>
+               <div class="urbs-curtain__cards">
+                  <a class="urbs-curtain__card" href="mapa.html">
+                     <span>CARTOGRAFIA VIVA</span>
+                     <strong>Explorar o Mapa <b aria-hidden="true">↗</b></strong>
+                  </a>
+                  <a class="urbs-curtain__card is-lime" aria-current="page" href="registro.html">
+                     <span>COLABORAÇÃO CIDADÃ</span>
+                     <strong>Registrar Ocorrência <b aria-hidden="true">↗</b></strong>
+                  </a>
+                  <a class="urbs-curtain__card" href="login.html">
+                     <span>CONTA &amp; PERFIS</span>
+                     <strong>Acesso / Alternar Usuário <b aria-hidden="true">↗</b></strong>
+                  </a>
+               </div>
+
+               <div class="urbs-curtain__meta">
+                  <span>ÁREA PILOTO · MONTES CLAROS / MG</span>
+                  <small>16°43′ S · 43°51′ W</small>
+               </div>
+            </aside>
+         </div>
+
+         <div class="urbs-curtain__bottom">
+            <span>URBS · SPATIAL INTELLIGENCE</span>
+            <span>ESC PARA FECHAR</span>
+         </div>
+      </div>
+   </div>
   <main class="form-page" id="registro-conteudo">
    <div class="form-heading">
     <h1 id="report-page-title">Registrar ocorrência</h1>

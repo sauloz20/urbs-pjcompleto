@@ -559,7 +559,7 @@
       }
     });
 
-    if (isHomePage) {
+    if (isHomePage || header.classList.contains('urbs-platform-header')) {
       const mobileToggle = header.querySelector('.menu-toggle');
       if (mobileToggle) header.insertBefore(menuWrap, mobileToggle);
       else header.append(menuWrap);
