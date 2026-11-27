@@ -1,18 +1,30 @@
-/* URBS — Sessão, controle de acesso, direcionamento inteligente (?next=) e transição suave entre páginas */
+/* URBS — Sessão, controle de acesso, direcionamento inteligente (?next=) e Handoff Transparente do Satélite */
 (() => {
   'use strict';
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TRANSITION_KEY = 'urbs:page_transition';
+  const SAT_HANDOFF_KEY = 'urbs:sat_handoff';
   const INTERNAL_PAGES = /^(index|mapa|registro|login|painel)\.html(?:[?#].*)?$/i;
   const PROTECTED_PAGES = /^(mapa|registro|painel)\.html(?:[?#].*)?$/i;
 
-  // ================= CORTINA DE TRANSIÇÃO ENTRE PÁGINAS =================
-  function ensureVeilStyles() {
+  // ================= PONTE ÓPTICA TRANSPARENTE (SATÉLITE -> PÁGINA REAL ATRÁS) =================
+  let activeSatHandoff = null;
+
+  function ensureTransitionStyles() {
     if (document.getElementById('urbs-veil-styles')) return;
     const style = document.createElement('style');
     style.id = 'urbs-veil-styles';
     style.textContent = `
+      @view-transition {
+        navigation: auto;
+      }
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation-duration: 0.22s;
+      }
+
+      /* Cortina padrão (urbs. + barrinha verde) usada na navegação comum entre telas */
       #urbs-page-veil {
         position: fixed;
         inset: 0;
@@ -54,12 +66,184 @@
         border-radius: 99px;
         background: linear-gradient(90deg, transparent, #c7f36b, transparent);
       }
+
+      /* Handoff transparente do satélite: dissolve a opacidade revelando o Mapa / Registro atrás */
+      #urbs-sat-handoff {
+        position: fixed;
+        inset: 0;
+        z-index: 99998;
+        overflow: hidden;
+        background: #040d09;
+        opacity: 1;
+        pointer-events: auto;
+        transition:
+          opacity 1.18s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 1.18s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: opacity, filter;
+      }
+      #urbs-sat-handoff.is-revealing {
+        opacity: 0;
+        filter: blur(2px) brightness(1.06);
+        pointer-events: none;
+      }
+      #urbs-sat-handoff .urbs-sat-layer {
+        position: absolute;
+        inset: 0;
+        transform-origin: center center;
+        filter: contrast(1.06) saturate(0.96) brightness(0.90);
+        transition: transform 1.25s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: transform;
+        background-image:
+          linear-gradient(rgba(199, 243, 107, 0.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(199, 243, 107, 0.08) 1px, transparent 1px);
+        background-size: 64px 64px;
+      }
+      #urbs-sat-handoff .urbs-sat-grid {
+        position: absolute;
+        pointer-events: none;
+        user-select: none;
+      }
+      #urbs-sat-handoff .urbs-sat-grid img {
+        position: absolute;
+        width: 256px;
+        height: 256px;
+        display: block;
+        object-fit: cover;
+        transform: scale(1.004);
+      }
+      #urbs-sat-handoff .urbs-sat-vignette {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 50% 50%, transparent 32%, rgba(2, 8, 5, 0.58) 76%, rgba(2, 6, 4, 0.92) 100%),
+          linear-gradient(180deg, rgba(2, 7, 5, 0.45) 0%, transparent 18%, transparent 72%, rgba(2, 7, 5, 0.82) 100%);
+      }
     `;
     document.head.appendChild(style);
   }
 
+  function latLonToTileFloat(lat, lon, z) {
+    const n = Math.pow(2, z);
+    const x = ((lon + 180) / 360) * n;
+    const rad = (lat * Math.PI) / 180;
+    const y = ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * n;
+    return { x, y };
+  }
+
+  // Monta o frame exato das ruas de Montes Claros (em cache) imediatamente antes do primeiro fade
+  function mountSatelliteHandoffIfPending() {
+    if (reduced || !document.body) return null;
+
+    let raw = null;
+    try {
+      raw = sessionStorage.getItem(SAT_HANDOFF_KEY);
+      sessionStorage.removeItem(SAT_HANDOFF_KEY);
+    } catch (_) {}
+
+    if (!raw) return null;
+
+    let data = null;
+    try {
+      data = JSON.parse(raw);
+    } catch (_) {
+      return null;
+    }
+
+    if (!data || !data.ts || Date.now() - Number(data.ts) > 10000) return null;
+
+    ensureTransitionStyles();
+
+    const lat = Number(data.lat ?? -16.7248);
+    const lon = Number(data.lon ?? -43.8631);
+    const z = Number(data.z ?? 16);
+    const fallbackScale = Math.max(window.innerWidth / 860, window.innerHeight / 860, 1.05) * 1.92;
+    const scale = Number(data.scale || fallbackScale);
+
+    const wrap = document.createElement('div');
+    wrap.id = 'urbs-sat-handoff';
+    wrap.setAttribute('aria-hidden', 'true');
+
+    const layer = document.createElement('div');
+    layer.className = 'urbs-sat-layer';
+    layer.style.transform = `scale(${scale})`;
+
+    const { x: xf, y: yf } = latLonToTileFloat(lat, lon, z);
+    const cx = Math.floor(xf);
+    const cy = Math.floor(yf);
+    const fx = xf - cx;
+    const fy = yf - cy;
+
+    const half = 2;
+    const tileSize = 256;
+    const gridPx = (half * 2 + 1) * tileSize;
+    const centerPxX = (half + fx) * tileSize;
+    const centerPxY = (half + fy) * tileSize;
+
+    const grid = document.createElement('div');
+    grid.className = 'urbs-sat-grid';
+    grid.style.width = `${gridPx}px`;
+    grid.style.height = `${gridPx}px`;
+    grid.style.left = `calc(50% - ${centerPxX.toFixed(2)}px)`;
+    grid.style.top = `calc(50% - ${centerPxY.toFixed(2)}px)`;
+
+    for (let dy = -half; dy <= half; dy++) {
+      for (let dx = -half; dx <= half; dx++) {
+        const img = document.createElement('img');
+        img.alt = '';
+        img.decoding = 'sync';
+        img.loading = 'eager';
+        img.style.left = `${(dx + half) * tileSize}px`;
+        img.style.top = `${(dy + half) * tileSize}px`;
+        img.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${cy + dy}/${cx + dx}`;
+        img.onerror = () => { img.style.opacity = '0'; };
+        grid.appendChild(img);
+      }
+    }
+
+    const vignette = document.createElement('div');
+    vignette.className = 'urbs-sat-vignette';
+
+    layer.appendChild(grid);
+    wrap.append(layer, vignette);
+    document.body.appendChild(wrap);
+
+    let revealed = false;
+    const reveal = () => {
+      if (revealed) return;
+      revealed = true;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          layer.style.transform = `scale(${(scale * 1.08).toFixed(4)})`;
+          wrap.classList.add('is-revealing');
+          window.setTimeout(() => wrap.remove(), 1280);
+        });
+      });
+    };
+
+    // Segurança: garante que a camada sempre revele mesmo se algum recurso externo demorar
+    const fallbackTimer = window.setTimeout(reveal, 1650);
+
+    return {
+      revealNow(delayMs = 360) {
+        window.clearTimeout(fallbackTimer);
+        window.setTimeout(reveal, delayMs);
+      },
+      destroy() {
+        window.clearTimeout(fallbackTimer);
+        wrap.remove();
+      }
+    };
+  }
+
+  // Executa IMEDIATAMENTE (antes do DOMContentLoaded) para segurar o frame sem flash
+  ensureTransitionStyles();
+  activeSatHandoff = mountSatelliteHandoffIfPending();
+
+  // ================= CORTINA PADRÃO DE TRANSIÇÃO ENTRE PÁGINAS =================
   function getPageVeil() {
-    ensureVeilStyles();
+    ensureTransitionStyles();
     let veil = document.getElementById('urbs-page-veil');
     if (!veil) {
       veil = document.createElement('div');
@@ -72,7 +256,7 @@
   }
 
   function playArrivalFade() {
-    if (reduced) return;
+    if (reduced || activeSatHandoff) return;
     let ts = 0;
     try {
       ts = Number(sessionStorage.getItem(TRANSITION_KEY) || 0);
@@ -116,13 +300,63 @@
     }, 320);
   }
 
-  // Garante que o botão "Voltar" do navegador (bfcache) nunca trave a cortina na tela
   window.addEventListener('pageshow', (event) => {
     const veil = document.getElementById('urbs-page-veil');
     if (veil && (event.persisted || veil.classList.contains('is-visible'))) {
       veil.classList.remove('is-visible');
     }
+    if (event.persisted) {
+      document.getElementById('urbs-sat-handoff')?.remove();
+    }
   });
+
+  // ================= NORMALIZAÇÃO E PRÉ-SELEÇÃO DE CATEGORIA =================
+  function normalizeText(value) {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
+  }
+
+  function preselectCategoryFromUrl() {
+    const requested = new URLSearchParams(window.location.search).get('categoria');
+    if (!requested) return;
+
+    const targetNorm = normalizeText(requested);
+    const select =
+      document.querySelector('select[name="category_id"], select[name="category"], select#category, select#categoria') ||
+      null;
+    if (!select) return;
+
+    const tryApply = () => {
+      const options = [...select.options];
+      const match = options.find((opt) => {
+        const val = normalizeText(opt.value);
+        const text = normalizeText(opt.textContent);
+        return (
+          val === targetNorm ||
+          text === targetNorm ||
+          (targetNorm.length >= 4 && (text.includes(targetNorm) || targetNorm.includes(text)))
+        );
+      });
+
+      if (!match) return false;
+      if (select.value !== match.value) {
+        select.value = match.value;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return true;
+    };
+
+    if (tryApply()) return;
+
+    const observer = new MutationObserver(() => {
+      if (tryApply()) observer.disconnect();
+    });
+    observer.observe(select, { childList: true, subtree: true });
+    window.setTimeout(() => observer.disconnect(), 6000);
+  }
 
   // ================= FLUXO PRINCIPAL =================
   document.addEventListener('DOMContentLoaded', async () => {
@@ -142,7 +376,10 @@
       master: 'Admin Master',
     };
 
-    // 1. Logo "urbs." fixo e translúcido no scroll do index.html
+    if (isRegisterPage) {
+      preselectCategoryFromUrl();
+    }
+
     if (isHomePage) {
       const logo = document.querySelector('.header .logo');
       const updateFloatingLogo = () => {
@@ -191,14 +428,24 @@
 
     const isLoggedIn = Boolean(session.authenticated && session.user);
 
-    // 2. Bloqueio de acesso preservando o destino completo (?next=mapa.html?categoria=...)
     if (isProtectedPage && !isLoggedIn) {
+      activeSatHandoff?.destroy();
       const intended = `${currentFile}${window.location.search}${window.location.hash}`;
       window.location.replace(`login.html?acesso=restrito&next=${encodeURIComponent(intended)}`);
       return;
     }
 
-    // 3. Interceptação delegada para 100% dos links e cards (originais, clones, modal e cortina)
+    // Dissolve a camada do satélite revelando o mapa ou registro já montado atrás dela
+    if (activeSatHandoff) {
+      const triggerReveal = () => activeSatHandoff.revealNow(isMapPage ? 420 : 280);
+      if (document.readyState === 'complete') {
+        triggerReveal();
+      } else {
+        window.addEventListener('load', triggerReveal, { once: true });
+      }
+    }
+
+    // Interceptação delegada para 100% dos links e cards internos
     document.addEventListener('click', (event) => {
       if (event.defaultPrevented) return;
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -214,14 +461,12 @@
 
       event.preventDefault();
 
-      // Visitante deslogado clicando em qualquer card/botão de área protegida -> preserva intenção no ?next=
       if (!isLoggedIn && PROTECTED_PAGES.test(rawHref)) {
         const loginTarget = `login.html?acesso=restrito&next=${encodeURIComponent(rawHref)}`;
         navigateSmoothly(loginTarget);
         return;
       }
 
-      // Navegação interna com transição suave
       navigateSmoothly(rawHref);
     });
 
@@ -229,7 +474,6 @@
     const nav = header?.querySelector('nav');
     if (!header || !nav || !isLoggedIn) return;
 
-    // 4. Usuário LOGADO:
     const user = session.user;
     rememberAccount(user);
 
@@ -238,7 +482,6 @@
       nav.querySelectorAll('a[href^="registro.html"]').forEach((link) => link.remove());
     }
 
-    // Atualiza o cartão de acesso dentro da cortina full-screen para "Alternar Usuário"
     const curtainLoginCard = document.querySelector('.urbs-curtain__card[href="login.html"]');
     if (curtainLoginCard) {
       curtainLoginCard.href = 'login.html?trocar=1';
@@ -277,7 +520,6 @@
     menuWrap.querySelector('.urbs-user-name').textContent = firstName;
     menuWrap.querySelector('.urbs-user-summary strong').textContent = user.name || firstName;
     menuWrap.querySelector('.urbs-user-summary span').textContent = roleLabel;
-
     const trigger = menuWrap.querySelector('.urbs-user-trigger');
     const dropdown = menuWrap.querySelector('.urbs-user-dropdown');
     const logoutBtn = menuWrap.querySelector('[data-urbs-logout]');
