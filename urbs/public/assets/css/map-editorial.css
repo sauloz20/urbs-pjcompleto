@@ -1,0 +1,78 @@
+/* URBS / Cartografia editorial. A home fornece tipografia, linhas e ritmo. */
+.map-page{--atlas-bg:#07140e;--atlas-panel:#0c1c14;--atlas-line:#34463a;--atlas-text:#efeee5;--atlas-muted:#a8bcad;background:var(--atlas-bg);}
+.map-page .monitor-heading{padding:30px clamp(18px,3.5vw,56px) 26px;align-items:end;}
+.map-page .monitor-heading h1{font:700 clamp(30px,3vw,46px)/1.05 var(--display);letter-spacing:-.06em;text-transform:none;margin:8px 0;}
+.map-page .monitor-description{font-size:14px;}
+.map-page .monitor-location{border:0;text-align:right;gap:5px;}
+.map-page .map-main{padding:0 clamp(18px,3.5vw,56px) 44px;max-width:1900px;}
+.atlas-workspace-label,.editorial-rule{display:flex;align-items:center;gap:16px;color:var(--atlas-muted);font:500 10px/1.4 var(--mono);letter-spacing:.12em;margin-bottom:16px;}
+.atlas-rule,.editorial-rule i{height:1px;flex:1;background:var(--atlas-line);}
+.map-page .map-workspace{gap:0;border:1px solid var(--atlas-line);background:var(--atlas-panel);}
+.map-page .map-panel,.map-page .explorer-panel{border:0;border-radius:0;background:var(--atlas-panel);}
+.map-page .map-panel{overflow:hidden;}
+.map-page .map-controls{background:#0c1c14;border-top:0;padding:9px 12px;gap:6px;}
+.map-page .map-controls button{font-size:12px;}
+.map-page .map-layer-switch{border-radius:3px;}
+.map-page .map-layer-switch button{border-radius:2px;}
+.map-page .map-canvas-wrap{min-height:clamp(480px,67vh,780px);}
+.map-page .atlas-map-footer{border:0;padding:11px 16px;font:500 11px/1.5 var(--mono);}
+.map-page .explorer-panel{border-left:1px solid var(--atlas-line);}
+.map-page .explorer-content{padding:20px;}
+.map-page .explorer-topline{margin-bottom:17px;}
+.map-page .explorer-topline h2{font-size:25px;}
+.map-page .explorer-panel .result-count{background:none;border:0;font:600 22px/1 var(--display);color:var(--atlas-lime);padding:0;}
+.map-page .explorer-panel .search-field,.map-page .explorer-panel select{border-radius:3px;background:#07140e;}
+.atlas-filter-row{grid-template-columns:minmax(0,1fr);gap:10px;}
+.atlas-source-settings{margin-top:12px;padding-bottom:10px;}
+.atlas-source-settings .report-sources{gap:4px;}
+.atlas-results-heading{margin:15px 0 6px;}
+.map-page .explorer-panel .report-list{max-height:clamp(220px,38vh,500px);}
+.map-page .explorer-panel .report-card{padding:14px 8px 14px 0;}
+.map-page .explorer-panel .report-card:is(:hover,.is-selected){padding-left:8px;}
+@media(min-width:801px){.map-page .map-workspace{grid-template-columns:minmax(0,1fr) minmax(300px,350px);}}
+/* Editorial guide: one continuous index, no card matrix. */
+.map-page .atlas-editorial{margin:clamp(60px,8vw,120px) 0 0;padding:0;border:0;display:block;}
+.editorial-heading{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.6fr);align-items:end;gap:28px;margin:36px 0 44px;}
+.editorial-heading h2{font:700 clamp(42px,6.2vw,92px)/.88 var(--display);letter-spacing:-.075em;margin:0;color:var(--atlas-text);}
+.editorial-heading h2 em{font-style:normal;color:var(--atlas-lime);}
+.editorial-heading p{font:400 16px/1.65 var(--body);color:var(--atlas-muted);max-width:36ch;margin:0;}
+.editorial-lab{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(24px,5vw,76px);align-items:start;}
+.atlas-editorial .editorial-preview{display:flex;flex-direction:column;margin:0;border:1px solid var(--atlas-line);border-radius:0;background:#0b1a12;overflow:hidden;min-width:0;}
+.editorial-preview-top{display:flex;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--atlas-line);font:500 10px/1.4 var(--mono);letter-spacing:.08em;color:var(--atlas-muted);}
+.atlas-editorial .atlas-pin-stage{min-height:clamp(220px,24vw,330px);background:radial-gradient(ellipse at center,#1d3827,#0b1a12 75%);}
+.atlas-editorial .map-pin-sample .map-v19-pin{transform:scale(3);}
+.editorial-preview-caption{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:18px;border-top:1px solid var(--atlas-line);}
+.editorial-preview-caption strong{font:600 21px/1.2 var(--display);letter-spacing:-.04em;}
+.editorial-preview-caption span{font:500 12px/1.4 var(--mono);color:var(--atlas-lime);}
+.editorial-select{display:grid;gap:8px;padding:0 18px 18px;}
+.editorial-select label{font:500 11px/1.4 var(--mono);color:var(--atlas-muted);}
+.editorial-select select{min-height:42px;color:var(--atlas-text);background:#07140e;border:1px solid var(--atlas-line);border-radius:0;padding:8px 12px;color-scheme:dark;}
+.editorial-index-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 0 15px;border-bottom:1px solid var(--atlas-line);}
+.map-page .atlas-editorial .editorial-index-heading h3{font:600 23px/1.1 var(--display);margin:0;}
+.editorial-index-heading span{font:500 10px/1.4 var(--mono);color:var(--atlas-muted);}
+.map-page .atlas-editorial .map-pin-guide-list{display:block;margin:0;}
+.atlas-editorial .map-category-entry{min-height:0;display:block;border:0;border-bottom:1px solid var(--atlas-line);border-radius:0;background:none;padding:0;overflow:visible;}
+.atlas-editorial .map-category-entry::before{display:none;}
+.atlas-editorial .atlas-category-button{display:grid;grid-template-columns:24px 42px minmax(0,1fr) 18px;gap:12px;padding:13px 6px;min-height:66px;border-radius:0;}
+.atlas-editorial .atlas-category-button::before{content:attr(data-index);color:var(--atlas-muted);font:500 10px/1 var(--mono);}
+.atlas-editorial .atlas-category-button::after{content:"↗";color:var(--category-color);font-size:18px;}
+.atlas-editorial .atlas-category-button[aria-pressed="true"]{box-shadow:inset 2px 0 var(--category-color);background:#13271c;}
+.atlas-editorial .map-category-preview{width:42px;height:42px;}
+.atlas-editorial .map-category-entry .category-caption strong{font:600 17px/1.2 var(--display);}
+.atlas-editorial .map-category-entry .category-caption small{font-size:12px;}
+.editorial-status{margin-top:64px;}
+.map-page .atlas-editorial .editorial-status h3{font:700 clamp(26px,3vw,40px)/1.1 var(--display);margin:24px 0;}
+.atlas-editorial .editorial-status .map-status-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;border-top:1px solid var(--atlas-line);border-bottom:1px solid var(--atlas-line);}
+.atlas-editorial .editorial-status li{display:flex;align-items:start;gap:10px;padding:18px 12px;border:0;border-right:1px solid var(--atlas-line);border-radius:0;background:none;}
+.atlas-editorial .editorial-status li:last-child{border-right:0;}
+.atlas-editorial .editorial-status .legend-dot{margin-top:5px;flex:none;}
+.atlas-editorial .editorial-status li span{display:grid;gap:5px;}
+.atlas-editorial .editorial-status small{color:var(--atlas-muted);font-size:11px;}
+.editorial-end{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:36px 0;margin-top:40px;border-top:1px solid var(--atlas-line);}
+.editorial-end span{color:var(--atlas-lime);font:500 10px/1.4 var(--mono);letter-spacing:.1em;}
+.editorial-end h3{font:700 clamp(26px,4vw,52px)/1 var(--display);letter-spacing:-.06em;margin:9px 0 0;}
+.editorial-cta{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 18px;border:1px solid var(--atlas-lime);color:var(--atlas-lime);font:600 11px/1.4 var(--mono);text-decoration:none;}
+.editorial-cta:hover{background:var(--atlas-lime);color:#07140e;}
+.editorial-disclaimer{font:400 12px/1.6 var(--body);color:var(--atlas-muted);max-width:95ch;margin:0;}
+@media(max-width:800px){.editorial-heading,.editorial-lab{grid-template-columns:1fr;gap:24px;}.editorial-heading{margin:26px 0;}.editorial-status{margin-top:40px;}.atlas-editorial .editorial-status .map-status-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.atlas-editorial .editorial-status li{border-bottom:1px solid var(--atlas-line);}.map-page .map-workspace{grid-template-columns:1fr;}.map-page .map-canvas-wrap{min-height:50svh;}.map-page .monitor-heading{padding:22px 18px;}.editorial-end{align-items:start;flex-direction:column;}}
+@media(max-width:760px){.map-page .explorer-panel{border-top:1px solid var(--atlas-line);border-radius:14px 14px 0 0;}.map-page .explorer-panel .report-list{max-height:none;}.atlas-filter-row{grid-template-columns:1fr 1fr;}}

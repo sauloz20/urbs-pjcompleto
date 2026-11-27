@@ -356,8 +356,10 @@ document.addEventListener("DOMContentLoaded", () => {
         categoryMarkers.forEach((appearance, category) => {
             const entry = makeElement("li", "map-category-entry");
             entry.style.setProperty("--category-color", appearance.color);
+            entry.dataset.index = String(guide.children.length + 1).padStart(2, "0");
             const button = makeElement("button", "atlas-category-button");
             button.type = "button";
+            button.dataset.index = entry.dataset.index;
             button.setAttribute("aria-label", "Simular marcador: " + category);
             const preview = makeElement("span", "map-category-preview");
             preview.setAttribute("aria-hidden", "true");
