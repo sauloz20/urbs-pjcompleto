@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // O mapa mantém os exemplos visuais e carrega as ocorrências reais pela API PHP.
     const map = L.map(mapElement, { scrollWheelZoom: false, zoomControl: false, preferCanvas: true }).setView(center, 13);
+    if ("ResizeObserver" in window) new ResizeObserver(() => map.invalidateSize({ pan: false })).observe(mapElement);
     const streets = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
@@ -411,7 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const matches = getFilteredReports();
         const realCount = matches.filter(report => !report.demo).length;
         const demoCount = matches.length - realCount;
-        const reports = showDemoReports.checked ? matches : matches.filter(report => !report.demo);
+        const reports = (showDemoReports.checked ? matches : matches.filter(report => !report.demo)).slice().sort((a, b) => Number(Boolean(a.demo)) - Number(Boolean(b.demo)));
         window.clearTimeout(pendingPopup);
         markerLayer.clearLayers();
         markersById.clear();

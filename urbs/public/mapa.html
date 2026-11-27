@@ -41,10 +41,11 @@
   </script>
   <script defer="" src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
   </script>
-  <script defer="" src="assets/js/map.js?v=20261126-map-controls">
+  <script defer="" src="assets/js/map.js?v=20261127-atlas">
   </script>
    <link rel="stylesheet" href="assets/css/platform-nav.css?v=20261127-scroll"/>
   <script defer src="assets/js/platform-nav.js?v=20261127-scroll"></script>
+   <link rel="stylesheet" href="assets/css/map-atlas.css?v=20261127-atlas"/>
  </head>
  <body class="app-page map-page">
   <div aria-hidden="true" class="urbs-arrival-curtain">
@@ -175,14 +176,17 @@
       </div>
    </div>
   <div class="monitor-heading">
-   <p>01 / Monitoramento urbano</p>
-   <h1 id="map-title">Mapa de ocorrências</h1>
+   <div class="monitor-intro"><p>URBS / Cartografia colaborativa</p>
+   <h1 id="map-title">Mapa de ocorrências<span>.</span></h1>
+   <div class="monitor-description">Explore os registros da cidade, identifique pontos críticos e acompanhe as mudanças no território.</div></div>
+   <div class="monitor-location"><span>ÁREA DE MONITORAMENTO</span><strong>Montes Claros, MG</strong><small>16°43′ S · 43°51′ W</small></div>
   </div>
   <main aria-labelledby="map-title" class="map-main" id="mapa-conteudo">
    <p aria-live="polite" class="visually-hidden" id="map-live-region" role="status">
    </p>
    <div class="map-workspace">
     <section aria-label="Mapa e localização das ocorrências" class="map-panel">
+     <div class="map-panel-heading"><div><span class="atlas-eyebrow">01 / TERRITÓRIO</span><h2>Explore a cidade</h2></div><span class="atlas-map-context">Montes Claros · MG</span></div>
      <div class="map-controls" role="group" aria-label="Controles do mapa">
       <div class="map-layer-switch" role="group" aria-label="Tipo de mapa">
        <button id="btnLayerLight" type="button" aria-pressed="true">Ruas</button>
@@ -191,11 +195,11 @@
       <div class="map-actions" role="group" aria-label="Navegação no mapa">
        <button id="map-fit-reports" type="button">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/><g fill="currentColor" stroke="none"><circle cx="8" cy="13" r="1.6"/><circle cx="13" cy="8" r="1.6"/><circle cx="16" cy="15" r="1.6"/></g></svg>
-        <span>Ver resultados no mapa</span>
+        <span>Enquadrar resultados</span>
        </button>
        <button id="map-reset-city" type="button" title="Centralizar em Montes Claros">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 9c0 5-7 12-7 12S5 14 5 9a7 7 0 1 1 14 0Z"/><circle cx="12" cy="9" r="2.3"/></svg>
-        <span>Voltar ao centro</span>
+        <span>Centralizar</span>
        </button>
        <button id="locate-me" type="button">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
@@ -226,6 +230,7 @@
        </span>
       </div>
      </div>
+     <div class="atlas-map-footer"><span><i></i> Selecione um marcador para consultar a ocorrência.</span><span>Cartografia interativa</span></div>
     </section>
     <aside aria-labelledby="explorer-title" class="explorer-panel" id="occurrence-explorer">
      <div class="map-sheet-bar">
@@ -237,7 +242,7 @@
      <p class="report-action-feedback" id="report-action-feedback" role="status"></p>
      <div class="explorer-content" id="explorer-content">
       <div class="explorer-topline">
-       <h2 id="explorer-title">Registros</h2>
+       <div><span class="atlas-eyebrow">02 / EXPLORADOR</span><h2 id="explorer-title">Ocorrências</h2></div>
        <span class="result-count" id="result-count">—</span>
       </div>
       <div class="filter-location">
@@ -247,8 +252,9 @@
         <input autocomplete="off" id="location-filter" placeholder="Buscar rua ou bairro" type="search"/>
        </div>
       </div>
-      <div class="category-tabs" id="category-tabs" role="group" aria-label="Filtrar por categoria"></div>
-      <select id="category-filter" hidden aria-label="Categoria">
+      <div class="atlas-filter-row"><div class="atlas-category-field"><label for="category-filter">Categoria</label>
+      <div class="category-tabs" id="category-tabs" role="group" aria-label="Filtrar por categoria" hidden></div>
+      <select id="category-filter" aria-label="Categoria">
           <option value="all">
            Todas as categorias
           </option>
@@ -273,7 +279,7 @@
           <option value="Outro">
            Outro
           </option>
-      </select>
+      </select></div>
       <div class="filter-fields">
         <div>
          <label for="status-filter"><i data-lucide="circle-dot" aria-hidden="true"></i> Situação</label>
@@ -296,10 +302,10 @@
           </option>
          </select>
         </div>
-        <button class="clear-filters" id="clear-filters" type="button">Limpar filtros</button>
-      </div>
+      </div></div>
+      <button class="clear-filters" id="clear-filters" type="button">Limpar filtros</button>
       <div id="filter-chips" aria-label="Filtros aplicados" role="group" hidden></div>
-      <div class="report-sources">
+      <details class="atlas-source-settings"><summary>Fontes dos registros <span aria-hidden="true">+</span></summary><div class="report-sources">
        <p aria-live="polite" aria-atomic="true" class="report-source-counts">
         <span id="real-report-count">0 registros reais</span>
         <span id="demo-report-count">0 exemplos</span>
@@ -309,6 +315,8 @@
         Mostrar exemplos
        </label>
       </div>
+      </details>
+      <div class="atlas-results-heading"><span>RESULTADOS DA BUSCA</span><span>Selecione para localizar ↗</span></div>
       <div aria-label="Lista de ocorrências" class="report-list" id="report-list"></div>
       <div class="empty-state" hidden="" id="empty-state">
        <h3>Nenhuma ocorrência encontrada</h3>
